@@ -1,0 +1,15 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i000.stock.user.dao.mapper.AssetMapper">
+
+    <resultMap id="Asset" type="com.i000.stock.user.dao.model.Asset">
+        <id column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="stock" property="stock"/>
+        <result column="balance" property="balance"/>
+        <result column="cover" property="cover"/>
+    </resultMap>
+
+</mapper>
