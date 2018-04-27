@@ -4,4 +4,19 @@
 
 <mapper namespace="com.i000.stock.user.dao.mapper.TradeMapper">
 
+    <resultMap id="Trade" type="com.i000.stock.user.dao.model.Trade">
+        <id column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="type" property="type"/>
+        <result column="name" property="name"/>
+        <result column="action" property="action"/>
+        <result column="price" property="price"/>
+        <result column="note" property="note"/>
+    </resultMap>
+
+    <select id="findByDate" resultMap="Trade">
+        select * from trade where date=#{date}
+    </select>
+
+
 </mapper>

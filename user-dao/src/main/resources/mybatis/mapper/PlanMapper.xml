@@ -4,4 +4,18 @@
 
 <mapper namespace="com.i000.stock.user.dao.mapper.PlanMapper">
 
+    <resultMap id="Plan" type="com.i000.stock.user.dao.model.Plan">
+        <id column="id" property="id"/>
+        <result column="new_date" property="newDate"/>
+        <result column="name" property="name"/>
+        <result column="type" property="type"/>
+        <result column="action" property="action"/>
+        <result column="rank" property="rank"/>
+        <result column="note" property="note"/>
+    </resultMap>
+
+    <select id="findByDate" resultMap="Plan">
+        select * from plan where new_date=#{date}
+    </select>
+
 </mapper>

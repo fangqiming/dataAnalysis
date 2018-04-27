@@ -1,0 +1,90 @@
+package com.i000.stock.user.service.impl.mail;
+
+import com.i000.stock.user.api.service.MailParseService;
+import com.i000.stock.user.dao.mapper.HoldMapper;
+import com.i000.stock.user.dao.model.Hold;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.regex.Pattern;
+
+/**
+ * @Author:qmfang
+ * @Description:
+ * @Date:Created in 13:37 2018/4/27
+ * @Modified By:
+ */
+@Component
+public class ParseToHold implements MailParseService {
+
+    private String start = "------ Portfolio for 20";
+
+    @Resource
+    private HoldMapper holdMapper;
+
+
+    @Override
+    public LocalDate save(String original) {
+        List<String> parts = getPart(original);
+        LocalDate maxDate = holdMapper.getMaxDate();
+        LocalDate parse = null;
+        Map<String, List<String>> stringListMap = fetchLines(parts);
+        for (String key : stringListMap.keySet()) {
+            for (String line : stringListMap.get(key)) {
+                String[] split = line.split("\t");
+                parse = LocalDate.parse(split[5], DateTimeFormatter.ofPattern("yyyyMMdd"));
+                if (Objects.isNull(maxDate) || parse.compareTo(maxDate) > 0) {
+                    holdMapper.insert(Hold.builder().gain(new BigDecimal(split[8]).divide(new BigDecimal(100), 5, RoundingMode.HALF_UP))
+                            .holdDay(Integer.valueOf(split[7]))
+                            .name(split[0])
+                            .newDate(parse)
+                            .newPrice(new BigDecimal(split[4]))
+                            .oldDate(LocalDate.parse(split[2], DateTimeFormatter.ofPattern("yyyyMMdd")))
+                            .oldPrice(new BigDecimal(split[1]))
+                            .newRank(new BigDecimal(split[3]))
+                            .oldRank(new BigDecimal(split[6]))
+                            .type(key).build());
+                }
+            }
+        }
+        return parse;
+    }
+
+
+    public List<String> getPart(String original) {
+        List<String> result = new ArrayList<>();
+        String[] split = original.split(section.pattern());
+        for (String part : split) {
+            if (part.startsWith(start)) {
+                result.add(part);
+            }
+        }
+        return result;
+    }
+
+    private Map<String, List<String>> fetchLines(List<String> parts) {
+        Map<String, List<String>> result = new HashMap<>(4);
+        for (String part : parts) {
+            String[] split = part.split(line.pattern());
+            String type = "";
+            List<String> lines = new ArrayList<>();
+            for (String line : split) {
+                if (validItem.matcher(line).find()) {
+                    lines.add(line.substring(0, line.length() - 1));
+                }
+                if (line.startsWith("------ Portfolio")) {
+                    type = line.split(", ")[1].split(" ")[0];
+                }
+            }
+            result.put(type, lines);
+        }
+        return result;
+    }
+
+}

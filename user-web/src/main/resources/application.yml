@@ -1,3 +1,4 @@
+# 数据库配置
 spring:
   application:
     name: user
@@ -18,6 +19,13 @@ spring:
     pool-prepared-statements: true
     max-pool-prepared-statement-per-connection-size: 20
     filters: stat
+  http:
+    multipart:
+      max-file-size: 30Mb
+      max-request-size: 30Mb
+
+
+#    mybatis 配置
 dao:
   mybatis:
     plus:
@@ -40,13 +48,46 @@ dao:
           sql-session-factory-bean-name: sqlSessionFactory
 
 
+#  邮件解析配置
+mail:
+  user: 847271387@qq.com
+  host: pop.qq.com
+  password: ldtmixmacazvbccc
+  #monitor: longjilin
+  monitor: www.5201314008.com@qq.com
+  content:
+    baseLine: as baseline (market index)
+    Portfolio: Portfolio for
+    tomorrowPlan: Tomorrows Plan
+    todayTrade: Todays Trades -----
+    todayTradeDetail: Details for closed positions
+
+
 server:
   port: 8082
 
+#  日志配置
 logging:
   level:
     root: info
     com.10000.stock.user: debug
+
+# oss 配置
+component:
+  file:
+    system:
+      oss:
+        private:
+          write-endpoint: https://oss-cn-beijing.aliyuncs.com
+          read-endpoint: https://oss-cn-beijing.aliyuncs.com
+          access-key-id: LTAI8Q4Nmi5WnXGD
+          access-key-secret: B2QFjQfeX3s0rluDRdah8FUnATwpKk
+          bucket-name: aisharev1
+        http-prefix: https://
+        image:
+          catalog: share
+
+
 
 
 

@@ -4,4 +4,22 @@
 
 <mapper namespace="com.i000.stock.user.dao.mapper.HoldMapper">
 
+    <resultMap id="Hold" type="com.i000.stock.user.dao.model.Hold">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="old_date" property="oldDate"/>
+        <result column="old_price" property="oldPrice"/>
+        <result column="old_rank" property="oldRank"/>
+        <result column="new_date" property="newDate"/>
+        <result column="new_rank" property="newRank"/>
+        <result column="new_price" property="newPrice"/>
+        <result column="hold_day" property="holdDay"/>
+        <result column="gain" property="gain"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <select id="findByDate" resultMap="Hold">
+        select * from hold where new_date=#{date}
+    </select>
+
 </mapper>

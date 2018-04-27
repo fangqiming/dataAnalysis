@@ -34,4 +34,10 @@ public class Asset {
      * 做空金额
      */
     private BigDecimal cover;
+
+
+    /**
+     * 相对上一天的收益率
+     */
+    private BigDecimal gain;
 }

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50717
 File Encoding         : 65001
 
-Date: 2018-04-26 15:37:19
+Date: 2018-04-27 20:39:28
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -22,15 +22,22 @@ DROP TABLE IF EXISTS `asset`;
 CREATE TABLE `asset` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `date` date DEFAULT NULL,
-  `stock` decimal(20,4) DEFAULT NULL,
-  `balance` decimal(20,4) DEFAULT NULL,
-  `cover` decimal(20,4) DEFAULT NULL,
+  `stock` decimal(20,4) DEFAULT '0.0000',
+  `balance` decimal(20,4) DEFAULT '0.0000',
+  `cover` decimal(20,4) DEFAULT '0.0000',
+  `gain` decimal(10,4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of asset
 -- ----------------------------
+INSERT INTO `asset` VALUES ('1', '2017-03-30', '803.3000', '195.8800', '-4.4200', '0.0000');
+INSERT INTO `asset` VALUES ('2', '2017-03-31', '814.1300', '204.7000', '11.6500', '0.0036');
+INSERT INTO `asset` VALUES ('3', '2017-04-03', '843.1000', '295.5000', '129.6900', '0.0017');
+INSERT INTO `asset` VALUES ('4', '2017-04-04', '830.9100', '278.4500', '114.0900', '-0.0135');
+INSERT INTO `asset` VALUES ('5', '2017-04-05', '731.7900', '345.9100', '114.0900', '-0.0318');
+INSERT INTO `asset` VALUES ('6', '2017-04-06', '779.8500', '297.4300', '114.0900', '-0.0004');
 
 -- ----------------------------
 -- Table structure for company
@@ -2978,11 +2985,98 @@ CREATE TABLE `hold` (
   `gain` decimal(10,2) DEFAULT NULL,
   `type` varchar(5) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of hold
 -- ----------------------------
+INSERT INTO `hold` VALUES ('1', 'AOBC', '2017-03-02', '19.38', '6.46', '2017-03-30', '19.64', '0.45', '20', '0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('2', 'ARNC', '2017-03-07', '26.98', '22.91', '2017-03-30', '26.56', '0.36', '17', '-0.02', 'LONG1');
+INSERT INTO `hold` VALUES ('3', 'INCY', '2017-03-24', '139.64', '0.65', '2017-03-30', '137.77', '0.75', '4', '-0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('4', 'KATE', '2017-03-23', '22.95', '1.68', '2017-03-30', '23.20', '0.48', '5', '0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('5', 'KITE', '2017-03-23', '74.50', '1.00', '2017-03-30', '78.27', '0.16', '5', '0.05', 'LONG1');
+INSERT INTO `hold` VALUES ('6', 'NTES', '2017-03-15', '286.86', '2.67', '2017-03-30', '282.35', '0.33', '11', '-0.02', 'LONG1');
+INSERT INTO `hold` VALUES ('7', 'PTEN', '2017-03-22', '24.57', '20.70', '2017-03-30', '24.29', '0.16', '6', '-0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('8', 'PTEN', '2017-03-28', '23.45', '20.70', '2017-03-30', '24.29', '0.02', '2', '0.04', 'LONG1');
+INSERT INTO `hold` VALUES ('9', 'BSBR', '2017-03-29', '8.74', '35.17', '2017-03-30', '8.89', '0.70', '1', '0.02', 'LONG2');
+INSERT INTO `hold` VALUES ('10', 'GCP', '2017-03-22', '33.00', '0.27', '2017-03-30', '33.20', '0.22', '6', '0.01', 'LONG2');
+INSERT INTO `hold` VALUES ('11', 'NMBL', '2017-03-20', '12.47', '2.48', '2017-03-30', '12.48', '0.61', '8', '0.00', 'LONG2');
+INSERT INTO `hold` VALUES ('12', 'PTLA', '2017-03-24', '38.44', '0.46', '2017-03-30', '38.90', '0.67', '4', '0.01', 'LONG2');
+INSERT INTO `hold` VALUES ('13', 'SAGE', '2017-03-23', '65.09', '1.47', '2017-03-30', '64.83', '0.67', '5', '0.00', 'LONG2');
+INSERT INTO `hold` VALUES ('14', 'HTZ', '2017-03-22', '18.56', '1.30', '2017-03-30', '17.55', '0.08', '6', '0.05', 'SHORT');
+INSERT INTO `hold` VALUES ('15', 'VRX', '2017-03-08', '11.88', '9.85', '2017-03-30', '11.08', '0.18', '16', '0.07', 'SHORT');
+INSERT INTO `hold` VALUES ('16', 'AOBC', '2017-03-02', '19.38', '25.53', '2017-03-31', '19.81', '0.45', '21', '0.02', 'LONG1');
+INSERT INTO `hold` VALUES ('17', 'ARNC', '2017-03-07', '26.98', '12.99', '2017-03-31', '26.34', '0.36', '18', '-0.02', 'LONG1');
+INSERT INTO `hold` VALUES ('18', 'INCY', '2017-03-24', '139.64', '0.81', '2017-03-31', '133.67', '0.75', '5', '-0.04', 'LONG1');
+INSERT INTO `hold` VALUES ('19', 'KATE', '2017-03-23', '22.95', '2.37', '2017-03-31', '23.23', '0.48', '6', '0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('20', 'KITE', '2017-03-23', '74.50', '0.64', '2017-03-31', '78.49', '0.16', '6', '0.05', 'LONG1');
+INSERT INTO `hold` VALUES ('21', 'NTES', '2017-03-15', '286.86', '4.21', '2017-03-31', '284.00', '0.33', '12', '-0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('22', 'PTEN', '2017-03-22', '24.57', '23.13', '2017-03-31', '24.27', '0.16', '7', '-0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('23', 'PTEN', '2017-03-28', '23.45', '23.13', '2017-03-31', '24.27', '0.02', '3', '0.04', 'LONG1');
+INSERT INTO `hold` VALUES ('24', 'GCP', '2017-03-22', '33.00', '0.06', '2017-03-31', '32.65', '0.22', '7', '-0.01', 'LONG2');
+INSERT INTO `hold` VALUES ('25', 'NMBL', '2017-03-20', '12.47', '0.76', '2017-03-31', '12.50', '0.61', '9', '0.00', 'LONG2');
+INSERT INTO `hold` VALUES ('26', 'PTLA', '2017-03-24', '38.44', '0.99', '2017-03-31', '39.19', '0.67', '5', '0.02', 'LONG2');
+INSERT INTO `hold` VALUES ('27', 'SAGE', '2017-03-23', '65.09', '91.97', '2017-03-31', '71.07', '0.67', '6', '0.09', 'LONG2');
+INSERT INTO `hold` VALUES ('28', 'FSLR', '2017-03-31', '27.10', '0.30', '2017-03-31', '27.10', '0.22', '0', '0.00', 'SHORT');
+INSERT INTO `hold` VALUES ('29', 'HTZ', '2017-03-22', '18.56', '2.89', '2017-03-31', '17.54', '0.08', '7', '0.06', 'SHORT');
+INSERT INTO `hold` VALUES ('30', 'ARNC', '2017-03-07', '26.98', '7.93', '2017-04-03', '26.18', '0.36', '19', '-0.03', 'LONG1');
+INSERT INTO `hold` VALUES ('31', 'INCY', '2017-03-24', '139.64', '5.99', '2017-04-03', '138.52', '0.75', '6', '-0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('32', 'KATE', '2017-03-23', '22.95', '2.28', '2017-04-03', '22.80', '0.48', '7', '-0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('33', 'KITE', '2017-03-23', '74.50', '0.41', '2017-04-03', '78.22', '0.16', '7', '0.05', 'LONG1');
+INSERT INTO `hold` VALUES ('34', 'NTES', '2017-03-15', '286.86', '3.12', '2017-04-03', '285.22', '0.33', '13', '-0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('35', 'PTEN', '2017-03-22', '24.57', '15.14', '2017-04-03', '24.16', '0.16', '8', '-0.02', 'LONG1');
+INSERT INTO `hold` VALUES ('36', 'PTEN', '2017-03-28', '23.45', '15.14', '2017-04-03', '24.16', '0.02', '4', '0.03', 'LONG1');
+INSERT INTO `hold` VALUES ('37', 'GCP', '2017-03-22', '33.00', '0.06', '2017-04-03', '32.05', '0.22', '8', '-0.03', 'LONG2');
+INSERT INTO `hold` VALUES ('38', 'NMBL', '2017-03-20', '12.47', '0.38', '2017-04-03', '12.50', '0.61', '10', '0.00', 'LONG2');
+INSERT INTO `hold` VALUES ('39', 'PTLA', '2017-03-24', '38.44', '0.56', '2017-04-03', '38.96', '0.67', '6', '0.01', 'LONG2');
+INSERT INTO `hold` VALUES ('40', 'CAB', '2017-04-03', '53.34', '0.19', '2017-04-03', '53.34', '0.22', '0', '0.00', 'SHORT');
+INSERT INTO `hold` VALUES ('41', 'FSLR', '2017-03-31', '27.10', '0.25', '2017-04-03', '26.33', '0.22', '1', '0.03', 'SHORT');
+INSERT INTO `hold` VALUES ('42', 'HTZ', '2017-03-22', '18.56', '6.64', '2017-04-03', '15.96', '0.08', '8', '0.14', 'SHORT');
+INSERT INTO `hold` VALUES ('43', 'RARE', '2017-04-03', '64.70', '1.04', '2017-04-03', '64.70', '0.30', '0', '0.00', 'SHORT');
+INSERT INTO `hold` VALUES ('44', 'AKS', '2017-04-04', '7.19', '1.48', '2017-04-04', '7.19', '0.53', '0', '0.00', 'LONG1');
+INSERT INTO `hold` VALUES ('45', 'ARNC', '2017-03-07', '26.98', '7.09', '2017-04-04', '26.38', '0.36', '20', '-0.02', 'LONG1');
+INSERT INTO `hold` VALUES ('46', 'INCY', '2017-03-24', '139.64', '64.67', '2017-04-04', '141.55', '0.75', '7', '0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('47', 'KATE', '2017-03-23', '22.95', '41.90', '2017-04-04', '19.46', '0.48', '8', '-0.15', 'LONG1');
+INSERT INTO `hold` VALUES ('48', 'KITE', '2017-03-23', '74.50', '0.22', '2017-04-04', '75.90', '0.16', '8', '0.02', 'LONG1');
+INSERT INTO `hold` VALUES ('49', 'NTES', '2017-03-15', '286.86', '3.06', '2017-04-04', '273.09', '0.33', '14', '-0.05', 'LONG1');
+INSERT INTO `hold` VALUES ('50', 'PTEN', '2017-03-22', '24.57', '42.61', '2017-04-04', '24.35', '0.16', '9', '-0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('51', 'PTEN', '2017-03-28', '23.45', '42.61', '2017-04-04', '24.35', '0.02', '5', '0.04', 'LONG1');
+INSERT INTO `hold` VALUES ('52', 'VALE', '2017-04-04', '9.86', '15.52', '2017-04-04', '9.86', '0.57', '0', '0.00', 'LONG1');
+INSERT INTO `hold` VALUES ('53', 'GCP', '2017-03-22', '33.00', '0.10', '2017-04-04', '31.95', '0.22', '9', '-0.03', 'LONG2');
+INSERT INTO `hold` VALUES ('54', 'NMBL', '2017-03-20', '12.47', '0.34', '2017-04-04', '12.50', '0.61', '11', '0.00', 'LONG2');
+INSERT INTO `hold` VALUES ('55', 'PTLA', '2017-03-24', '38.44', '0.63', '2017-04-04', '39.09', '0.67', '7', '0.02', 'LONG2');
+INSERT INTO `hold` VALUES ('56', 'CAB', '2017-04-03', '53.34', '0.15', '2017-04-04', '53.45', '0.22', '1', '0.00', 'SHORT');
+INSERT INTO `hold` VALUES ('57', 'FSLR', '2017-03-31', '27.10', '0.28', '2017-04-04', '26.82', '0.22', '2', '0.01', 'SHORT');
+INSERT INTO `hold` VALUES ('58', 'RARE', '2017-04-03', '64.70', '0.88', '2017-04-04', '64.97', '0.30', '1', '0.00', 'SHORT');
+INSERT INTO `hold` VALUES ('59', 'AKS', '2017-04-04', '7.19', '0.12', '2017-04-05', '6.83', '0.53', '1', '-0.05', 'LONG1');
+INSERT INTO `hold` VALUES ('60', 'ARNC', '2017-03-07', '26.98', '2.47', '2017-04-05', '25.89', '0.36', '21', '-0.04', 'LONG1');
+INSERT INTO `hold` VALUES ('61', 'KITE', '2017-03-23', '74.50', '0.21', '2017-04-05', '74.57', '0.16', '9', '0.00', 'LONG1');
+INSERT INTO `hold` VALUES ('62', 'NTES', '2017-03-15', '286.86', '4.62', '2017-04-05', '276.46', '0.33', '15', '-0.04', 'LONG1');
+INSERT INTO `hold` VALUES ('63', 'THO', '2017-04-05', '90.79', '0.01', '2017-04-05', '90.79', '0.04', '0', '0.00', 'LONG1');
+INSERT INTO `hold` VALUES ('64', 'VALE', '2017-04-04', '9.86', '0.17', '2017-04-05', '9.43', '0.57', '1', '-0.04', 'LONG1');
+INSERT INTO `hold` VALUES ('65', 'BOFI', '2017-04-05', '24.31', '0.11', '2017-04-05', '24.31', '0.18', '0', '0.00', 'LONG2');
+INSERT INTO `hold` VALUES ('66', 'GCP', '2017-03-22', '33.00', '0.18', '2017-04-05', '31.80', '0.22', '10', '-0.04', 'LONG2');
+INSERT INTO `hold` VALUES ('67', 'NMBL', '2017-03-20', '12.47', '0.30', '2017-04-05', '12.49', '0.61', '12', '0.00', 'LONG2');
+INSERT INTO `hold` VALUES ('68', 'PTLA', '2017-03-24', '38.44', '0.26', '2017-04-05', '38.10', '0.67', '8', '-0.01', 'LONG2');
+INSERT INTO `hold` VALUES ('69', 'CAB', '2017-04-03', '53.34', '0.15', '2017-04-05', '52.83', '0.22', '2', '0.01', 'SHORT');
+INSERT INTO `hold` VALUES ('70', 'FSLR', '2017-03-31', '27.10', '0.22', '2017-04-05', '26.58', '0.22', '3', '0.02', 'SHORT');
+INSERT INTO `hold` VALUES ('71', 'RARE', '2017-04-03', '64.70', '1.93', '2017-04-05', '61.71', '0.30', '2', '0.05', 'SHORT');
+INSERT INTO `hold` VALUES ('72', 'AKS', '2017-04-04', '7.19', '0.85', '2017-04-06', '7.06', '0.53', '2', '-0.02', 'LONG1');
+INSERT INTO `hold` VALUES ('73', 'AKS', '2017-04-06', '7.06', '0.85', '2017-04-06', '7.06', '0.12', '0', '0.00', 'LONG1');
+INSERT INTO `hold` VALUES ('74', 'ARNC', '2017-03-07', '26.98', '4.51', '2017-04-06', '26.16', '0.36', '22', '-0.03', 'LONG1');
+INSERT INTO `hold` VALUES ('75', 'EXEL', '2017-04-06', '20.38', '0.06', '2017-04-06', '20.38', '0.10', '0', '0.00', 'LONG1');
+INSERT INTO `hold` VALUES ('76', 'KITE', '2017-03-23', '74.50', '2.88', '2017-04-06', '77.11', '0.16', '10', '0.04', 'LONG1');
+INSERT INTO `hold` VALUES ('77', 'NTES', '2017-03-15', '286.86', '6.48', '2017-04-06', '276.01', '0.33', '16', '-0.04', 'LONG1');
+INSERT INTO `hold` VALUES ('78', 'THO', '2017-04-05', '90.79', '0.03', '2017-04-06', '91.67', '0.04', '1', '0.01', 'LONG1');
+INSERT INTO `hold` VALUES ('79', 'VALE', '2017-04-04', '9.86', '0.11', '2017-04-06', '9.16', '0.57', '2', '-0.07', 'LONG1');
+INSERT INTO `hold` VALUES ('80', 'BOFI', '2017-04-05', '24.31', '0.65', '2017-04-06', '24.46', '0.18', '1', '0.01', 'LONG2');
+INSERT INTO `hold` VALUES ('81', 'GCP', '2017-03-22', '33.00', '0.33', '2017-04-06', '32.05', '0.22', '11', '-0.03', 'LONG2');
+INSERT INTO `hold` VALUES ('82', 'NKTR', '2017-04-06', '21.04', '1.11', '2017-04-06', '21.04', '0.42', '0', '0.00', 'LONG2');
+INSERT INTO `hold` VALUES ('83', 'NMBL', '2017-03-20', '12.47', '0.30', '2017-04-06', '12.49', '0.61', '13', '0.00', 'LONG2');
+INSERT INTO `hold` VALUES ('84', 'PTLA', '2017-03-24', '38.44', '0.25', '2017-04-06', '36.62', '0.67', '9', '-0.05', 'LONG2');
+INSERT INTO `hold` VALUES ('85', 'CAB', '2017-04-03', '53.34', '0.10', '2017-04-06', '53.37', '0.22', '3', '0.00', 'SHORT');
+INSERT INTO `hold` VALUES ('86', 'FSLR', '2017-03-31', '27.10', '0.16', '2017-04-06', '26.62', '0.22', '4', '0.02', 'SHORT');
+INSERT INTO `hold` VALUES ('87', 'RARE', '2017-04-03', '64.70', '3.20', '2017-04-06', '58.59', '0.30', '3', '0.09', 'SHORT');
 
 -- ----------------------------
 -- Table structure for index_info
@@ -3046,29 +3140,329 @@ CREATE TABLE `line` (
   `type` varchar(20) DEFAULT NULL,
   `gain` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=319 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of line
 -- ----------------------------
-
--- ----------------------------
--- Table structure for person
--- ----------------------------
-DROP TABLE IF EXISTS `person`;
-CREATE TABLE `person` (
-  `p_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `p_name` varchar(45) DEFAULT NULL COMMENT '姓名',
-  `p_age` int(11) DEFAULT NULL COMMENT '年龄',
-  PRIMARY KEY (`p_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='人员信息表';
-
--- ----------------------------
--- Records of person
--- ----------------------------
-INSERT INTO `person` VALUES ('1', '张三', '20');
-INSERT INTO `person` VALUES ('2', '李四', '25');
-INSERT INTO `person` VALUES ('3', '王五', '18');
+INSERT INTO `line` VALUES ('1', '2016-01-04', '2013.00', '2013.00', null, '0.00');
+INSERT INTO `line` VALUES ('2', '2016-01-05', '2017.00', '2012.00', null, '0.00');
+INSERT INTO `line` VALUES ('3', '2016-01-06', '1990.00', '2016.00', null, '0.01');
+INSERT INTO `line` VALUES ('4', '2016-01-07', '1943.00', '2014.00', null, '0.04');
+INSERT INTO `line` VALUES ('5', '2016-01-08', '1922.00', '2016.00', null, '0.05');
+INSERT INTO `line` VALUES ('6', '2016-01-11', '1924.00', '1998.00', null, '0.04');
+INSERT INTO `line` VALUES ('7', '2016-01-12', '1939.00', '1994.00', null, '0.03');
+INSERT INTO `line` VALUES ('8', '2016-01-13', '1890.00', '1970.00', null, '0.04');
+INSERT INTO `line` VALUES ('9', '2016-01-14', '1922.00', '2024.00', null, '0.05');
+INSERT INTO `line` VALUES ('10', '2016-01-15', '1880.00', '1909.00', null, '0.02');
+INSERT INTO `line` VALUES ('11', '2016-01-19', '1881.00', '1787.00', null, '-0.05');
+INSERT INTO `line` VALUES ('12', '2016-01-20', '1859.00', '1763.00', null, '-0.05');
+INSERT INTO `line` VALUES ('13', '2016-01-21', '1869.00', '1921.00', null, '0.03');
+INSERT INTO `line` VALUES ('14', '2016-01-22', '1907.00', '2167.00', null, '0.14');
+INSERT INTO `line` VALUES ('15', '2016-01-25', '1877.00', '1995.00', null, '0.06');
+INSERT INTO `line` VALUES ('16', '2016-01-26', '1904.00', '2145.00', null, '0.13');
+INSERT INTO `line` VALUES ('17', '2016-01-27', '1883.00', '2158.00', null, '0.15');
+INSERT INTO `line` VALUES ('18', '2016-01-28', '1893.00', '2185.00', null, '0.15');
+INSERT INTO `line` VALUES ('19', '2016-01-29', '1940.00', '2334.00', null, '0.20');
+INSERT INTO `line` VALUES ('20', '2016-02-01', '1939.00', '2297.00', null, '0.19');
+INSERT INTO `line` VALUES ('21', '2016-02-02', '1903.00', '2260.00', null, '0.19');
+INSERT INTO `line` VALUES ('22', '2016-02-03', '1913.00', '2326.00', null, '0.22');
+INSERT INTO `line` VALUES ('23', '2016-02-04', '1915.00', '2431.00', null, '0.27');
+INSERT INTO `line` VALUES ('24', '2016-02-05', '1880.00', '2347.00', null, '0.25');
+INSERT INTO `line` VALUES ('25', '2016-02-08', '1853.00', '2301.00', null, '0.24');
+INSERT INTO `line` VALUES ('26', '2016-02-09', '1852.00', '2303.00', null, '0.24');
+INSERT INTO `line` VALUES ('27', '2016-02-10', '1852.00', '2264.00', null, '0.22');
+INSERT INTO `line` VALUES ('28', '2016-02-11', '1829.00', '2273.00', null, '0.24');
+INSERT INTO `line` VALUES ('29', '2016-02-12', '1865.00', '2248.00', null, '0.21');
+INSERT INTO `line` VALUES ('30', '2016-02-16', '1896.00', '2340.00', null, '0.23');
+INSERT INTO `line` VALUES ('31', '2016-02-17', '1927.00', '2396.00', null, '0.24');
+INSERT INTO `line` VALUES ('32', '2016-02-18', '1918.00', '2402.00', null, '0.25');
+INSERT INTO `line` VALUES ('33', '2016-02-19', '1918.00', '2397.00', null, '0.25');
+INSERT INTO `line` VALUES ('34', '2016-02-22', '1946.00', '2497.00', null, '0.28');
+INSERT INTO `line` VALUES ('35', '2016-02-23', '1921.00', '2505.00', null, '0.30');
+INSERT INTO `line` VALUES ('36', '2016-02-24', '1930.00', '2497.00', null, '0.29');
+INSERT INTO `line` VALUES ('37', '2016-02-25', '1952.00', '2538.00', null, '0.30');
+INSERT INTO `line` VALUES ('38', '2016-02-26', '1948.00', '2609.00', null, '0.34');
+INSERT INTO `line` VALUES ('39', '2016-02-29', '1932.00', '2602.00', null, '0.35');
+INSERT INTO `line` VALUES ('40', '2016-03-01', '1978.00', '2577.00', null, '0.30');
+INSERT INTO `line` VALUES ('41', '2016-03-02', '1986.00', '2659.00', null, '0.34');
+INSERT INTO `line` VALUES ('42', '2016-03-03', '1993.00', '2810.00', null, '0.41');
+INSERT INTO `line` VALUES ('43', '2016-03-04', '2000.00', '2838.00', null, '0.42');
+INSERT INTO `line` VALUES ('44', '2016-03-07', '2002.00', '2876.00', null, '0.44');
+INSERT INTO `line` VALUES ('45', '2016-03-08', '1979.00', '2897.00', null, '0.46');
+INSERT INTO `line` VALUES ('46', '2016-03-09', '1989.00', '2877.00', null, '0.45');
+INSERT INTO `line` VALUES ('47', '2016-03-10', '1990.00', '2891.00', null, '0.45');
+INSERT INTO `line` VALUES ('48', '2016-03-11', '2022.00', '2844.00', null, '0.41');
+INSERT INTO `line` VALUES ('49', '2016-03-14', '2020.00', '2852.00', null, '0.41');
+INSERT INTO `line` VALUES ('50', '2016-03-15', '2016.00', '2847.00', null, '0.41');
+INSERT INTO `line` VALUES ('51', '2016-03-16', '2027.00', '2799.00', null, '0.38');
+INSERT INTO `line` VALUES ('52', '2016-03-17', '2041.00', '2758.00', null, '0.35');
+INSERT INTO `line` VALUES ('53', '2016-03-18', '2050.00', '2782.00', null, '0.36');
+INSERT INTO `line` VALUES ('54', '2016-03-21', '2052.00', '2796.00', null, '0.36');
+INSERT INTO `line` VALUES ('55', '2016-03-22', '2050.00', '2834.00', null, '0.38');
+INSERT INTO `line` VALUES ('56', '2016-03-23', '2037.00', '2866.00', null, '0.41');
+INSERT INTO `line` VALUES ('57', '2016-03-24', '2036.00', '2845.00', null, '0.40');
+INSERT INTO `line` VALUES ('58', '2016-03-28', '2037.00', '2834.00', null, '0.39');
+INSERT INTO `line` VALUES ('59', '2016-03-29', '2055.00', '2872.00', null, '0.40');
+INSERT INTO `line` VALUES ('60', '2016-03-30', '2064.00', '2862.00', null, '0.39');
+INSERT INTO `line` VALUES ('61', '2016-03-31', '2060.00', '2878.00', null, '0.40');
+INSERT INTO `line` VALUES ('62', '2016-04-01', '2073.00', '2866.00', null, '0.38');
+INSERT INTO `line` VALUES ('63', '2016-04-04', '2066.00', '2873.00', null, '0.39');
+INSERT INTO `line` VALUES ('64', '2016-04-05', '2045.00', '2856.00', null, '0.40');
+INSERT INTO `line` VALUES ('65', '2016-04-06', '2067.00', '2974.00', null, '0.44');
+INSERT INTO `line` VALUES ('66', '2016-04-07', '2042.00', '2968.00', null, '0.45');
+INSERT INTO `line` VALUES ('67', '2016-04-08', '2048.00', '2985.00', null, '0.46');
+INSERT INTO `line` VALUES ('68', '2016-04-11', '2042.00', '2955.00', null, '0.45');
+INSERT INTO `line` VALUES ('69', '2016-04-12', '2062.00', '2904.00', null, '0.41');
+INSERT INTO `line` VALUES ('70', '2016-04-13', '2082.00', '3004.00', null, '0.44');
+INSERT INTO `line` VALUES ('71', '2016-04-14', '2083.00', '3008.00', null, '0.44');
+INSERT INTO `line` VALUES ('72', '2016-04-15', '2081.00', '2986.00', null, '0.44');
+INSERT INTO `line` VALUES ('73', '2016-04-18', '2094.00', '3009.00', null, '0.44');
+INSERT INTO `line` VALUES ('74', '2016-04-19', '2101.00', '2980.00', null, '0.42');
+INSERT INTO `line` VALUES ('75', '2016-04-20', '2102.00', '2962.00', null, '0.41');
+INSERT INTO `line` VALUES ('76', '2016-04-21', '2091.00', '3087.00', null, '0.48');
+INSERT INTO `line` VALUES ('77', '2016-04-22', '2092.00', '3008.00', null, '0.44');
+INSERT INTO `line` VALUES ('78', '2016-04-25', '2088.00', '3018.00', null, '0.45');
+INSERT INTO `line` VALUES ('79', '2016-04-26', '2092.00', '2942.00', null, '0.41');
+INSERT INTO `line` VALUES ('80', '2016-04-27', '2095.00', '2894.00', null, '0.38');
+INSERT INTO `line` VALUES ('81', '2016-04-28', '2076.00', '2945.00', null, '0.42');
+INSERT INTO `line` VALUES ('82', '2016-04-29', '2065.00', '2915.00', null, '0.41');
+INSERT INTO `line` VALUES ('83', '2016-05-02', '2081.00', '2934.00', null, '0.41');
+INSERT INTO `line` VALUES ('84', '2016-05-03', '2063.00', '2935.00', null, '0.42');
+INSERT INTO `line` VALUES ('85', '2016-05-04', '2051.00', '2900.00', null, '0.41');
+INSERT INTO `line` VALUES ('86', '2016-05-05', '2051.00', '2867.00', null, '0.40');
+INSERT INTO `line` VALUES ('87', '2016-05-06', '2057.00', '2897.00', null, '0.41');
+INSERT INTO `line` VALUES ('88', '2016-05-09', '2059.00', '2939.00', null, '0.43');
+INSERT INTO `line` VALUES ('89', '2016-05-10', '2084.00', '2964.00', null, '0.42');
+INSERT INTO `line` VALUES ('90', '2016-05-11', '2064.00', '2911.00', null, '0.41');
+INSERT INTO `line` VALUES ('91', '2016-05-12', '2064.00', '2849.00', null, '0.38');
+INSERT INTO `line` VALUES ('92', '2016-05-13', '2047.00', '2884.00', null, '0.41');
+INSERT INTO `line` VALUES ('93', '2016-05-16', '2067.00', '2921.00', null, '0.41');
+INSERT INTO `line` VALUES ('94', '2016-05-17', '2047.00', '2900.00', null, '0.42');
+INSERT INTO `line` VALUES ('95', '2016-05-18', '2048.00', '2926.00', null, '0.43');
+INSERT INTO `line` VALUES ('96', '2016-05-19', '2040.00', '2880.00', null, '0.41');
+INSERT INTO `line` VALUES ('97', '2016-05-20', '2052.00', '2943.00', null, '0.43');
+INSERT INTO `line` VALUES ('98', '2016-05-23', '2048.00', '2943.00', null, '0.44');
+INSERT INTO `line` VALUES ('99', '2016-05-24', '2076.00', '3000.00', null, '0.45');
+INSERT INTO `line` VALUES ('100', '2016-05-25', '2091.00', '3041.00', null, '0.45');
+INSERT INTO `line` VALUES ('101', '2016-05-26', '2090.00', '3054.00', null, '0.46');
+INSERT INTO `line` VALUES ('102', '2016-05-27', '2099.00', '3084.00', null, '0.47');
+INSERT INTO `line` VALUES ('103', '2016-05-31', '2097.00', '3112.00', null, '0.48');
+INSERT INTO `line` VALUES ('104', '2016-06-01', '2099.00', '3139.00', null, '0.50');
+INSERT INTO `line` VALUES ('105', '2016-06-02', '2105.00', '3188.00', null, '0.51');
+INSERT INTO `line` VALUES ('106', '2016-06-03', '2099.00', '3180.00', null, '0.52');
+INSERT INTO `line` VALUES ('107', '2016-06-06', '2109.00', '3191.00', null, '0.51');
+INSERT INTO `line` VALUES ('108', '2016-06-07', '2112.00', '3197.00', null, '0.51');
+INSERT INTO `line` VALUES ('109', '2016-06-08', '2119.00', '3158.00', null, '0.49');
+INSERT INTO `line` VALUES ('110', '2016-06-09', '2115.00', '3156.00', null, '0.49');
+INSERT INTO `line` VALUES ('111', '2016-06-10', '2096.00', '3196.00', null, '0.53');
+INSERT INTO `line` VALUES ('112', '2016-06-13', '2079.00', '3187.00', null, '0.53');
+INSERT INTO `line` VALUES ('113', '2016-06-14', '2075.00', '3210.00', null, '0.55');
+INSERT INTO `line` VALUES ('114', '2016-06-15', '2072.00', '3183.00', null, '0.54');
+INSERT INTO `line` VALUES ('115', '2016-06-16', '2078.00', '3215.00', null, '0.55');
+INSERT INTO `line` VALUES ('116', '2016-06-17', '2071.00', '3126.00', null, '0.51');
+INSERT INTO `line` VALUES ('117', '2016-06-20', '2083.00', '3100.00', null, '0.49');
+INSERT INTO `line` VALUES ('118', '2016-06-21', '2089.00', '3110.00', null, '0.49');
+INSERT INTO `line` VALUES ('119', '2016-06-22', '2085.00', '3117.00', null, '0.50');
+INSERT INTO `line` VALUES ('120', '2016-06-23', '2113.00', '3099.00', null, '0.47');
+INSERT INTO `line` VALUES ('121', '2016-06-24', '2037.00', '3143.00', null, '0.54');
+INSERT INTO `line` VALUES ('122', '2016-06-27', '2001.00', '3155.00', null, '0.58');
+INSERT INTO `line` VALUES ('123', '2016-06-28', '2036.00', '3123.00', null, '0.53');
+INSERT INTO `line` VALUES ('124', '2016-06-29', '2071.00', '3102.00', null, '0.50');
+INSERT INTO `line` VALUES ('125', '2016-06-30', '2099.00', '3140.00', null, '0.50');
+INSERT INTO `line` VALUES ('126', '2016-07-01', '2103.00', '3098.00', null, '0.47');
+INSERT INTO `line` VALUES ('127', '2016-07-05', '2089.00', '3139.00', null, '0.50');
+INSERT INTO `line` VALUES ('128', '2016-07-06', '2100.00', '3115.00', null, '0.48');
+INSERT INTO `line` VALUES ('129', '2016-07-07', '2098.00', '3156.00', null, '0.50');
+INSERT INTO `line` VALUES ('130', '2016-07-08', '2130.00', '3147.00', null, '0.48');
+INSERT INTO `line` VALUES ('131', '2016-07-11', '2137.00', '3183.00', null, '0.49');
+INSERT INTO `line` VALUES ('132', '2016-07-12', '2152.00', '3098.00', null, '0.44');
+INSERT INTO `line` VALUES ('133', '2016-07-13', '2152.00', '3121.00', null, '0.45');
+INSERT INTO `line` VALUES ('134', '2016-07-14', '2164.00', '3128.00', null, '0.45');
+INSERT INTO `line` VALUES ('135', '2016-07-15', '2162.00', '3127.00', null, '0.45');
+INSERT INTO `line` VALUES ('136', '2016-07-18', '2167.00', '3119.00', null, '0.44');
+INSERT INTO `line` VALUES ('137', '2016-07-19', '2164.00', '3103.00', null, '0.43');
+INSERT INTO `line` VALUES ('138', '2016-07-20', '2173.00', '3092.00', null, '0.42');
+INSERT INTO `line` VALUES ('139', '2016-07-21', '2165.00', '3080.00', null, '0.42');
+INSERT INTO `line` VALUES ('140', '2016-07-22', '2175.00', '3056.00', null, '0.41');
+INSERT INTO `line` VALUES ('141', '2016-07-25', '2168.00', '3047.00', null, '0.41');
+INSERT INTO `line` VALUES ('142', '2016-07-26', '2169.00', '3070.00', null, '0.42');
+INSERT INTO `line` VALUES ('143', '2016-07-27', '2167.00', '3099.00', null, '0.43');
+INSERT INTO `line` VALUES ('144', '2016-07-28', '2170.00', '3089.00', null, '0.42');
+INSERT INTO `line` VALUES ('145', '2016-07-29', '2174.00', '3128.00', null, '0.44');
+INSERT INTO `line` VALUES ('146', '2016-08-01', '2171.00', '3084.00', null, '0.42');
+INSERT INTO `line` VALUES ('147', '2016-08-02', '2157.00', '3090.00', null, '0.43');
+INSERT INTO `line` VALUES ('148', '2016-08-03', '2164.00', '3075.00', null, '0.42');
+INSERT INTO `line` VALUES ('149', '2016-08-04', '2164.00', '3110.00', null, '0.44');
+INSERT INTO `line` VALUES ('150', '2016-08-05', '2183.00', '3159.00', null, '0.45');
+INSERT INTO `line` VALUES ('151', '2016-08-08', '2181.00', '3115.00', null, '0.43');
+INSERT INTO `line` VALUES ('152', '2016-08-09', '2182.00', '3130.00', null, '0.43');
+INSERT INTO `line` VALUES ('153', '2016-08-10', '2175.00', '3182.00', null, '0.46');
+INSERT INTO `line` VALUES ('154', '2016-08-11', '2186.00', '3180.00', null, '0.46');
+INSERT INTO `line` VALUES ('155', '2016-08-12', '2184.00', '3196.00', null, '0.46');
+INSERT INTO `line` VALUES ('156', '2016-08-15', '2190.00', '3222.00', null, '0.47');
+INSERT INTO `line` VALUES ('157', '2016-08-16', '2178.00', '3174.00', null, '0.46');
+INSERT INTO `line` VALUES ('158', '2016-08-17', '2182.00', '3122.00', null, '0.43');
+INSERT INTO `line` VALUES ('159', '2016-08-18', '2187.00', '3120.00', null, '0.43');
+INSERT INTO `line` VALUES ('160', '2016-08-19', '2184.00', '3072.00', null, '0.41');
+INSERT INTO `line` VALUES ('161', '2016-08-22', '2183.00', '3098.00', null, '0.42');
+INSERT INTO `line` VALUES ('162', '2016-08-23', '2187.00', '3150.00', null, '0.44');
+INSERT INTO `line` VALUES ('163', '2016-08-24', '2175.00', '3069.00', null, '0.41');
+INSERT INTO `line` VALUES ('164', '2016-08-25', '2172.00', '3097.00', null, '0.43');
+INSERT INTO `line` VALUES ('165', '2016-08-26', '2169.00', '3068.00', null, '0.41');
+INSERT INTO `line` VALUES ('166', '2016-08-29', '2180.00', '3082.00', null, '0.41');
+INSERT INTO `line` VALUES ('167', '2016-08-30', '2176.00', '3013.00', null, '0.39');
+INSERT INTO `line` VALUES ('168', '2016-08-31', '2171.00', '3007.00', null, '0.39');
+INSERT INTO `line` VALUES ('169', '2016-09-01', '2171.00', '3016.00', null, '0.39');
+INSERT INTO `line` VALUES ('170', '2016-09-02', '2180.00', '3063.00', null, '0.41');
+INSERT INTO `line` VALUES ('171', '2016-09-06', '2186.00', '3079.00', null, '0.41');
+INSERT INTO `line` VALUES ('172', '2016-09-07', '2186.00', '3085.00', null, '0.41');
+INSERT INTO `line` VALUES ('173', '2016-09-08', '2181.00', '3103.00', null, '0.42');
+INSERT INTO `line` VALUES ('174', '2016-09-09', '2128.00', '3021.00', null, '0.42');
+INSERT INTO `line` VALUES ('175', '2016-09-12', '2159.00', '3059.00', null, '0.42');
+INSERT INTO `line` VALUES ('176', '2016-09-13', '2127.00', '3016.00', null, '0.42');
+INSERT INTO `line` VALUES ('177', '2016-09-14', '2126.00', '3045.00', null, '0.43');
+INSERT INTO `line` VALUES ('178', '2016-09-15', '2147.00', '3096.00', null, '0.44');
+INSERT INTO `line` VALUES ('179', '2016-09-16', '2139.00', '3081.00', null, '0.44');
+INSERT INTO `line` VALUES ('180', '2016-09-19', '2139.00', '3101.00', null, '0.45');
+INSERT INTO `line` VALUES ('181', '2016-09-20', '2140.00', '3099.00', null, '0.45');
+INSERT INTO `line` VALUES ('182', '2016-09-21', '2163.00', '3118.00', null, '0.44');
+INSERT INTO `line` VALUES ('183', '2016-09-22', '2177.00', '3110.00', null, '0.43');
+INSERT INTO `line` VALUES ('184', '2016-09-23', '2165.00', '3103.00', null, '0.43');
+INSERT INTO `line` VALUES ('185', '2016-09-26', '2146.00', '3090.00', null, '0.44');
+INSERT INTO `line` VALUES ('186', '2016-09-27', '2160.00', '3092.00', null, '0.43');
+INSERT INTO `line` VALUES ('187', '2016-09-28', '2171.00', '3065.00', null, '0.41');
+INSERT INTO `line` VALUES ('188', '2016-09-29', '2151.00', '3089.00', null, '0.44');
+INSERT INTO `line` VALUES ('189', '2016-09-30', '2168.00', '3087.00', null, '0.42');
+INSERT INTO `line` VALUES ('190', '2016-10-03', '2161.00', '3130.00', null, '0.45');
+INSERT INTO `line` VALUES ('191', '2016-10-04', '2150.00', '3180.00', null, '0.48');
+INSERT INTO `line` VALUES ('192', '2016-10-05', '2160.00', '3166.00', null, '0.47');
+INSERT INTO `line` VALUES ('193', '2016-10-06', '2161.00', '3175.00', null, '0.47');
+INSERT INTO `line` VALUES ('194', '2016-10-07', '2154.00', '3176.00', null, '0.47');
+INSERT INTO `line` VALUES ('195', '2016-10-10', '2164.00', '3159.00', null, '0.46');
+INSERT INTO `line` VALUES ('196', '2016-10-11', '2137.00', '3131.00', null, '0.47');
+INSERT INTO `line` VALUES ('197', '2016-10-12', '2139.00', '3162.00', null, '0.48');
+INSERT INTO `line` VALUES ('198', '2016-10-13', '2133.00', '3169.00', null, '0.49');
+INSERT INTO `line` VALUES ('199', '2016-10-14', '2133.00', '3164.00', null, '0.48');
+INSERT INTO `line` VALUES ('200', '2016-10-17', '2127.00', '3164.00', null, '0.49');
+INSERT INTO `line` VALUES ('201', '2016-10-18', '2140.00', '3154.00', null, '0.47');
+INSERT INTO `line` VALUES ('202', '2016-10-19', '2144.00', '3141.00', null, '0.47');
+INSERT INTO `line` VALUES ('203', '2016-10-20', '2141.00', '3184.00', null, '0.49');
+INSERT INTO `line` VALUES ('204', '2016-10-21', '2141.00', '3170.00', null, '0.48');
+INSERT INTO `line` VALUES ('205', '2016-10-24', '2151.00', '3166.00', null, '0.47');
+INSERT INTO `line` VALUES ('206', '2016-10-25', '2143.00', '3132.00', null, '0.46');
+INSERT INTO `line` VALUES ('207', '2016-10-26', '2139.00', '3127.00', null, '0.46');
+INSERT INTO `line` VALUES ('208', '2016-10-27', '2133.00', '3114.00', null, '0.46');
+INSERT INTO `line` VALUES ('209', '2016-10-28', '2126.00', '3121.00', null, '0.47');
+INSERT INTO `line` VALUES ('210', '2016-10-31', '2126.00', '3113.00', null, '0.46');
+INSERT INTO `line` VALUES ('211', '2016-11-01', '2112.00', '3068.00', null, '0.45');
+INSERT INTO `line` VALUES ('212', '2016-11-02', '2098.00', '3085.00', null, '0.47');
+INSERT INTO `line` VALUES ('213', '2016-11-03', '2089.00', '3140.00', null, '0.50');
+INSERT INTO `line` VALUES ('214', '2016-11-04', '2085.00', '3214.00', null, '0.54');
+INSERT INTO `line` VALUES ('215', '2016-11-07', '2132.00', '3237.00', null, '0.52');
+INSERT INTO `line` VALUES ('216', '2016-11-08', '2140.00', '3324.00', null, '0.55');
+INSERT INTO `line` VALUES ('217', '2016-11-09', '2163.00', '3294.00', null, '0.52');
+INSERT INTO `line` VALUES ('218', '2016-11-10', '2167.00', '3254.00', null, '0.50');
+INSERT INTO `line` VALUES ('219', '2016-11-11', '2164.00', '3257.00', null, '0.51');
+INSERT INTO `line` VALUES ('220', '2016-11-14', '2164.00', '3232.00', null, '0.49');
+INSERT INTO `line` VALUES ('221', '2016-11-15', '2180.00', '3262.00', null, '0.50');
+INSERT INTO `line` VALUES ('222', '2016-11-16', '2177.00', '3310.00', null, '0.52');
+INSERT INTO `line` VALUES ('223', '2016-11-17', '2187.00', '3304.00', null, '0.51');
+INSERT INTO `line` VALUES ('224', '2016-11-18', '2182.00', '3320.00', null, '0.52');
+INSERT INTO `line` VALUES ('225', '2016-11-21', '2198.00', '3305.00', null, '0.50');
+INSERT INTO `line` VALUES ('226', '2016-11-22', '2203.00', '3333.00', null, '0.51');
+INSERT INTO `line` VALUES ('227', '2016-11-23', '2205.00', '3304.00', null, '0.50');
+INSERT INTO `line` VALUES ('228', '2016-11-25', '2213.00', '3309.00', null, '0.50');
+INSERT INTO `line` VALUES ('229', '2016-11-28', '2202.00', '3336.00', null, '0.52');
+INSERT INTO `line` VALUES ('230', '2016-11-29', '2205.00', '3377.00', null, '0.53');
+INSERT INTO `line` VALUES ('231', '2016-11-30', '2199.00', '3338.00', null, '0.52');
+INSERT INTO `line` VALUES ('232', '2016-12-01', '2191.00', '3320.00', null, '0.52');
+INSERT INTO `line` VALUES ('233', '2016-12-02', '2192.00', '3363.00', null, '0.53');
+INSERT INTO `line` VALUES ('234', '2016-12-05', '2205.00', '3357.00', null, '0.52');
+INSERT INTO `line` VALUES ('235', '2016-12-06', '2212.00', '3363.00', null, '0.52');
+INSERT INTO `line` VALUES ('236', '2016-12-07', '2241.00', '3382.00', null, '0.51');
+INSERT INTO `line` VALUES ('237', '2016-12-08', '2246.00', '3384.00', null, '0.51');
+INSERT INTO `line` VALUES ('238', '2016-12-09', '2260.00', '3346.00', null, '0.48');
+INSERT INTO `line` VALUES ('239', '2016-12-12', '2257.00', '3359.00', null, '0.49');
+INSERT INTO `line` VALUES ('240', '2016-12-13', '2272.00', '3359.00', null, '0.48');
+INSERT INTO `line` VALUES ('241', '2016-12-14', '2253.00', '3368.00', null, '0.50');
+INSERT INTO `line` VALUES ('242', '2016-12-15', '2262.00', '3354.00', null, '0.48');
+INSERT INTO `line` VALUES ('243', '2016-12-16', '2258.00', '3354.00', null, '0.49');
+INSERT INTO `line` VALUES ('244', '2016-12-19', '2263.00', '3332.00', null, '0.47');
+INSERT INTO `line` VALUES ('245', '2016-12-20', '2271.00', '3375.00', null, '0.49');
+INSERT INTO `line` VALUES ('246', '2016-12-21', '2265.00', '3416.00', null, '0.51');
+INSERT INTO `line` VALUES ('247', '2016-12-22', '2261.00', '3406.00', null, '0.51');
+INSERT INTO `line` VALUES ('248', '2016-12-23', '2264.00', '3404.00', null, '0.50');
+INSERT INTO `line` VALUES ('249', '2016-12-27', '2269.00', '3397.00', null, '0.50');
+INSERT INTO `line` VALUES ('250', '2016-12-28', '2250.00', '3387.00', null, '0.51');
+INSERT INTO `line` VALUES ('251', '2016-12-29', '2249.00', '3386.00', null, '0.51');
+INSERT INTO `line` VALUES ('252', '2016-12-30', '2239.00', '3350.00', null, '0.50');
+INSERT INTO `line` VALUES ('253', '2017-01-03', '2258.00', '3404.00', null, '0.51');
+INSERT INTO `line` VALUES ('254', '2017-01-04', '2271.00', '3460.00', null, '0.52');
+INSERT INTO `line` VALUES ('255', '2017-01-05', '2269.00', '3446.00', null, '0.52');
+INSERT INTO `line` VALUES ('256', '2017-01-06', '2277.00', '3422.00', null, '0.50');
+INSERT INTO `line` VALUES ('257', '2017-01-09', '2269.00', '3404.00', null, '0.50');
+INSERT INTO `line` VALUES ('258', '2017-01-10', '2269.00', '3418.00', null, '0.51');
+INSERT INTO `line` VALUES ('259', '2017-01-11', '2275.00', '3435.00', null, '0.51');
+INSERT INTO `line` VALUES ('260', '2017-01-12', '2270.00', '3382.00', null, '0.49');
+INSERT INTO `line` VALUES ('261', '2017-01-13', '2275.00', '3387.00', null, '0.49');
+INSERT INTO `line` VALUES ('262', '2017-01-17', '2268.00', '3407.00', null, '0.50');
+INSERT INTO `line` VALUES ('263', '2017-01-18', '2272.00', '3387.00', null, '0.49');
+INSERT INTO `line` VALUES ('264', '2017-01-19', '2264.00', '3388.00', null, '0.50');
+INSERT INTO `line` VALUES ('265', '2017-01-20', '2271.00', '3406.00', null, '0.50');
+INSERT INTO `line` VALUES ('266', '2017-01-23', '2265.00', '3410.00', null, '0.51');
+INSERT INTO `line` VALUES ('267', '2017-01-24', '2280.00', '3424.00', null, '0.50');
+INSERT INTO `line` VALUES ('268', '2017-01-25', '2298.00', '3454.00', null, '0.50');
+INSERT INTO `line` VALUES ('269', '2017-01-26', '2297.00', '3445.00', null, '0.50');
+INSERT INTO `line` VALUES ('270', '2017-01-27', '2295.00', '3440.00', null, '0.50');
+INSERT INTO `line` VALUES ('271', '2017-01-30', '2281.00', '3457.00', null, '0.52');
+INSERT INTO `line` VALUES ('272', '2017-01-31', '2279.00', '3422.00', null, '0.50');
+INSERT INTO `line` VALUES ('273', '2017-02-01', '2280.00', '3410.00', null, '0.50');
+INSERT INTO `line` VALUES ('274', '2017-02-02', '2281.00', '3419.00', null, '0.50');
+INSERT INTO `line` VALUES ('275', '2017-02-03', '2297.00', '3427.00', null, '0.49');
+INSERT INTO `line` VALUES ('276', '2017-02-06', '2293.00', '3412.00', null, '0.49');
+INSERT INTO `line` VALUES ('277', '2017-02-07', '2293.00', '3421.00', null, '0.49');
+INSERT INTO `line` VALUES ('278', '2017-02-08', '2295.00', '3405.00', null, '0.48');
+INSERT INTO `line` VALUES ('279', '2017-02-09', '2308.00', '3431.00', null, '0.49');
+INSERT INTO `line` VALUES ('280', '2017-02-10', '2316.00', '3435.00', null, '0.48');
+INSERT INTO `line` VALUES ('281', '2017-02-13', '2328.00', '3429.00', null, '0.47');
+INSERT INTO `line` VALUES ('282', '2017-02-14', '2338.00', '3443.00', null, '0.47');
+INSERT INTO `line` VALUES ('283', '2017-02-15', '2349.00', '3456.00', null, '0.47');
+INSERT INTO `line` VALUES ('284', '2017-02-16', '2347.00', '3415.00', null, '0.46');
+INSERT INTO `line` VALUES ('285', '2017-02-17', '2351.00', '3399.00', null, '0.45');
+INSERT INTO `line` VALUES ('286', '2017-02-21', '2365.00', '3405.00', null, '0.44');
+INSERT INTO `line` VALUES ('287', '2017-02-22', '2363.00', '3366.00', null, '0.42');
+INSERT INTO `line` VALUES ('288', '2017-02-23', '2364.00', '3400.00', null, '0.44');
+INSERT INTO `line` VALUES ('289', '2017-02-24', '2367.00', '3360.00', null, '0.42');
+INSERT INTO `line` VALUES ('290', '2017-02-27', '2370.00', '3313.00', null, '0.40');
+INSERT INTO `line` VALUES ('291', '2017-02-28', '2364.00', '3317.00', null, '0.40');
+INSERT INTO `line` VALUES ('292', '2017-03-01', '2396.00', '3367.00', null, '0.41');
+INSERT INTO `line` VALUES ('293', '2017-03-02', '2382.00', '3348.00', null, '0.41');
+INSERT INTO `line` VALUES ('294', '2017-03-03', '2383.00', '3368.00', null, '0.41');
+INSERT INTO `line` VALUES ('295', '2017-03-06', '2375.00', '3380.00', null, '0.42');
+INSERT INTO `line` VALUES ('296', '2017-03-07', '2368.00', '3402.00', null, '0.44');
+INSERT INTO `line` VALUES ('297', '2017-03-08', '2363.00', '3402.00', null, '0.44');
+INSERT INTO `line` VALUES ('298', '2017-03-09', '2365.00', '3410.00', null, '0.44');
+INSERT INTO `line` VALUES ('299', '2017-03-10', '2373.00', '3415.00', null, '0.44');
+INSERT INTO `line` VALUES ('300', '2017-03-13', '2373.00', '3417.00', null, '0.44');
+INSERT INTO `line` VALUES ('301', '2017-03-14', '2365.00', '3414.00', null, '0.44');
+INSERT INTO `line` VALUES ('302', '2017-03-15', '2385.00', '3454.00', null, '0.45');
+INSERT INTO `line` VALUES ('303', '2017-03-16', '2381.00', '3453.00', null, '0.45');
+INSERT INTO `line` VALUES ('304', '2017-03-17', '2378.00', '3473.00', null, '0.46');
+INSERT INTO `line` VALUES ('305', '2017-03-20', '2373.00', '3492.00', null, '0.47');
+INSERT INTO `line` VALUES ('306', '2017-03-21', '2344.00', '3520.00', null, '0.50');
+INSERT INTO `line` VALUES ('307', '2017-03-22', '2348.00', '3520.00', null, '0.50');
+INSERT INTO `line` VALUES ('308', '2017-03-23', '2346.00', '3529.00', null, '0.50');
+INSERT INTO `line` VALUES ('309', '2017-03-24', '2344.00', '3539.00', null, '0.51');
+INSERT INTO `line` VALUES ('310', '2017-03-27', '2342.00', '3538.00', null, '0.51');
+INSERT INTO `line` VALUES ('311', '2017-03-28', '2359.00', '3550.00', null, '0.51');
+INSERT INTO `line` VALUES ('312', '2017-03-29', '2361.00', '3549.00', null, '0.50');
+INSERT INTO `line` VALUES ('313', '2017-03-30', '2368.00', '3565.00', null, '0.51');
+INSERT INTO `line` VALUES ('314', '2017-03-31', '2363.00', '3575.00', null, '0.51');
+INSERT INTO `line` VALUES ('315', '2017-04-03', '2359.00', '3592.00', null, '0.52');
+INSERT INTO `line` VALUES ('316', '2017-04-04', '2360.00', '3560.00', null, '0.51');
+INSERT INTO `line` VALUES ('317', '2017-04-05', '2353.00', '3545.00', null, '0.51');
+INSERT INTO `line` VALUES ('318', '2017-04-06', '2357.00', '3557.00', null, '0.51');
 
 -- ----------------------------
 -- Table structure for plan
@@ -3083,11 +3477,32 @@ CREATE TABLE `plan` (
   `rank` decimal(10,2) DEFAULT NULL,
   `note` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of plan
 -- ----------------------------
+INSERT INTO `plan` VALUES ('1', '2017-03-30', 'BSBR', 'LONG2', 'SELL', '35.17', 'Banco Santander Braz | BANKING - Foreign Regional Bank');
+INSERT INTO `plan` VALUES ('2', '2017-03-30', 'FSLR', 'SHORT', 'SHORT', '0.22', 'First Solar Inc | ELECTRONICS - Semiconductor - Spec');
+INSERT INTO `plan` VALUES ('3', '2017-03-30', 'VRX', 'SHORT', 'COVER', '9.85', 'Valeant Pharmaceutic | DRUGS - Drug Deliver');
+INSERT INTO `plan` VALUES ('4', '2017-03-31', 'AOBC', 'LONG1', 'SELL', '25.53', 'American Outdoor Bra | AEROSPACE/DEFENSE - Aerospace/Defe');
+INSERT INTO `plan` VALUES ('5', '2017-03-31', 'SAGE', 'LONG2', 'SELL', '91.97', 'Sage Therapeutics In | DRUGS - Biotechnolog');
+INSERT INTO `plan` VALUES ('6', '2017-03-31', 'CAB', 'SHORT', 'SHORT', '0.22', 'Cabela\'s Inc | SPECIALTY RETAIL - Sporting Goods ');
+INSERT INTO `plan` VALUES ('7', '2017-03-31', 'RARE', 'SHORT', 'SHORT', '0.30', 'Ultragenyx Pharmaceu | DRUGS - Biotechnolog');
+INSERT INTO `plan` VALUES ('8', '2017-04-03', 'AKS', 'LONG1', 'BUY', '0.53', 'Ak Steel Holding Cor | METALS & MINING - Steel & Iro');
+INSERT INTO `plan` VALUES ('9', '2017-04-03', 'VALE', 'LONG1', 'BUY', '0.57', 'Vale SA ADR | METALS & MINING - Industrial Metal');
+INSERT INTO `plan` VALUES ('10', '2017-04-03', 'HTZ', 'SHORT', 'COVER', '6.64', 'Hertz Global Holding | DIVERSIFIED SERVICES - Rental & Le');
+INSERT INTO `plan` VALUES ('11', '2017-04-04', 'INCY', 'LONG1', 'SELL', '64.67', 'Incyte Corp | DRUGS - Biotechnolog');
+INSERT INTO `plan` VALUES ('12', '2017-04-04', 'KATE', 'LONG1', 'SELL', '41.90', 'Kate Spade & Company | CONSUMER NON-DURABLES - Textile - ');
+INSERT INTO `plan` VALUES ('13', '2017-04-04', 'PTEN', 'LONG1', 'SELL', '42.61', 'Patterson-Uti Energy | ENERGY - Oil & Gas Drilling & Expl');
+INSERT INTO `plan` VALUES ('14', '2017-04-04', 'THO', 'LONG1', 'BUY', '0.04', 'Thor Industries Inc | AUTOMOTIVE - Recreational Vehicle');
+INSERT INTO `plan` VALUES ('15', '2017-04-04', 'BOFI', 'LONG2', 'BUY', '0.18', 'BofI Holding Inc | BANKING - Savings & Loan');
+INSERT INTO `plan` VALUES ('16', '2017-04-05', 'AKS', 'LONG1', 'BUY', '0.12', 'Ak Steel Holding Cor | METALS & MINING - Steel & Iro');
+INSERT INTO `plan` VALUES ('17', '2017-04-05', 'EXEL', 'LONG1', 'BUY', '0.10', 'Exelixis Inc | DRUGS - Biotechnolog');
+INSERT INTO `plan` VALUES ('18', '2017-04-05', 'NKTR', 'LONG2', 'BUY', '0.42', 'Nektar Therapeutics | DRUGS - Biotechnolog');
+INSERT INTO `plan` VALUES ('19', '2017-04-06', 'VALE', 'LONG1', 'BUY', '0.11', 'Vale SA ADR | METALS & MINING - Industrial Metal');
+INSERT INTO `plan` VALUES ('20', '2017-04-06', 'AVXS', 'LONG2', 'BUY', '0.05', 'AveXis Inc | DRUGS - Biotechnolog');
+INSERT INTO `plan` VALUES ('21', '2017-04-06', 'GBT', 'LONG2', 'BUY', '0.42', 'Global Blood Therape | DRUGS - Biotechnolog');
 
 -- ----------------------------
 -- Table structure for price
@@ -6063,18 +6478,37 @@ INSERT INTO `topic` VALUES ('4', '文章内容', '测试文章', '测试码', '0
 DROP TABLE IF EXISTS `trade`;
 CREATE TABLE `trade` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) DEFAULT NULL,
-  `action` varchar(20) DEFAULT NULL,
+  `date` date DEFAULT NULL,
   `type` varchar(20) DEFAULT NULL,
-  `old_date` date DEFAULT NULL,
-  `old_price` decimal(10,2) DEFAULT NULL,
-  `new_date` date DEFAULT NULL,
-  `new_price` decimal(10,2) DEFAULT NULL,
-  `gain` decimal(10,4) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `action` varchar(20) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
   `note` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of trade
 -- ----------------------------
+INSERT INTO `trade` VALUES ('1', '2017-03-30', 'LONG1', 'ATVI', 'SELL', '50.19', 'Activision Blizzard, | COMPUTER SOFTWARE & SERVICES - Mul');
+INSERT INTO `trade` VALUES ('2', '2017-03-30', 'LONG1', 'CWEI', 'SELL', '131.79', 'Clayton Williams Ene | ENERGY - Independent Oil & Ga');
+INSERT INTO `trade` VALUES ('3', '2017-03-30', 'LONG2', 'MHLD', 'SELL', '13.90', 'Maiden Hldgs Ltd | INSURANCE - Property & Casualty In');
+INSERT INTO `trade` VALUES ('4', '2017-03-30', 'SHORT', 'RAD', 'COVER', '4.42', 'Rite Aid Corp | RETAIL - Drug Stores');
+INSERT INTO `trade` VALUES ('5', '2017-03-31', 'LONG2', 'BSBR', 'SELL', '8.82', 'Banco Santander Braz | BANKING - Foreign Regional Bank');
+INSERT INTO `trade` VALUES ('6', '2017-03-31', 'SHORT', 'FSLR', 'SHORT', '27.10', 'First Solar Inc | ELECTRONICS - Semiconductor - Spec');
+INSERT INTO `trade` VALUES ('7', '2017-03-31', 'SHORT', 'VRX', 'COVER', '11.03', 'Valeant Pharmaceutic | DRUGS - Drug Delivery');
+INSERT INTO `trade` VALUES ('8', '2017-04-03', 'LONG1', 'AOBC', 'SELL', '20.45', 'American Outdoor Bra | AEROSPACE/DEFENSE - Aerospace/Defe');
+INSERT INTO `trade` VALUES ('9', '2017-04-03', 'LONG2', 'SAGE', 'SELL', '70.35', 'Sage Therapeutics In | DRUGS - Biotechnolog');
+INSERT INTO `trade` VALUES ('10', '2017-04-03', 'SHORT', 'CAB', 'SHORT', '53.34', 'Cabela\'s Inc | SPECIALTY RETAIL - Sporting Goods ');
+INSERT INTO `trade` VALUES ('11', '2017-04-03', 'SHORT', 'RARE', 'SHORT', '64.70', 'Ultragenyx Pharmaceu | DRUGS - Biotechnology');
+INSERT INTO `trade` VALUES ('12', '2017-04-04', 'LONG1', 'AKS', 'BUY', '7.19', 'Ak Steel Holding Cor | METALS & MINING - Steel & Iro');
+INSERT INTO `trade` VALUES ('13', '2017-04-04', 'LONG1', 'VALE', 'BUY', '9.86', 'Vale SA ADR | METALS & MINING - Industrial Metal');
+INSERT INTO `trade` VALUES ('14', '2017-04-04', 'SHORT', 'HTZ', 'COVER', '15.60', 'Hertz Global Holding | DIVERSIFIED SERVICES - Rental & Lea');
+INSERT INTO `trade` VALUES ('15', '2017-04-05', 'LONG1', 'INCY', 'SELL', '138.43', 'Incyte Corp | DRUGS - Biotechnolog');
+INSERT INTO `trade` VALUES ('16', '2017-04-05', 'LONG1', 'KATE', 'SELL', '19.47', 'Kate Spade & Company | CONSUMER NON-DURABLES - Textile - ');
+INSERT INTO `trade` VALUES ('17', '2017-04-05', 'LONG1', 'PTEN', 'SELL', '24.66', 'Patterson-Uti Energy | ENERGY - Oil & Gas Drilling & Expl');
+INSERT INTO `trade` VALUES ('18', '2017-04-05', 'LONG1', 'THO', 'BUY', '90.79', 'Thor Industries Inc | AUTOMOTIVE - Recreational Vehicle');
+INSERT INTO `trade` VALUES ('19', '2017-04-05', 'LONG2', 'BOFI', 'BUY', '24.31', 'BofI Holding Inc | BANKING - Savings & Loans');
+INSERT INTO `trade` VALUES ('20', '2017-04-06', 'LONG1', 'AKS', 'BUY', '7.06', 'Ak Steel Holding Cor | METALS & MINING - Steel & Iro');
+INSERT INTO `trade` VALUES ('21', '2017-04-06', 'LONG1', 'EXEL', 'BUY', '20.38', 'Exelixis Inc | DRUGS - Biotechnolog');
+INSERT INTO `trade` VALUES ('22', '2017-04-06', 'LONG2', 'NKTR', 'BUY', '21.04', 'Nektar Therapeutics | DRUGS - Biotechnology');

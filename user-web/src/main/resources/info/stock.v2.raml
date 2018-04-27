@@ -1,0 +1,395 @@
+﻿#%RAML 1.0
+title: stock V2 API
+version: v1
+documentation:
+ - title: stock.v2
+   content: |
+     实时服务
+     baseUri如下:
+     - dev: 未定
+     - clone: 未定
+     - online: 未定
+
+mediaType:  application/json
+
+/trade/find_gain:
+  description: 获取首页的收益信息展示
+  get:
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "entities": [
+                              {
+                                "date": "2017-04-06",   //日期
+                                "profit": -0.0004       //收益
+                              },
+                              {
+                                "date": "2017-04-05",
+                                "profit": -0.0318
+                              },
+                              {
+                                "date": "最近一周",
+                                "profit": -0.0403
+                              },
+                              {
+                                "date": "最近一月",
+                                "profit": -0.0403
+                              }
+                            ]
+                          }
+                        }
+
+
+
+/trade/search_gain:
+  description: 获取收益信息
+  get:
+    queryParameters:
+        pageSize:
+          type: integer
+          required: true
+          description: 页大小
+        pageNo:
+          type: integer
+          required: true
+          description: 第几页
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "entities": [
+                              {
+                                "id": 6,      //主键
+                                "date": "2017-04-06",   //日期
+                                "stock": 779.85,        //股票金额
+                                "balance": 297.43,      //账户余额
+                                "cover": 114.09,        //做空余额 （为负数表示收益）
+                                "gain": -0.0004         //收益率
+                              }
+                            ],
+                            "total": 6
+                          }
+                        }
+
+
+/trade/get_lately:
+  description: 获取最近的交易记录
+  get:
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "entities": [
+                              {
+                                "id": 20,   //主键
+                                "date": "2017-04-06",   //日期
+                                "type": "LONG1",        //股票类型
+                                "name": "AKS",          //股票名称
+                                "action": "BUY",        //交易类型
+                                "price": 7.06,          //交易时的金额
+                                "note": "Ak Steel Holding Cor | METALS & MINING - Steel & Iro"    //备注
+                              },
+                              {
+                                "id": 21,
+                                "date": "2017-04-06",
+                                "type": "LONG1",
+                                "name": "EXEL",
+                                "action": "BUY",
+                                "price": 20.38,
+                                "note": "Exelixis Inc | DRUGS - Biotechnolog"
+                              },
+                              {
+                                "id": 22,
+                                "date": "2017-04-06",
+                                "type": "LONG2",
+                                "name": "NKTR",
+                                "action": "BUY",
+                                "price": 21.04,
+                                "note": "Nektar Therapeutics | DRUGS - Biotechnology"
+                              }
+                            ]
+                          }
+                        }
+
+
+/trade/search:
+  description:  分页查询交易记录
+  get:
+    queryParameters:
+      pageSize:
+        type: integer
+        required: true
+        description: 页大小
+      pageNo:
+        type: integer
+        required: true
+        description: 第几页
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "entities": [
+                              {
+                                "date": "2017-04-06",   //日期
+                                "gainRate": -0.0004,    //收益率
+                                "trade": [
+                                  {
+                                    "id": 20,           //主键
+                                    "date": "2017-04-06", //日期
+                                    "type": "LONG1",      //股票类型
+                                    "name": "AKS",        //股票名称
+                                    "action": "BUY",      //交易动作
+                                    "price": 7.06,        //交易时的价格
+                                    "note": "Ak Steel Holding Cor | METALS & MINING - Steel & Iro"  //备注
+                                  },
+                                  {
+                                    "id": 21,
+                                    "date": "2017-04-06",
+                                    "type": "LONG1",
+                                    "name": "EXEL",
+                                    "action": "BUY",
+                                    "price": 20.38,
+                                    "note": "Exelixis Inc | DRUGS - Biotechnolog"
+                                  },
+                                  {
+                                    "id": 22,
+                                    "date": "2017-04-06",
+                                    "type": "LONG2",
+                                    "name": "NKTR",
+                                    "action": "BUY",
+                                    "price": 21.04,
+                                    "note": "Nektar Therapeutics | DRUGS - Biotechnology"
+                                  }
+                                ]
+                              },
+                              {
+                                "date": "2017-04-05",
+                                "gainRate": -0.0318,
+                                "trade": [
+                                  {
+                                    "id": 15,
+                                    "date": "2017-04-05",
+                                    "type": "LONG1",
+                                    "name": "INCY",
+                                    "action": "SELL",
+                                    "price": 138.43,
+                                    "note": "Incyte Corp | DRUGS - Biotechnolog"
+                                  },
+                                  {
+                                    "id": 16,
+                                    "date": "2017-04-05",
+                                    "type": "LONG1",
+                                    "name": "KATE",
+                                    "action": "SELL",
+                                    "price": 19.47,
+                                    "note": "Kate Spade & Company | CONSUMER NON-DURABLES - Textile - "
+                                  },
+                                  {
+                                    "id": 17,
+                                    "date": "2017-04-05",
+                                    "type": "LONG1",
+                                    "name": "PTEN",
+                                    "action": "SELL",
+                                    "price": 24.66,
+                                    "note": "Patterson-Uti Energy | ENERGY - Oil & Gas Drilling & Expl"
+                                  },
+                                  {
+                                    "id": 18,
+                                    "date": "2017-04-05",
+                                    "type": "LONG1",
+                                    "name": "THO",
+                                    "action": "BUY",
+                                    "price": 90.79,
+                                    "note": "Thor Industries Inc | AUTOMOTIVE - Recreational Vehicle"
+                                  },
+                                  {
+                                    "id": 19,
+                                    "date": "2017-04-05",
+                                    "type": "LONG2",
+                                    "name": "BOFI",
+                                    "action": "BUY",
+                                    "price": 24.31,
+                                    "note": "BofI Holding Inc | BANKING - Savings & Loans"
+                                  }
+                                ]
+                              },
+                              {
+                                "date": "2017-04-04",
+                                "gainRate": -0.0135,
+                                "trade": [
+                                  {
+                                    "id": 12,
+                                    "date": "2017-04-04",
+                                    "type": "LONG1",
+                                    "name": "AKS",
+                                    "action": "BUY",
+                                    "price": 7.19,
+                                    "note": "Ak Steel Holding Cor | METALS & MINING - Steel & Iro"
+                                  },
+                                  {
+                                    "id": 13,
+                                    "date": "2017-04-04",
+                                    "type": "LONG1",
+                                    "name": "VALE",
+                                    "action": "BUY",
+                                    "price": 9.86,
+                                    "note": "Vale SA ADR | METALS & MINING - Industrial Metal"
+                                  },
+                                  {
+                                    "id": 14,
+                                    "date": "2017-04-04",
+                                    "type": "SHORT",
+                                    "name": "HTZ",
+                                    "action": "COVER",
+                                    "price": 15.6,
+                                    "note": "Hertz Global Holding | DIVERSIFIED SERVICES - Rental & Lea"
+                                  }
+                                ]
+                              }
+                            ],
+                            "total": 6
+                          }
+                        }
+
+
+/recommend/get_contrast:
+  description: 获取大盘与AI指数对比
+  get:
+    queryParameters:
+      step:
+        type: string
+        required: true
+        description: 取值为WEEK(周) MONTH(月) QUARTER(季) YEAR(年)
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "code": 0,
+                "data": {
+                  "entity": {
+                    "baseMarket": [],
+                    "aiMarket": [],
+                    "time": []
+                  }
+                }
+              }
+
+/recommend/find:
+  description: 获取最新的推荐信息
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "code": 0,
+                "data": {
+                  "entities": [
+                    {
+                      "id": 19,   //主键
+                      "newDate": "2017-04-06",      //日期
+                      "name": "VALE",     //名称
+                      "type": "LONG1",    //股票类型
+                      "action": "BUY",    //交易动作
+                      "rank": 0.11,       //推荐指数
+                      "note": "Vale SA ADR | METALS & MINING - Industrial Metal"  //备注
+                    },
+                    {
+                      "id": 20,
+                      "newDate": "2017-04-06",
+                      "name": "AVXS",
+                      "type": "LONG2",
+                      "action": "BUY",
+                      "rank": 0.05,
+                      "note": "AveXis Inc | DRUGS - Biotechnolog"
+                    },
+                    {
+                      "id": 21,
+                      "newDate": "2017-04-06",
+                      "name": "GBT",
+                      "type": "LONG2",
+                      "action": "BUY",
+                      "rank": 0.42,
+                      "note": "Global Blood Therape | DRUGS - Biotechnolog"
+                    }
+                  ]
+                }
+              }
+/recommend/search:
+  description: 分页获取推荐信息
+  get:
+    queryParameters:
+      pageSize:
+        type: integer
+        required: true
+        description: 页大小
+      pageNo:
+        type: integer
+        required: true
+        description: 第几页
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "code": 0,
+                "data": {
+                  "entities": [
+                    {
+                      "date": "2017-04-06",
+                      "gainRate": -0.0004,
+                      "recommend": [
+                        {
+                          "id": 19,
+                          "newDate": "2017-04-06",
+                          "name": "VALE",
+                          "type": "LONG1",
+                          "action": "BUY",
+                          "rank": 0.11,
+                          "note": "Vale SA ADR | METALS & MINING - Industrial Metal"
+                        },
+                        {
+                          "id": 20,
+                          "newDate": "2017-04-06",
+                          "name": "AVXS",
+                          "type": "LONG2",
+                          "action": "BUY",
+                          "rank": 0.05,
+                          "note": "AveXis Inc | DRUGS - Biotechnolog"
+                        },
+                        {
+                          "id": 21,
+                          "newDate": "2017-04-06",
+                          "name": "GBT",
+                          "type": "LONG2",
+                          "action": "BUY",
+                          "rank": 0.42,
+                          "note": "Global Blood Therape | DRUGS - Biotechnolog"
+                        }
+                      ]
+                    }
+                  ],
+                  "total": 6
+                }
+              }

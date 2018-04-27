@@ -10,6 +10,23 @@
         <result column="stock" property="stock"/>
         <result column="balance" property="balance"/>
         <result column="cover" property="cover"/>
+        <result column="gain" property="gain"/>
     </resultMap>
+
+    <select id="getLately" resultMap="Asset">
+        select * from asset ORDER BY id DESC  limit 1
+    </select>
+
+    <select id="getDiff" resultMap="Asset">
+        select * from asset where date >= DATE_SUB(#{date}, INTERVAL ${diff} DAY) limit 1
+    </select>
+
+    <select id="getByDate" resultMap="Asset">
+        select * from asset where date =#{date}
+    </select>
+
+    <select id="search" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo" resultMap="Asset">
+        select sql_calc_found_rows  * from asset ORDER BY date DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
+    </select>
 
 </mapper>

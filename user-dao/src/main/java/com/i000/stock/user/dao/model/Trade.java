@@ -1,7 +1,10 @@
 package com.i000.stock.user.dao.model;
 
 import com.baomidou.mybatisplus.annotations.TableId;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,20 +16,18 @@ import java.time.LocalDate;
  * @Modified By:
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Trade {
 
     @TableId
     private Long id;
-
+    private LocalDate date;
+    private String type;
     private String name;
     private String action;
-    private String type;
-    private LocalDate oldDate;
-    private BigDecimal oldPrice;
-    private LocalDate newDate;
-    private BigDecimal newPrice;
-    private BigDecimal gain;
+    private BigDecimal price;
     private String note;
-
 
 }
