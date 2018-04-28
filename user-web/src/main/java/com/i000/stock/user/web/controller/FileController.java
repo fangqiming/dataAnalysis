@@ -1,5 +1,6 @@
 package com.i000.stock.user.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.i000.stock.user.core.file.oss.OSSFileUpload;
 import com.i000.stock.user.core.file.upload.FileStreamTransformer;
 import com.i000.stock.user.core.file.upload.SpringMultipartFileTransformer;
@@ -7,13 +8,14 @@ import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import java.io.*;
+import java.util.Arrays;
 
 /**
  * @Author:qmfang
@@ -24,6 +26,7 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequestMapping("/file")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class FileController {
 
     @Autowired
@@ -31,15 +34,27 @@ public class FileController {
 
     /**
      * 用于上传图片
-     * 127.0.0.1:8082/file
+     * 127.0.0.1:8082/file/upload
+     *
      * @param file
      * @return
      * @throws IOException
      */
     @PostMapping(path = "/upload")
-    public ResultEntity testFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResultEntity fileUpload(@RequestParam("file") MultipartFile file) throws IOException {
         FileStreamTransformer fileStreamTransformer = SpringMultipartFileTransformer.transformer(file);
-        String url = ossFileUpload.upload(fileStreamTransformer);
+        String url = ossFileUpload.upload(fileStreamTransformer, false);
         return Results.newNormalResultEntity("url", url);
     }
+
+    @PostMapping(path = "/upload_user")
+    public JSONObject fileUploadBy(@RequestParam("file") MultipartFile file) throws IOException {
+        FileStreamTransformer fileStreamTransformer = SpringMultipartFileTransformer.transformer(file);
+        String url = ossFileUpload.upload(fileStreamTransformer, true);
+        JSONObject result = new JSONObject();
+        result.put("errno", 0);
+        result.put("data", Arrays.asList(url));
+        return result;
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.i000.stock.user.web.controller;
 
+import com.i000.stock.user.api.service.HoldService;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.api.entity.vo.*;
 import com.i000.stock.user.api.service.AssetService;
@@ -10,6 +11,7 @@ import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.Asset;
+import com.i000.stock.user.dao.model.Hold;
 import com.i000.stock.user.dao.model.Trade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -46,6 +48,9 @@ public class TradeController {
 
     @Resource
     private TradeService tradeService;
+
+    @Resource
+    private HoldService holdService;
 
     /**
      * 127.0.0.1:8082/trade/find_gain
@@ -128,4 +133,28 @@ public class TradeController {
         }
         return Results.newPageResultEntity(pageData.getTotal(), result);
     }
+
+    /**
+     * 127.0.0.1:8082/trade/find_stock
+     * 获取当前持股信息
+     *
+     * @return
+     */
+    @GetMapping(path = "/find_stock")
+    public ResultEntity findHoldStock() {
+        List<Hold> hold = holdService.findHold();
+        return Results.newListResultEntity(ConvertUtils.listConvert(hold, HoldVo.class));
+    }
+
+    /**
+     * 127.0.0.1:8082/trade/get_overview
+     * 获取账户总览信息
+     *
+     * @return
+     */
+    @GetMapping(path = "/get_overview")
+    public ResultEntity getOverview() {
+        return Results.newSingleResultEntity(assetService.getSummary());
+    }
+
 }

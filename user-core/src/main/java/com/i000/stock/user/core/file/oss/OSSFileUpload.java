@@ -3,6 +3,10 @@ package com.i000.stock.user.core.file.oss;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.i000.stock.user.core.file.upload.FileStreamTransformer;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.UUID;
 
 /**
  * @Author:qmfang
@@ -31,9 +35,9 @@ public class OSSFileUpload {
      *
      * @return 上传成功后的文件地址
      */
-    public String upload(FileStreamTransformer fileStreamTransformer) {
+    public String upload(FileStreamTransformer fileStreamTransformer, boolean createNewName) {
         ObjectMetadata meta = new ObjectMetadata();
-        String fileName = generateFileName(fileStreamTransformer.getFileName());
+        String fileName = generateFileName(fileStreamTransformer.getFileName(), createNewName);
 
         meta.setContentLength(fileStreamTransformer.getSize());
 
@@ -47,8 +51,11 @@ public class OSSFileUpload {
         return buildFileURL(fileName);
     }
 
-    private String generateFileName(String oldFileName) {
-        return catalog + "/" + oldFileName;
+    private String generateFileName(String oldFileName, boolean createNewName) {
+        return createNewName ? catalog + "/" + UUID.randomUUID().toString().replace("-", StringUtils.EMPTY)
+                + "." + FilenameUtils.getExtension(oldFileName)
+                : catalog + "/" + oldFileName;
+
     }
 
     private String buildFileURL(String fileName) {

@@ -9,7 +9,9 @@ package com.i000.stock.user.api.service;
 public interface CompanyService {
 
     /**
-     * 更新全部的公司信息
+     * 更新公司信息（与东方财富同步所有的A股股票）
+     *
+     * @return
      */
     Boolean updateInfo();
 }

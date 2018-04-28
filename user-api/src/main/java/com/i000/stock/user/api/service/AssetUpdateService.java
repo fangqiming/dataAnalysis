@@ -11,5 +11,12 @@ import com.i000.stock.user.dao.model.Trade;
  */
 public interface AssetUpdateService {
 
+    /**
+     * 根据交易信息更细用户资产
+     *
+     * @param asset
+     * @param plan
+     * @return
+     */
     Asset update(Asset asset, Trade plan);
 }

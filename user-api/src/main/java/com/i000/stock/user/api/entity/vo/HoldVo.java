@@ -11,20 +11,24 @@ import java.time.LocalDate;
 /**
  * @Author:qmfang
  * @Description:
- * @Date:Created in 11:10 2018/4/27
+ * @Date:Created in 9:57 2018/4/28
  * @Modified By:
  */
 @Data
-public class TradeVo {
+public class HoldVo {
 
     private Long id;
-
+    private String name;
     @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate date;
+    private LocalDate oldDate;
+    private BigDecimal oldPrice;
+    private BigDecimal oldRank;
+    private LocalDate newDate;
+    private BigDecimal newPrice;
+    private BigDecimal newRank;
+    private Integer holdDay;
+    private BigDecimal gain;
+
     @JsonSerialize(using = TypeSerializer.class)
     private String type;
-    private String name;
-    private String action;
-    private BigDecimal price;
-    private String note;
 }

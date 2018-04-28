@@ -1,5 +1,6 @@
 package com.i000.stock.user.api.service;
 
+import com.i000.stock.user.api.entity.vo.AssetDiffVo;
 import com.i000.stock.user.api.entity.vo.GainBo;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.Asset;
@@ -48,5 +49,18 @@ public interface AssetService {
      */
     GainBo getGain(LocalDate start, Integer day);
 
+    /**
+     * 分页查找资产信息
+     *
+     * @param baseSearchVo
+     * @return
+     */
     Page<Asset> search(BaseSearchVo baseSearchVo);
+
+    /**
+     * 获取资产的总体信息
+     *
+     * @return
+     */
+    AssetDiffVo getSummary();
 }

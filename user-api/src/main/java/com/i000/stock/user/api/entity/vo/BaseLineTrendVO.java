@@ -20,7 +20,6 @@ public class BaseLineTrendVO {
     private List<BigDecimal> baseMarket;
     private List<BigDecimal> aiMarket;
 
-    //@JsonSerialize(using = ListLocalDateSerializer.class)
     private List<String> time;
 
     public BaseLineTrendVO() {

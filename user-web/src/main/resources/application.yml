@@ -1,4 +1,4 @@
-# 数据库配置
+
 spring:
   application:
     name: user
@@ -24,6 +24,9 @@ spring:
       max-file-size: 30Mb
       max-request-size: 30Mb
 
+  thymeleaf:
+    prefix: classpath:/templates/
+    mode: LEGACYHTML5
 
 #    mybatis 配置
 dao:
@@ -46,6 +49,11 @@ dao:
       mapper:
         scanner:
           sql-session-factory-bean-name: sqlSessionFactory
+
+business:
+  init:
+    amount: 100000
+
 
 
 #  邮件解析配置
