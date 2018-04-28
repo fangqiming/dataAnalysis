@@ -23,12 +23,12 @@ public class HoldVo {
     private LocalDate oldDate;
     private BigDecimal oldPrice;
     private BigDecimal oldRank;
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate newDate;
     private BigDecimal newPrice;
     private BigDecimal newRank;
     private Integer holdDay;
     private BigDecimal gain;
-
     @JsonSerialize(using = TypeSerializer.class)
     private String type;
 }

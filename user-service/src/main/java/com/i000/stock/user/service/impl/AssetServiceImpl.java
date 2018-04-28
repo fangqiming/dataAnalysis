@@ -71,6 +71,9 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public void calculate(LocalDate date) {
         Asset lately = assetMapper.getLately();
+        if (Objects.nonNull(lately) && date.compareTo(lately.getDate()) <= 0) {
+            return;
+        }
         List<Trade> byDate = tradeMapper.findByDate(date);
         //更新账户信息
         for (Trade trade : byDate) {
@@ -93,7 +96,6 @@ public class AssetServiceImpl implements AssetService {
         }
         assetMapper.insert(lately);
     }
-
 
     @Override
     public GainBo getGain(LocalDate start, Integer day) {

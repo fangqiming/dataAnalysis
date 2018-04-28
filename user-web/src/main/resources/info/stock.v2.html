@@ -449,4 +449,72 @@
     "total": 6
   }
 }
-</code></pre></div></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#trade_find_gain">/trade/find_gain</a></li><li><a href="#trade_search_gain">/trade/search_gain</a></li><li><a href="#trade_get_lately">/trade/get_lately</a></li><li><a href="#trade_search">/trade/search</a></li><li><a href="#recommend_get_contrast">/recommend/get_contrast</a></li><li><a href="#recommend_find">/recommend/find</a></li><li><a href="#recommend_search">/recommend/search</a></li></ul></div></div></div></div></body></html>
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="trade_find_stock" class="panel-title">/trade/find_stock</h3></div><div class="panel-body"><div class="top-resource-description"><p>获取当前持股</p></div><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_trade_find_stock"><span class="parent"></span>/trade/find_stock</a> <span class="methods"><a href="#trade_find_stock_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_trade_find_stock" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#trade_find_stock_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="trade_find_stock_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/trade/find_stock</h4></div><div class="modal-body"><ul class="nav nav-tabs"><li class="active"><a href="#trade_find_stock_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="trade_find_stock_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "code": 0,
+  "data": {
+    "entities": [
+      {
+        "id": 72,     //主键
+        "name": "AKS",  //名称
+        "oldDate": "2017-04-04",    //买入日期
+        "oldPrice": 7.19,   //买入价格
+        "oldRank": 0.85,    //买入时排名
+        "newDate": "2017-04-06",    //当前日期
+        "newPrice": 7.06,     //当前价格
+        "newRank": 0.53,      //当前排名
+        "holdDay": 2,         //持有交易日天数
+        "gain": -0.02,        //收益率
+        "type": "稳定型"       //股票类型
+      },
+      {
+        "id": 73,
+        "name": "AKS",
+        "oldDate": "2017-04-06",
+        "oldPrice": 7.06,
+        "oldRank": 0.85,
+        "newDate": "2017-04-06",
+        "newPrice": 7.06,
+        "newRank": 0.12,
+        "holdDay": 0,
+        "gain": 0,
+        "type": "稳定型"
+      }
+    ]
+  }
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="trade_get_overview" class="panel-title">/trade/get_overview</h3></div><div class="panel-body"><div class="top-resource-description"><p>获取账户信息</p></div><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_trade_get_overview"><span class="parent"></span>/trade/get_overview</a> <span class="methods"><a href="#trade_get_overview_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_trade_get_overview" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#trade_get_overview_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="trade_get_overview_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/trade/get_overview</h4></div><div class="modal-body"><ul class="nav nav-tabs"><li class="active"><a href="#trade_get_overview_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="trade_get_overview_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "code": 0,
+  "data": {
+    "entity": {
+      "date": "2017-04-06",   //日期
+      "totalAmount": 95970,   //总额
+      "balance": 297.4255205, //余额
+      "stockAmount": 779.8469746, //股票金额
+      "totalGain": -0.0403,   //总收益率
+      "todayGain": -0.0004,    //今日收益率
+      "initAmount": 100000,     //初始金额
+      "coverAmount": 114.0855912    //做空金额
+    }
+  }
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="ad_get" class="panel-title">/ad/get</h3></div><div class="panel-body"><div class="top-resource-description"><p>通过key获取文案内容</p></div><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_ad_get"><span class="parent"></span>/ad/get</a> <span class="methods"><a href="#ad_get_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_ad_get" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#ad_get_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="ad_get_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent"></span>/ad/get</h4></div><div class="modal-body"><ul class="nav nav-tabs"><li class="active"><a href="#ad_get_get_request" data-toggle="tab">Request</a></li><li><a href="#ad_get_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="ad_get_get_request"><h3>Query Parameters</h3><ul><li><strong>key</strong>: <em>required (string)</em><p>文案信息的键</p></li></ul></div><div class="tab-pane" id="ad_get_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "code": 0,
+  "data": {
+    "entity": "算法先将" //文案内容
+  }
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="ad_save" class="panel-title">/ad/save</h3></div><div class="panel-body"><div class="top-resource-description"><p>保存或者是更新文案</p></div><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_ad_save"><span class="parent"></span>/ad/save</a> <span class="methods"><a href="#ad_save_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_ad_save" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#ad_save_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="ad_save_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent"></span>/ad/save</h4></div><div class="modal-body"><ul class="nav nav-tabs"><li class="active"><a href="#ad_save_post_request" data-toggle="tab">Request</a></li><li><a href="#ad_save_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="ad_save_post_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+	"key":"文案的key",
+	"value":"文案的值"
+}
+</code></pre></div></div><div class="tab-pane" id="ad_save_post_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "code": 0,
+  "data": {
+    "entity":
+      {
+      	"key":"文案的key",
+      	"value":"文案的值"
+      }
+  }
+}
+</code></pre></div></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#trade_find_gain">/trade/find_gain</a></li><li><a href="#trade_search_gain">/trade/search_gain</a></li><li><a href="#trade_get_lately">/trade/get_lately</a></li><li><a href="#trade_search">/trade/search</a></li><li><a href="#recommend_get_contrast">/recommend/get_contrast</a></li><li><a href="#recommend_find">/recommend/find</a></li><li><a href="#recommend_search">/recommend/search</a></li><li><a href="#trade_find_stock">/trade/find_stock</a></li><li><a href="#trade_get_overview">/trade/get_overview</a></li><li><a href="#ad_get">/ad/get</a></li><li><a href="#ad_save">/ad/save</a></li></ul></div></div></div></div></body></html>

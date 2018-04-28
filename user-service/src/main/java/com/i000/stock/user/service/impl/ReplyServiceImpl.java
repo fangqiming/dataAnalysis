@@ -7,6 +7,7 @@ import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.mapper.ReplyMapper;
+import com.i000.stock.user.dao.mapper.TopicMapper;
 import com.i000.stock.user.dao.model.Reply;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,9 @@ public class ReplyServiceImpl implements ReplyService {
     @Resource
     private ReplyMapper replyMapper;
 
+    @Resource
+    private TopicMapper topicMapper;
+
     @Override
     public Long create(Reply reply) {
         replyMapper.insert(reply);
@@ -39,6 +43,7 @@ public class ReplyServiceImpl implements ReplyService {
     public Page<ReplyVos> search(BaseSearchVo baseSearchVo, Long id) {
         baseSearchVo.setStart();
         List<Reply> replies = replyMapper.search(baseSearchVo, id);
+        topicMapper.updateNum(id);
         Long count = replyMapper.count();
         Page<ReplyVos> result = new Page<>();
         if (!CollectionUtils.isEmpty(replies)) {

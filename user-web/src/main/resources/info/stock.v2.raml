@@ -393,3 +393,117 @@ mediaType:  application/json
                   "total": 6
                 }
               }
+
+
+/trade/find_stock:
+  description: 获取当前持股
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+              example: |
+                {
+                  "code": 0,
+                  "data": {
+                    "entities": [
+                      {
+                        "id": 72,     //主键
+                        "name": "AKS",  //名称
+                        "oldDate": "2017-04-04",    //买入日期
+                        "oldPrice": 7.19,   //买入价格
+                        "oldRank": 0.85,    //买入时排名
+                        "newDate": "2017-04-06",    //当前日期
+                        "newPrice": 7.06,     //当前价格
+                        "newRank": 0.53,      //当前排名
+                        "holdDay": 2,         //持有交易日天数
+                        "gain": -0.02,        //收益率
+                        "type": "稳定型"       //股票类型
+                      },
+                      {
+                        "id": 73,
+                        "name": "AKS",
+                        "oldDate": "2017-04-06",
+                        "oldPrice": 7.06,
+                        "oldRank": 0.85,
+                        "newDate": "2017-04-06",
+                        "newPrice": 7.06,
+                        "newRank": 0.12,
+                        "holdDay": 0,
+                        "gain": 0,
+                        "type": "稳定型"
+                      }
+                    ]
+                  }
+                }
+
+/trade/get_overview:
+  description: 获取账户信息
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+              example: |
+                {
+                  "code": 0,
+                  "data": {
+                    "entity": {
+                      "date": "2017-04-06",   //日期
+                      "totalAmount": 95970,   //总额
+                      "balance": 297.4255205, //余额
+                      "stockAmount": 779.8469746, //股票金额
+                      "totalGain": -0.0403,   //总收益率
+                      "todayGain": -0.0004,    //今日收益率
+                      "initAmount": 100000,     //初始金额
+                      "coverAmount": 114.0855912    //做空金额
+                    }
+                  }
+                }
+
+
+/ad/get:
+  description: 通过key获取文案内容
+  get:
+    queryParameters:
+      key:
+        type: string
+        required: true
+        description: 文案信息的键
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "code": 0,
+                "data": {
+                  "entity": "算法先将" //文案内容
+                }
+              }
+
+/ad/save:
+  description: 保存或者是更新文案
+  post:
+    body:
+      application/json:
+        example: |
+            {
+            	"key":"文案的key",
+            	"value":"文案的值"
+            }
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "code": 0,
+                "data": {
+                  "entity":
+                    {
+                    	"key":"文案的key",
+                    	"value":"文案的值"
+                    }
+                }
+              }
