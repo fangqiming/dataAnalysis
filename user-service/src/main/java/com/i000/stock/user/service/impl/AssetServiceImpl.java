@@ -5,27 +5,25 @@ import com.i000.stock.user.api.entity.vo.AssetDiffVo;
 import com.i000.stock.user.api.entity.vo.GainBo;
 import com.i000.stock.user.api.service.AssetService;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
+import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.mapper.AssetMapper;
 import com.i000.stock.user.dao.mapper.HoldMapper;
 import com.i000.stock.user.dao.mapper.TradeMapper;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.Hold;
 import com.i000.stock.user.dao.model.Trade;
-import com.i000.stock.user.service.impl.asset.UpdateAssetImpl;
+import com.i000.stock.user.service.impl.asset.amount.UpdateAssetImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-
-import com.i000.stock.user.dao.bo.Page;
 
 import static java.util.stream.Collectors.reducing;
 
@@ -135,6 +133,7 @@ public class AssetServiceImpl implements AssetService {
         Asset end = getLately();
         if (Objects.nonNull(end)) {
             GainBo gain = getGain(end.getDate(), 365000);
+            assetDiffVo.setStartDate(gain.getEndDate());
             assetDiffVo.setTotalAmount(initAmount.multiply((new BigDecimal(1).add(gain.getProfit()))));
             assetDiffVo.setDate(end.getDate());
             assetDiffVo.setTodayGain(end.getGain());

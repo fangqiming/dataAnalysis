@@ -1,20 +1,28 @@
-package com.i000.stock.user.service.impl.asset;
+package com.i000.stock.user.service.impl.asset.money;
 
+import com.i000.stock.user.api.entity.bo.AssetInitBo;
 import com.i000.stock.user.api.service.AssetUpdateService;
+import com.i000.stock.user.api.service.HoldService;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.Trade;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 
-/**
- * @Author:qmfang
- * @Description: 卖股票 账户余额增加
- * @Date:Created in 16:58 2018/4/26
- * @Modified By:
- */
-public class SellAssetImpl implements AssetUpdateService {
+@Component
+public class SellAssetSomeImpl implements AssetUpdateService {
+
+    @Autowired
+    private AssetInitBo assetInitBo;
+
+    @Resource
+    private HoldService holdService;
+
     @Override
     public Asset update(Asset asset, Trade trade) {
+
         if (Objects.nonNull(asset) && Objects.nonNull(asset.getBalance())) {
             asset.setBalance(asset.getBalance().add(trade.getPrice()));
         } else {
@@ -24,4 +32,6 @@ public class SellAssetImpl implements AssetUpdateService {
         asset.setDate(trade.getDate());
         return asset;
     }
+
+
 }

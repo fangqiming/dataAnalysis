@@ -2,6 +2,8 @@ package com.i000.stock.user.api.service;
 
 import com.i000.stock.user.dao.model.Hold;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -18,4 +20,16 @@ public interface HoldService {
      * @return
      */
     List<Hold> findHold();
+
+
+    /**
+     * 更新当前持股的买入的股票份数
+     * @param date
+     * @param name
+     * @param amount
+     * @return
+     */
+    Integer updateAmount(LocalDate date, String name, BigDecimal amount);
+
+    BigDecimal getAmount()
 }

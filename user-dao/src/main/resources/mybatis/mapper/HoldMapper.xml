@@ -16,6 +16,7 @@
         <result column="hold_day" property="holdDay"/>
         <result column="gain" property="gain"/>
         <result column="type" property="type"/>
+        <result column="amount" property="amount"/>
     </resultMap>
 
     <select id="findByDate" resultMap="Hold">

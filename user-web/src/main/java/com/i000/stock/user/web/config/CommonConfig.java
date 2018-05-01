@@ -1,5 +1,6 @@
 package com.i000.stock.user.web.config;
 
+import com.i000.stock.user.api.entity.bo.AssetInitBo;
 import com.i000.stock.user.core.file.oss.OSSFileUpload;
 import com.i000.stock.user.core.file.oss.OSSUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,4 +35,10 @@ public class CommonConfig {
         ossUtil.setEndpoint(endpoint);
         return ossUtil;
     }
+
+    @Bean
+    public AssetInitBo assetInitBo(){
+        return new AssetInitBo();
+    }
+
 }

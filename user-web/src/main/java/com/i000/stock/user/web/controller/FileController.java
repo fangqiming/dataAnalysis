@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-import java.io.*;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -50,7 +47,7 @@ public class FileController {
     @PostMapping(path = "/upload_user")
     public JSONObject fileUploadBy(@RequestParam("file") MultipartFile file) throws IOException {
         FileStreamTransformer fileStreamTransformer = SpringMultipartFileTransformer.transformer(file);
-        String url = ossFileUpload.upload(fileStreamTransformer, true);
+        String url = ossFileUpload.upload(fileStreamTransformer, false);
         JSONObject result = new JSONObject();
         result.put("errno", 0);
         result.put("data", Arrays.asList(url));

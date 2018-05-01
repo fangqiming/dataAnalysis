@@ -3,9 +3,11 @@ package com.i000.stock.user.service.impl;
 import com.i000.stock.user.api.service.HoldService;
 import com.i000.stock.user.dao.mapper.HoldMapper;
 import com.i000.stock.user.dao.model.Hold;
+import com.sun.tools.internal.xjc.reader.xmlschema.BindGreen;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,5 +30,10 @@ public class HoldServiceImpl implements HoldService {
         LocalDate maxDate = holdMapper.getMaxDate();
         return Objects.isNull(maxDate) ? new ArrayList<>(0) :
                 holdMapper.findByDate(maxDate);
+    }
+
+    @Override
+    public Integer updateAmount(LocalDate date, String name, BigDecimal amount) {
+        return holdMapper.updateAmount(date,name,amount);
     }
 }

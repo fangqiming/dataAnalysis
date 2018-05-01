@@ -1,6 +1,7 @@
 package com.i000.stock.user.api.entity.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.i000.stock.user.api.jackson.ActionSerializer;
 import com.i000.stock.user.api.jackson.TypeSerializer;
 import com.i000.stock.user.core.jackson.serialize.LocalDateSerializer;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class TradeVo {
     @JsonSerialize(using = TypeSerializer.class)
     private String type;
     private String name;
+    @JsonSerialize(using = ActionSerializer.class)
     private String action;
     private BigDecimal price;
     private String note;

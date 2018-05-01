@@ -33,5 +33,7 @@ public class Hold {
     private Integer holdDay;
     private BigDecimal gain;
     private String type;
+    //持股数量
+    private Integer amount;
 
 }

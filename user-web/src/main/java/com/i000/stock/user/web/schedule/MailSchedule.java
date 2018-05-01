@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * @Author:qmfang
@@ -28,6 +29,8 @@ public class MailSchedule {
     @Scheduled(cron = "0 30 15 * * ?")
     public void fetchMail() throws Exception {
         LocalDate localDate = mailFetchService.initMail();
-        assetService.calculate(localDate);
+        if(Objects.nonNull(localDate)){
+            assetService.calculate(localDate);
+        }
     }
 }

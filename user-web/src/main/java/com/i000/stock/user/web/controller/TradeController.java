@@ -113,8 +113,10 @@ public class TradeController {
      */
     @GetMapping(path = "/search")
     public ResultEntity search(BaseSearchVo baseSearchVo) {
+        baseSearchVo.setPageNo(Objects.isNull(baseSearchVo.getPageNo()) ? 1 : baseSearchVo.getPageNo());
         ValidationUtils.validate(baseSearchVo);
-        Page<Asset> pageData = assetService.search(baseSearchVo);
+        Page<Asset> search = assetService.search(baseSearchVo);
+        Page<Asset> pageData = search;
         if (CollectionUtils.isEmpty(pageData.getList())) {
             return Results.newPageResultEntity(0L, null);
         }
@@ -123,7 +125,6 @@ public class TradeController {
         List<Trade> userTrades = tradeService.findByDate(dates);
         //根据日期进行排序
         Map<LocalDate, List<Trade>> map = userTrades.stream().collect(groupingBy(Trade::getDate));
-
         //然后将交易记录以及获利情况返回给前台
         List<TradeGainVo> result = new ArrayList<>();
         for (Asset userProfit : pageData.getList()) {
