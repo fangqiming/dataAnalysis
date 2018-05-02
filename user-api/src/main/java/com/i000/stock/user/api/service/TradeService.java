@@ -2,6 +2,7 @@ package com.i000.stock.user.api.service;
 
 import com.i000.stock.user.dao.model.Trade;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,5 +36,21 @@ public interface TradeService {
      * @return
      */
     LocalDate getMaxDate();
+
+    /**
+     * 获取指定股票的最新价格
+     *
+     * @param name
+     * @return
+     */
+    BigDecimal getSellPrice(String name);
+
+    /**
+     * 获取指定股票的最新价格
+     *
+     * @param name
+     * @return
+     */
+    BigDecimal getCoverPrice(String name);
 
 }

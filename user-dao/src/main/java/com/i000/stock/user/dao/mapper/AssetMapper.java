@@ -22,7 +22,7 @@ public interface AssetMapper extends BaseMapper<Asset> {
      *
      * @return
      */
-    Asset getLately();
+    Asset getLately(@Param("userCode") String userCode);
 
     /**
      * 获取距离最后一次交易间隔diff个时间的资产情况
@@ -30,7 +30,17 @@ public interface AssetMapper extends BaseMapper<Asset> {
      * @param diff
      * @return
      */
-    Asset getDiff(@Param("date") LocalDate date, @Param("diff") Integer diff);
+    Asset getDiff(@Param("date") LocalDate date, @Param("diff") Integer diff, @Param("userCode") String userCode);
+
+    /**
+     * 查询全部符合条件的Asset信息
+     *
+     * @param date
+     * @param diff
+     * @param userCode
+     * @return
+     */
+    List<Asset> findDiff(@Param("date") LocalDate date, @Param("diff") Integer diff, @Param("userCode") String userCode);
 
     /**
      * 获取指定日期的资产情况
@@ -38,7 +48,7 @@ public interface AssetMapper extends BaseMapper<Asset> {
      * @param date
      * @return
      */
-    Asset getByDate(@Param("date") LocalDate date);
+    Asset getByDate(@Param("date") LocalDate date, @Param("userCode") String userCode);
 
 
     /**
@@ -47,7 +57,7 @@ public interface AssetMapper extends BaseMapper<Asset> {
      * @param baseSearchVo
      * @return
      */
-    List<Asset> search(@Param("baseSearchVo") BaseSearchVo baseSearchVo);
+    List<Asset> search(@Param("baseSearchVo") BaseSearchVo baseSearchVo, @Param("userCode") String userCode);
 
     /**
      * 查询分页条数

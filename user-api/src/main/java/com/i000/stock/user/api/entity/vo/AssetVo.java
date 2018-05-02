@@ -1,6 +1,5 @@
 package com.i000.stock.user.api.entity.vo;
 
-import com.baomidou.mybatisplus.annotations.TableId;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.i000.stock.user.core.jackson.serialize.LocalDateSerializer;
 import lombok.Data;

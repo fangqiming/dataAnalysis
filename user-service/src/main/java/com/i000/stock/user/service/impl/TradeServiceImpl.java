@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -42,5 +43,15 @@ public class TradeServiceImpl extends AbstractService<Trade, TradeMapper> implem
     @Override
     public LocalDate getMaxDate() {
         return baseMapper.getMaxDate();
+    }
+
+    @Override
+    public BigDecimal getSellPrice(String name) {
+        return baseMapper.getPriceByName(name);
+    }
+
+    @Override
+    public BigDecimal getCoverPrice(String name) {
+        return baseMapper.getCoverPriceByName(name);
     }
 }

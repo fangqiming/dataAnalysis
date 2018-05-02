@@ -1,7 +1,9 @@
 package com.i000.stock.user.api.entity.vo;
 
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.i000.stock.user.api.jackson.TypeSerializer;
+import com.i000.stock.user.core.jackson.serialize.BigDecimalRoundSerializer;
 import com.i000.stock.user.core.jackson.serialize.LocalDateSerializer;
 import lombok.Data;
 
@@ -15,20 +17,29 @@ import java.time.LocalDate;
  * @Modified By:
  */
 @Data
-public class HoldVo {
+public class HoldNowVo {
 
     private Long id;
     private String name;
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate oldDate;
+    @JsonSerialize(using = BigDecimalRoundSerializer.class)
     private BigDecimal oldPrice;
-    private BigDecimal oldRank;
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate newDate;
+    @JsonSerialize(using = BigDecimalRoundSerializer.class)
     private BigDecimal newPrice;
-    private BigDecimal newRank;
     private Integer holdDay;
     private BigDecimal gain;
     @JsonSerialize(using = TypeSerializer.class)
     private String type;
+    private Integer amount;
+
+    //成本
+    private BigDecimal cost;
+    //目前价值
+    private BigDecimal value;
+    //收益绝对值
+    private BigDecimal earning;
+
 }

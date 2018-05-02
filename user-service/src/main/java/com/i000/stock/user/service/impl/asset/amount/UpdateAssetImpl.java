@@ -7,6 +7,7 @@ import com.i000.stock.user.service.impl.asset.amount.BuyAssetImpl;
 import com.i000.stock.user.service.impl.asset.amount.CoverAssetImpl;
 import com.i000.stock.user.service.impl.asset.amount.SellAssetImpl;
 import com.i000.stock.user.service.impl.asset.amount.ShortAssetImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -23,15 +24,24 @@ import java.util.Objects;
 @Component
 public class UpdateAssetImpl {
 
+    @Autowired
+    private SellAssetImpl sellAsset;
+    @Autowired
+    private BuyAssetImpl buyAsset;
+    @Autowired
+    private ShortAssetImpl shortAsset;
+    @Autowired
+    private CoverAssetImpl coverAsset;
+
     private Map<String, AssetUpdateService> map;
 
     @PostConstruct
     private void init() {
         map = new HashMap<>(4);
-        map.put("SELL", new SellAssetImpl());
-        map.put("BUY", new BuyAssetImpl());
-        map.put("SHORT", new ShortAssetImpl());
-        map.put("COVER", new CoverAssetImpl());
+        map.put("SELL", sellAsset);
+        map.put("BUY", buyAsset);
+        map.put("SHORT", shortAsset);
+        map.put("COVER", coverAsset);
     }
 
     public AssetUpdateService getParse(String action) {

@@ -19,12 +19,9 @@ import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.Plan;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -81,7 +78,7 @@ public class RecommendController {
 
 
     /**
-     *  127.0.0.1:8082/recommend/find
+     * 127.0.0.1:8082/recommend/find
      * 用于获取最新推荐
      *
      * @return
@@ -97,15 +94,17 @@ public class RecommendController {
     /**
      * 分页查询推荐信息
      * 127.0.0.1:8082/recommend/search
+     *
      * @param baseSearchVo
      * @return
      */
     @GetMapping(path = "/search")
-    public ResultEntity search(BaseSearchVo baseSearchVo) {
+    public ResultEntity search(BaseSearchVo baseSearchVo, String userCode) {
         //1.分页获取获利信息
         ValidationUtils.validate(baseSearchVo);
+        ValidationUtils.validateParameter(userCode, "用户码不能为空");
 
-        Page<Asset> pageData = assetService.search(baseSearchVo);
+        Page<Asset> pageData = assetService.search(baseSearchVo, userCode);
         if (CollectionUtils.isEmpty(pageData.getList())) {
             return Results.newPageResultEntity(0L, null);
         }

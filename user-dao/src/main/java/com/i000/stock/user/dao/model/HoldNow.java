@@ -13,14 +13,14 @@ import java.util.Objects;
 /**
  * @Author:qmfang
  * @Description:
- * @Date:Created in 15:10 2018/4/26
+ * @Date:Created in 9:49 2018/5/2
  * @Modified By:
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Hold {
+public class HoldNow {
 
     @TableId
     private Long id;
@@ -36,22 +36,24 @@ public class Hold {
     private String type;
     //持股数量
     private Integer amount;
+    private String userCode;
     private String action;
 
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Hold) {
-            Hold hold = (Hold) obj;
+        if (obj instanceof HoldNow) {
+            HoldNow hold = (HoldNow) obj;
             return this.name.equals(hold.getName())
-                    && this.oldDate.equals(hold.getOldDate())
-                    && this.type.equals(hold.getType());
+                    && this.newDate.equals(hold.getNewDate())
+                    && this.type.equals(hold.getType())
+                    && this.userCode.equals(hold.getUserCode());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, oldDate, type);
+        return Objects.hash(name, newDate, type, userCode);
     }
 }

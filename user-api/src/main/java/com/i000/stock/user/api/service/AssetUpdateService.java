@@ -1,6 +1,7 @@
 package com.i000.stock.user.api.service;
 
 import com.i000.stock.user.dao.model.Asset;
+import com.i000.stock.user.dao.model.Hold;
 import com.i000.stock.user.dao.model.Trade;
 
 /**
@@ -15,8 +16,8 @@ public interface AssetUpdateService {
      * 根据交易信息更细用户资产
      *
      * @param asset
-     * @param plan
+     * @param hold
      * @return
      */
-    Asset update(Asset asset, Trade plan);
+    Asset update(Asset asset, Hold hold);
 }

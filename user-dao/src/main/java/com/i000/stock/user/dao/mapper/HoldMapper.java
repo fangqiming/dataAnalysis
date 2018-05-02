@@ -33,12 +33,20 @@ public interface HoldMapper extends BaseMapper<Hold> {
     @Select("select max(new_date) from hold")
     LocalDate getMaxDate();
 
+
     /**
-     * 更新当前持股的股票份数
-     * @param date
-     * @param name
+     * 查找最近两天的持股情况
+     *
      * @return
      */
-    @Update("update hold set amount=${amount} where new_date=#{date} and old_date=#{date} and `name`=${name}")
-    Integer updateAmount(LocalDate date, String name, BigDecimal amount);
+    List<LocalDate> findTwoDay();
+
+    /**
+     * 查找最近两天的持股情况
+     *
+     * @param dates
+     * @return
+     */
+    List<Hold> findTwoHold(@Param("dates") List<LocalDate> dates);
+
 }

@@ -40,4 +40,14 @@ public class Asset {
      * 相对上一天的收益率
      */
     private BigDecimal gain;
+
+    /**
+     * 用户码
+     */
+    private String userCode;
+
+    /**
+     * 总收益率
+     */
+    private BigDecimal totalGain;
 }
