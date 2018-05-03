@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.Topic;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
@@ -39,4 +40,7 @@ public interface TopicMapper extends BaseMapper<Topic> {
 
     @Update("update topic set bad_num = bad_num+1 where id=${id}")
     void updateBad(@Param("id") Long id);
+
+    @Select("select user_code from topic where id=${id}")
+    String getUserCode(@Param("id") Long id);
 }

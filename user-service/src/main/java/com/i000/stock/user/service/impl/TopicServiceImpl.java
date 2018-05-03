@@ -57,4 +57,9 @@ public class TopicServiceImpl implements TopicService {
     public Topic get(Long id) {
         return topicMapper.selectById(id);
     }
+
+    @Override
+    public String getUserCode(Long id) {
+        return topicMapper.getUserCode(id);
+    }
 }

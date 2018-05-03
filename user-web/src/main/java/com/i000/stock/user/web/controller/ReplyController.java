@@ -4,6 +4,7 @@ import com.i000.stock.user.api.entity.vo.ReplyFirstVo;
 import com.i000.stock.user.api.entity.vo.ReplyVo;
 import com.i000.stock.user.api.entity.vo.ReplyVos;
 import com.i000.stock.user.api.service.ReplyService;
+import com.i000.stock.user.api.service.TopicService;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
@@ -33,6 +34,9 @@ public class ReplyController {
 
     @Resource
     private ReplyService replyService;
+
+    @Resource
+    private TopicService topicService;
 
     /**
      * 127.0.0.1:8082/reply/createFirst
@@ -67,6 +71,7 @@ public class ReplyController {
 
     /**
      * 127.0.0.1:8082/reply/search
+     * <p>
      * 根据分页条件 和 话题主键 查询评论回复信息
      *
      * @param baseSearchVo
@@ -82,7 +87,8 @@ public class ReplyController {
         if (CollectionUtils.isEmpty(search.getList())) {
             return Results.newPageResultEntity(0L, new ArrayList<>(0));
         }
-        List<ReplyVo> format = format(search.getList(), result, "root");
+        String userCode = topicService.getUserCode(id);
+        List<ReplyVo> format = format(search.getList(), result, userCode);
         return Results.newPageResultEntity(search.getTotal(), format);
     }
 

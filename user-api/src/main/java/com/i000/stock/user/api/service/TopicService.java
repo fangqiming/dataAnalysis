@@ -51,4 +51,11 @@ public interface TopicService {
      */
     Topic get(Long id);
 
+    /**
+     * 根据话题主键获取用户userCode
+     * @param id
+     * @return
+     */
+    String getUserCode(Long id);
+
 }
