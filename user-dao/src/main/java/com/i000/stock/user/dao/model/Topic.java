@@ -20,4 +20,8 @@ public class Topic extends BaseModel {
 
     private Integer clickNum;
 
+    private Integer goodNum;
+
+    private Integer badNum;
+
 }

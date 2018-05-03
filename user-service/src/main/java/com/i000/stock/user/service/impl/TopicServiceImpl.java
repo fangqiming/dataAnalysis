@@ -43,7 +43,14 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public Long doLike(Long id) {
-        return null;
+        topicMapper.updateGood(id);
+        return 1L;
+    }
+
+    @Override
+    public Long doBad(Long id) {
+        topicMapper.updateBad(id);
+        return 1L;
     }
 
     @Override

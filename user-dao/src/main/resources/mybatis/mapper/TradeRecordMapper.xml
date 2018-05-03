@@ -1,0 +1,24 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i000.stock.user.dao.mapper.TradeRecordMapper">
+
+    <resultMap id="TradeRecord" type="com.i000.stock.user.dao.model.TradeRecord">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="name" property="name"/>
+        <result column="action" property="action"/>
+        <result column="old_date" property="oldDate"/>
+        <result column="old_price" property="oldPrice"/>
+        <result column="new_date" property="newDate"/>
+        <result column="new_price" property="newPrice"/>
+        <result column="amount" property="amount"/>
+        <result column="user_code" property="userCode"/>
+    </resultMap>
+
+    <select id="find" resultMap="TradeRecord">
+        select * from trade_record where new_date=#{date} and user_code=#{userCode}
+    </select>
+
+</mapper>

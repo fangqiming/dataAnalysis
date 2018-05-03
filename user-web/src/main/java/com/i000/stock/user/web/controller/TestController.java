@@ -6,6 +6,7 @@ import com.i000.stock.user.api.service.MailFetchService;
 import com.i000.stock.user.dao.mapper.HoldMapper;
 import com.i000.stock.user.web.schedule.MailSchedule;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,11 +28,8 @@ import java.util.List;
 public class TestController {
 
 
-    @Resource
-    private MailFetchService mailFetchService;
-
-    @Resource
-    private AssetService assetService;
+    @Autowired
+    private MailSchedule mailSchedule;
 
     /**
      * 测试数据库访问
@@ -42,10 +40,7 @@ public class TestController {
     @ResponseBody
     @GetMapping("/test_dao")
     public Object testDao() throws Exception {
-        LocalDate localDate = mailFetchService.initMail();
-        System.out.println(System.currentTimeMillis());
-//        assetService.calculate(localDate, "root");
-        System.out.println(System.currentTimeMillis());
+        mailSchedule.fetchMail();
         return "null";
     }
 

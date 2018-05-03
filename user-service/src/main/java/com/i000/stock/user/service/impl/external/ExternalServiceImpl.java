@@ -2,6 +2,7 @@ package com.i000.stock.user.service.impl.external;
 
 import com.alibaba.fastjson.JSONObject;
 import com.i000.stock.user.api.entity.bo.IndexBo;
+import com.i000.stock.user.api.entity.bo.IpInfoBo;
 import com.i000.stock.user.dao.model.Price;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -77,13 +78,30 @@ public class ExternalServiceImpl {
     }
 
     /**
+     * 获取ip地址的信息
+     *
+     * @param ipAddress
+     * @return
+     */
+    public IpInfoBo getIpInfo(String ipAddress) {
+        Call<JSONObject> info = service.getIpInfo("json", ipAddress);
+        try {
+            JSONObject result = execute(info);
+            return JSONObject.parseObject(result.toString(), IpInfoBo.class);
+        } catch (Exception e) {
+
+        }
+        return IpInfoBo.builder().country("中国").city("内网").build();
+    }
+
+    /**
      * 获取指数
      *
      * @return
      */
     public IndexBo getIndex() {
         Call<JSONObject> index = service.getIndex();
-        return JSONObject.parseObject(execute(index).toString(),IndexBo.class);
+        return JSONObject.parseObject(execute(index).toString(), IndexBo.class);
     }
 
 

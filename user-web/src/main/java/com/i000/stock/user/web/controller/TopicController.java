@@ -71,4 +71,31 @@ public class TopicController {
         Topic topic = topicService.get(id);
         return Results.newSingleResultEntity(ConvertUtils.beanConvert(topic, new TopicVo()));
     }
+
+
+    /**
+     * 127.0.0.1:8082/topic/do_good
+     * 对评论点赞
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/do_good")
+    public ResultEntity doGood(@RequestParam Long id) {
+        ValidationUtils.validateId(id, "话题主键不合法");
+        return Results.newNormalResultEntity("addNum", topicService.doLike(id));
+    }
+
+    /**
+     * 127.0.0.1:8082/topic/do_bad
+     * 踩
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/do_bad")
+    public ResultEntity doBad(@RequestParam Long id) {
+        ValidationUtils.validateId(id, "话题主键不合法");
+        return Results.newNormalResultEntity("addNum", topicService.doBad(id));
+    }
 }

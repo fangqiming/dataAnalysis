@@ -40,9 +40,10 @@ public class MailSchedule {
     @Resource
     private UserInfoService userInfoService;
 
-    @Scheduled(cron = "0 30 15 * * ?")
+    @Scheduled(cron = "0 35 15 * * ?")
     public void fetchMail() throws Exception {
         LocalDate localDate = mailFetchService.initMail();
+        System.out.println("开始时间:" + System.currentTimeMillis());
         List<Hold> trade = holdService.getTrade();
         if (Objects.nonNull(localDate)) {
             Page<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
@@ -53,11 +54,12 @@ public class MailSchedule {
                 calculate(page, localDate, trade);
             }
         }
+        System.out.println("结束时间:" + System.currentTimeMillis());
     }
 
 
     private void calculate(Page<UserInfo> page, LocalDate date, List<Hold> trade) {
-        if (CollectionUtils.isEmpty(page.getList())) {
+        if (!CollectionUtils.isEmpty(page.getList())) {
             for (UserInfo userInfo : page.getList()) {
                 assetService.calculate(date, userInfo.getName(), trade);
             }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author:qmfang
@@ -76,9 +77,13 @@ public class ReplyController {
     public ResultEntity search(BaseSearchVo baseSearchVo, @RequestParam Long id) {
         ValidationUtils.validate(baseSearchVo);
         ValidationUtils.validateId(id, "话题主键不合法");
+        List<ReplyVo> result = new ArrayList<>();
         Page<ReplyVos> search = replyService.search(baseSearchVo, id);
-        return CollectionUtils.isEmpty(search.getList()) ? Results.newPageResultEntity(0L, new ArrayList<>(0)) :
-                Results.newPageResultEntity(search.getTotal(), search.getList());
+        if (CollectionUtils.isEmpty(search.getList())) {
+            return Results.newPageResultEntity(0L, new ArrayList<>(0));
+        }
+        List<ReplyVo> format = format(search.getList(), result, "root");
+        return Results.newPageResultEntity(search.getTotal(), format);
     }
 
     /**
@@ -104,6 +109,18 @@ public class ReplyController {
     public ResultEntity doBad(@RequestParam Long id) {
         ValidationUtils.validateId(id, "话题主键不合法");
         return Results.newNormalResultEntity("addNum", replyService.doBad(id));
+    }
+
+    public List<ReplyVo> format(List<ReplyVos> replyVos, List<ReplyVo> result, String userCode) {
+        for (ReplyVos node : replyVos) {
+            ReplyVo reply = node.getReply();
+            reply.setReplyUserCode(userCode);
+            result.add(reply);
+            if (!CollectionUtils.isEmpty(node.getSon())) {
+                format(node.getSon(), result, reply.getUserCode());
+            }
+        }
+        return result;
     }
 
 

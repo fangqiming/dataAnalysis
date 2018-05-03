@@ -29,4 +29,8 @@ public class AssetVo {
     private BigDecimal cover;
 
     private BigDecimal gain;
+
+    private String userCode;
+
+    private BigDecimal totalGain;
 }

@@ -6,6 +6,7 @@ import com.i000.stock.user.api.entity.vo.RecommendPageVO;
 import com.i000.stock.user.api.service.AssetService;
 import com.i000.stock.user.api.service.LineService;
 import com.i000.stock.user.api.service.PlanService;
+import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.CodeEnumUtil;
@@ -99,9 +100,11 @@ public class RecommendController {
      * @return
      */
     @GetMapping(path = "/search")
-    public ResultEntity search(BaseSearchVo baseSearchVo, String userCode) {
+    public ResultEntity search(BaseSearchVo baseSearchVo) {
         //1.分页获取获利信息
+
         ValidationUtils.validate(baseSearchVo);
+        String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
 
         Page<Asset> pageData = assetService.search(baseSearchVo, userCode);

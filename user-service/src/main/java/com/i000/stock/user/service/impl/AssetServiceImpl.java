@@ -17,6 +17,7 @@ import com.i000.stock.user.service.impl.asset.amount.UpdateAssetImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -37,6 +38,7 @@ import static java.util.stream.Collectors.toList;
  * @Modified By:
  */
 @Component
+@Transactional
 public class AssetServiceImpl implements AssetService {
 
 
@@ -77,11 +79,8 @@ public class AssetServiceImpl implements AssetService {
                 && !CollectionUtils.isEmpty(trade) && date.compareTo(now.getDate()) <= 0) {
             return;
         }
-
         now.setDate(date);
-        for (Hold hold : trade) {
-            now = updateAsset.getParse(hold.getAction()).update(now, hold);
-        }
+        updateAsset(trade, now);
         holdNowService.updatePrice(date);
         //设置股票金额
         now.setStock(getStockAmount(userCode));
@@ -93,6 +92,21 @@ public class AssetServiceImpl implements AssetService {
         now.setTotalGain(getGain(now, diff));
         //保存到数据
         assetMapper.insert(now);
+    }
+
+    private Asset updateAsset(List<Hold> trade, Asset now) {
+        if (!CollectionUtils.isEmpty(trade)) {
+            //先处理卖的，这样余额就能增加，以便能够买别的股票
+            List<Hold> sell = trade.stream().filter(a -> a.getAction().equals("SELL")).collect(toList());
+            for (Hold hold : sell) {
+                now = updateAsset.getParse(hold.getAction()).update(now, hold);
+            }
+            List<Hold> notSell = trade.stream().filter(a -> !a.getAction().equals("SELL")).collect(toList());
+            for (Hold hold : notSell) {
+                now = updateAsset.getParse(hold.getAction()).update(now, hold);
+            }
+        }
+        return now;
     }
 
     private BigDecimal getStockAmount(String userCode) {

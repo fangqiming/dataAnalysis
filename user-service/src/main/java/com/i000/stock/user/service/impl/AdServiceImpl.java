@@ -6,6 +6,7 @@ import com.i000.stock.user.dao.model.Ad;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -18,6 +19,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Component
+@Transactional
 public class AdServiceImpl implements AdService {
 
     @Resource

@@ -33,4 +33,10 @@ public interface TopicMapper extends BaseMapper<Topic> {
 
     @Update("update topic set click_num = click_num+1 where id=${id}")
     void updateNum(@Param("id") Long id);
+
+    @Update("update topic set good_num = good_num+1 where id=${id}")
+    void updateGood(@Param("id") Long id);
+
+    @Update("update topic set bad_num = bad_num+1 where id=${id}")
+    void updateBad(@Param("id") Long id);
 }

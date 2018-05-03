@@ -11,6 +11,9 @@
         <result column="user_code" property="userCode"/>
         <result column="click_number" property="clickNumber"/>
 
+        <result column="good_num" property="goodNum"/>
+        <result column="bad_num" property="badNum"/>
+
         <result column="created_time" property="createdTime"/>
         <result column="updated_time" property="updatedTime"/>
         <result column="deleted_time" property="deletedTime"/>

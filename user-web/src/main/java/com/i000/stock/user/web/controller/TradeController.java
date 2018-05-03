@@ -1,30 +1,38 @@
 package com.i000.stock.user.web.controller;
 
-import com.i000.stock.user.api.service.HoldNowService;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.api.entity.bo.IpInfoBo;
 import com.i000.stock.user.api.entity.vo.*;
+import com.i000.stock.user.api.service.AccessService;
 import com.i000.stock.user.api.service.AssetService;
-import com.i000.stock.user.api.service.TradeService;
+import com.i000.stock.user.api.service.HoldNowService;
+import com.i000.stock.user.api.service.TradeRecordService;
+import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
+import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.model.Access;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.HoldNow;
-import com.i000.stock.user.dao.model.Trade;
+import com.i000.stock.user.dao.model.TradeRecord;
+import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -43,20 +51,26 @@ public class TradeController {
     private AssetService assetService;
 
     @Resource
-    private TradeService tradeService;
+    private HoldNowService holdNowService;
 
     @Resource
-    private HoldNowService holdNowService;
+    private TradeRecordService tradeRecordService;
+
+    @Resource
+    private AccessService accessService;
+
+    @Resource
+    private ExternalServiceImpl externalService;
 
     /**
      * 127.0.0.1:8082/trade/get_contrast
      * 获取用户从开始投入到目前的收益率之和的曲线
      *
-     * @param userCode
      * @return
      */
     @GetMapping(path = "/get_contrast")
-    public ResultEntity getContrast(String userCode) {
+    public ResultEntity getContrast() {
+        String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         Asset lately = assetService.getLately(userCode);
         List<Asset> diff = assetService.findDiff(lately.getDate(), 365, userCode);
@@ -78,7 +92,8 @@ public class TradeController {
      * @return
      */
     @GetMapping(path = "/find_gain")
-    public ResultEntity findProfit(String userCode) {
+    public ResultEntity findProfit(HttpServletRequest httpServletRequest) {
+        String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         Asset lately = assetService.getLately(userCode);
         List<GainVo> result = new ArrayList<>();
@@ -88,14 +103,10 @@ public class TradeController {
             result.add(getGain(lately.getDate(), 365, "最近一年", userCode));
             result.add(getGain(lately.getDate(), 365 * 3, "最近三年", userCode));
         }
+        saveAccess(httpServletRequest);
         return Results.newListResultEntity(result);
-
     }
 
-    private GainVo getGain(LocalDate date, int day, String DateStr, String userCode) {
-        GainBo gain = assetService.getGain(date, day, userCode);
-        return GainVo.builder().date(DateStr).profit(gain.getProfit()).build();
-    }
 
     /**
      * 分页查找收益信息
@@ -105,7 +116,8 @@ public class TradeController {
      * @return
      */
     @GetMapping(path = "/search_gain")
-    public ResultEntity searchGain(BaseSearchVo baseSearchVo, String userCode) {
+    public ResultEntity searchGain(BaseSearchVo baseSearchVo) {
+        String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         ValidationUtils.validate(baseSearchVo);
         Page<Asset> search = assetService.search(baseSearchVo, userCode);
@@ -114,46 +126,16 @@ public class TradeController {
     }
 
     /**
-     * 127.0.0.1:8082/trade/get_lately
-     * 获取最新的交易记录
-     *
-     * @return
-     */
-    @GetMapping(path = "/get_lately")
-    public ResultEntity getLatelyTrade() {
-        LocalDate date = tradeService.getMaxDate();
-        List<Trade> byDate = tradeService.findByDate(date);
-        return Results.newListResultEntity(ConvertUtils.listConvert(byDate, TradeVo.class));
-    }
-
-    /**
-     * todo  需要去掉
      * 127.0.0.1:8082/trade/search
      * 分页查看交易记录，按照天分页
      */
     @GetMapping(path = "/search")
-    public ResultEntity search(BaseSearchVo baseSearchVo, String userCode) {
+    public ResultEntity search(LocalDate date) {
+        String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
-        baseSearchVo.setPageNo(Objects.isNull(baseSearchVo.getPageNo()) ? 1 : baseSearchVo.getPageNo());
-        ValidationUtils.validate(baseSearchVo);
-        Page<Asset> search = assetService.search(baseSearchVo, userCode);
-        Page<Asset> pageData = search;
-        if (CollectionUtils.isEmpty(pageData.getList())) {
-            return Results.newPageResultEntity(0L, null);
-        }
-        //然后获取这些日期的交易记录
-        List<LocalDate> dates = pageData.getList().stream().map(a -> a.getDate()).collect(Collectors.toList());
-        List<Trade> userTrades = tradeService.findByDate(dates);
-        //根据日期进行排序
-        Map<LocalDate, List<Trade>> map = userTrades.stream().collect(groupingBy(Trade::getDate));
-        //然后将交易记录以及获利情况返回给前台
-        List<TradeGainVo> result = new ArrayList<>();
-        for (Asset userProfit : pageData.getList()) {
-            result.add(TradeGainVo.builder().date(userProfit.getDate())
-                    .gainRate(userProfit.getGain())
-                    .trade(ConvertUtils.listConvert(map.get(userProfit.getDate()), TradeVo.class)).build());
-        }
-        return Results.newPageResultEntity(pageData.getTotal(), result);
+        ValidationUtils.validateParameter(date, "日期不能为空");
+        List<TradeRecord> tradeRecords = tradeRecordService.find(date, userCode);
+        return Results.newListResultEntity(ConvertUtils.listConvert(tradeRecords, TradeRecordVo.class));
     }
 
     /**
@@ -163,7 +145,8 @@ public class TradeController {
      * @return
      */
     @GetMapping(path = "/find_stock")
-    public ResultEntity findHoldStock(@RequestParam("userCode") String userCode) {
+    public ResultEntity findHoldStock() {
+        String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         List<HoldNow> hold = holdNowService.find(userCode);
         if (!CollectionUtils.isEmpty(hold)) {
@@ -186,10 +169,27 @@ public class TradeController {
      * @return
      */
     @GetMapping(path = "/get_overview")
-    public ResultEntity getOverview(String userCode) {
+    public ResultEntity getOverview() {
+        String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         return Results.newSingleResultEntity(assetService.getSummary(userCode));
     }
 
+    private GainVo getGain(LocalDate date, int day, String DateStr, String userCode) {
+        GainBo gain = assetService.getGain(date, day, userCode);
+        return GainVo.builder().date(DateStr).profit(gain.getProfit()).build();
+    }
+
+    private void saveAccess(HttpServletRequest httpServletRequest) {
+        String ip = httpServletRequest.getRemoteAddr();
+        if(!ip.startsWith("127")){
+            IpInfoBo ipInfo = externalService.getIpInfo(ip);
+            Access access = Access.builder().address(ip).city(ipInfo.getCity())
+                    .country(ipInfo.getCountry()).date(LocalDateTime.now()).build();
+            if(Objects.nonNull(access.getCountry())){
+                accessService.save(access);
+            }
+        }
+    }
 
 }

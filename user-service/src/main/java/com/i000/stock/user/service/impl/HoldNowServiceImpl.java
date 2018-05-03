@@ -6,6 +6,7 @@ import com.i000.stock.user.dao.mapper.HoldNowMapper;
 import com.i000.stock.user.dao.model.Hold;
 import com.i000.stock.user.dao.model.HoldNow;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.util.List;
  * @Modified By:
  */
 @Component
+@Transactional
 public class HoldNowServiceImpl implements HoldNowService {
 
     @Resource

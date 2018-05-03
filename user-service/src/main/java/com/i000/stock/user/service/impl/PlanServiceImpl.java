@@ -7,6 +7,7 @@ import com.i000.stock.user.dao.mapper.PlanMapper;
 import com.i000.stock.user.dao.model.Plan;
 import com.i000.stock.user.dao.service.AbstractService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
  * @Modified By:
  */
 @Component
+@Transactional
 public class PlanServiceImpl extends AbstractService<Plan, PlanMapper> implements PlanService {
     @Override
     public List<Plan> findByDate(LocalDate date) {

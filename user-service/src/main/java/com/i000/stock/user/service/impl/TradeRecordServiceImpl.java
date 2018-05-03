@@ -4,8 +4,11 @@ import com.i000.stock.user.api.service.TradeRecordService;
 import com.i000.stock.user.dao.mapper.TradeRecordMapper;
 import com.i000.stock.user.dao.model.TradeRecord;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @Author:qmfang
@@ -14,6 +17,7 @@ import javax.annotation.Resource;
  * @Modified By:
  */
 @Component
+@Transactional
 public class TradeRecordServiceImpl implements TradeRecordService {
 
     @Resource
@@ -22,5 +26,10 @@ public class TradeRecordServiceImpl implements TradeRecordService {
     @Override
     public void save(TradeRecord tradeRecord) {
         tradeRecordMapper.insert(tradeRecord);
+    }
+
+    @Override
+    public List<TradeRecord> find(LocalDate date, String userCode) {
+        return tradeRecordMapper.find(date, userCode);
     }
 }

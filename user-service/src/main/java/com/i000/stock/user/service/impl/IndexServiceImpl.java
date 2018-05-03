@@ -8,6 +8,7 @@ import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -23,6 +24,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Component
+@Transactional
 public class IndexServiceImpl implements IndexService {
 
     @Autowired

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import retrofit2.Call;
 import retrofit2.http.HTTP;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * @Author:qmfang
@@ -18,4 +19,7 @@ public interface ExternalService {
 
     @HTTP(method = "GET", path = "http://api.shenjian.io/?appid=ad4f4de8853f30da0492f27633a81dfd")
     Call<JSONObject> getIndex();
+
+    @HTTP(method = "GET", path = "http://int.dpool.sina.com.cn/iplookup/iplookup.php")
+    Call<JSONObject> getIpInfo(@Query("format") String format,@Query("ip") String ip);
 }

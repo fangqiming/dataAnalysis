@@ -9,6 +9,7 @@ import com.i000.stock.user.dao.model.Trade;
 import com.i000.stock.user.dao.service.AbstractService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
+@Transactional
 public class TradeServiceImpl extends AbstractService<Trade, TradeMapper> implements TradeService {
 
 

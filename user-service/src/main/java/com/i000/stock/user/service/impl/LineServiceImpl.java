@@ -5,6 +5,7 @@ import com.i000.stock.user.dao.bo.LineGroupQuery;
 import com.i000.stock.user.api.service.LineService;
 import com.i000.stock.user.dao.mapper.LineMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  * @Modified By:
  */
 @Component
+@Transactional
 public class LineServiceImpl implements LineService {
 
     @Resource

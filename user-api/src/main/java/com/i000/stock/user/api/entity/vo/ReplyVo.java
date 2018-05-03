@@ -34,6 +34,9 @@ public class ReplyVo {
 
     private Long badNum;
 
+    //被回复人
+    private String replyUserCode;
+
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime createdTime;
 

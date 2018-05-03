@@ -47,7 +47,7 @@ public class FileController {
     @PostMapping(path = "/upload_user")
     public JSONObject fileUploadBy(@RequestParam("file") MultipartFile file) throws IOException {
         FileStreamTransformer fileStreamTransformer = SpringMultipartFileTransformer.transformer(file);
-        String url = ossFileUpload.upload(fileStreamTransformer, false);
+        String url = ossFileUpload.upload(fileStreamTransformer, true);
         JSONObject result = new JSONObject();
         result.put("errno", 0);
         result.put("data", Arrays.asList(url));

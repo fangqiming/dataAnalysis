@@ -36,6 +36,14 @@ public interface TopicService {
     Long doLike(Long id);
 
     /**
+     * 踩，非重要
+     *
+     * @param id
+     * @return
+     */
+    Long doBad(Long id);
+
+    /**
      * 根据话题主键获取话题
      *
      * @param id
