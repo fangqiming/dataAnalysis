@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50717
 File Encoding         : 65001
 
-Date: 2018-05-03 16:10:30
+Date: 2018-05-03 18:46:53
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -15212,7 +15212,7 @@ CREATE TABLE `topic` (
 -- ----------------------------
 -- Records of topic
 -- ----------------------------
-INSERT INTO `topic` VALUES ('1', '世界和平，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，', '我是标题', '123456', '6', null, null, null, '0', '0', '0');
+INSERT INTO `topic` VALUES ('1', '世界和平，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，', '我是标题', '123456', '7', null, null, null, '0', '1', '1');
 INSERT INTO `topic` VALUES ('2', '文章内容', '测试文章', '测试码', '2', '2018-04-25 11:18:35', null, null, '0', '0', '0');
 INSERT INTO `topic` VALUES ('3', '文章内容', '测试文章', '测试码', '0', '2018-04-25 11:18:38', null, null, '0', '0', '0');
 

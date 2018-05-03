@@ -1,0 +1,377 @@
+﻿#%RAML 1.0
+title: Configure API
+version: v1
+documentation:
+ - title: 论坛接口  Account-Code 图片上传接口 /file/upload_user
+   content: |
+     baseUri如下:
+     - dev: 未定
+     - clone: 未定
+     - online: 未定
+
+mediaType:  application/json
+
+/topic/create:
+  description: 创建话题
+  post:
+    body:
+        application/json:
+            example: |
+              {
+              	"content":"文章内容",
+              	"title":"测试文章",
+              	"userCode":"测试码"
+              }
+    responses:
+          200:
+              body:
+                  application/json:
+                    example: |
+                       {
+                          "code": 0,    //错误码
+                          "data": {
+                            "id": 4     //文章主键
+                          }
+                        }
+
+
+/topic/search:
+  description: 分页查找话题
+  get:
+    queryParameters:
+        pageSize:
+          required: true
+          type: integer
+          description: 页大小
+        pageNo:
+          required: true
+          type: integer
+          description: 第几页
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entities": [
+                             {
+                               "id": 4,               //文章主键
+                               "content": "文章内容",  //文章内容
+                               "title": "测试文章",    //文章标题
+                               "userCode": "测试码",   //测试码
+                               "clickNum": null,       //点击数
+                               "createdTime": 1524626318000 //创建时间 毫秒数
+                             },
+                             {
+                               "id": 3,
+                               "content": "文章内容",
+                               "title": "测试文章",
+                               "userCode": "测试码",
+                               "clickNum": null,
+                               "createdTime": 1524626315000
+                             }
+                           ],
+                           "total": 3
+                         }
+                       }
+
+
+/topic/get:
+  description: 根据主键获取话题信息
+  get:
+    queryParameters:
+      id:
+        required: true
+        type: integer
+        description: 话题主键
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "entity": {
+                              "id": 1,
+                              "content": "世界和平，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，，",
+                              "title": "我是标题",
+                              "userCode": "123456",
+                              "clickNum": null,
+                              "createdTime": null
+                            }
+                          }
+                        }
+
+/reply/createFirst:
+  description: 对话题进行评论
+  post:
+    body:
+      application/json:
+        example: |
+            {
+            	"topicId":1,       //话题主键
+            	"userCode":"123",  //用户码
+            	"content":"Hello World"    //评论内容
+            }
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "id": 8   //评论的主键
+                          }
+                        }
+
+/reply/createReply:
+  description: 对评论或是回复进行评论
+  post:
+    body:
+      application/json:
+        example: |
+          {
+          	"userCode":"123",          //用户码
+          	"content":"我是评论内容",    //评论内容
+          	"replyId":1                //被评论的id
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+                {
+                  "code": 0,    //错误码
+                  "data": {
+                    "id": 10    //该评论的主键
+                  }
+                }
+
+/reply/search:
+  description: 分页查询主题的评论信息 为递归结构，如果前端不好处理，后台修改为前端需要的格式
+  get:
+    queryParameters:
+      pageSize:
+        required: true
+        type: integer
+        description: 页大小
+      pageNo:
+        required: true
+        type: integer
+        description: 第几页
+      id:
+        required: true
+        type: integer
+        description: 话题主键
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "code": 0,
+                "data": {
+                  "entities": [
+                    {
+                      "id": 11,           //主键
+                      "topicId": 1,       //话题主键
+                      "userCode": "11",   //该话题的发表者
+                      "content": "<p>欢迎使用 <b>wangEditor</b> 富文本编辑器",  //内容
+                      "replyId": null,    //回复id
+                      "goodNum": 0,       //点赞数  不需要
+                      "badNum": 0,        //踩数    不需要
+                      "replyUserCode": "123456",    //其回复的是谁   userCode 回复 replyUserCode
+                      "createdTime": 1524898331000
+                    },
+                    {
+                      "id": 8,
+                      "topicId": 1,
+                      "userCode": "8",
+                      "content": "Hello World",
+                      "replyId": null,
+                      "goodNum": 0,
+                      "badNum": 0,
+                      "replyUserCode": "123456",
+                      "createdTime": 1524626983000
+                    }
+                  ],
+                  "total": 1
+                }
+              }
+
+
+/topic/do_good:
+  description: 对话题进行点赞
+  get:
+    queryParameters:
+      id:
+        required: true
+        type: integer
+        description: 话题主键
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "addNum": 1
+                          }
+                        }
+
+
+/topic/do_bad:
+  description: 对话题进行踩
+  get:
+    queryParameters:
+      id:
+        required: true
+        type: integer
+        description: 话题主键
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "addNum": 1
+                          }
+                        }
+
+
+/trade/find_stock:
+  description: 获取当前持股 注意head中需要有userCode信息
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                  "code": 0,
+                  "data": {
+                    "entities": [
+                      {
+                        "id": 2,  //主键
+                        "name": "ARNC",   //名称
+                        "oldDate": "17-03-07",    //买入日期
+                        "oldPrice": 26.98,        //买入价格
+                        "newDate": "17-04-03",    //当前日期（不一定是今日日期）
+                        "newPrice": 26.18,        //当前价格
+                        "gain": -0.0297,          //收益率
+                        "type": "稳定型",          //类型
+                        "amount": 100,            //股票份数
+                        "cost": 2698,             //成本
+                        "value": 2618,            //目前价值
+                        "earning": -80            //收益绝对值
+                      }
+                    ]
+                  }
+                }
+
+
+/trade/search_gain:
+  description: 分页获取获取收益记录 注意head中需要有userCode信息
+  get:
+    queryParameters:
+      pageSize:
+        required: true
+        type: integer
+        description: 页大小
+      pageNo:
+        required: true
+        type: integer
+        description: 第几页
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "code": 0,
+                "data": {
+                  "entities": [
+                    {
+                      "id": 17,   //主键
+                      "date": "17-04-03", //当前日期(非今日)
+                      "stock": 23560,     //当前持股
+                      "balance": 30698,   //余额
+                      "cover": -4736,     //做空金额
+                      "gain": -0.0067,    //相对昨天的收益率
+                      "totalGain": -0.0096  //总收益率
+                    },
+                    {
+                      "id": 16,
+                      "date": "17-03-31",
+                      "stock": 25940,
+                      "balance": 28653,
+                      "cover": -4736,
+                      "gain": -0.0012,
+                      "userCode": "root",
+                      "totalGain": -0.0029
+                    },
+                    {
+                      "id": 15,
+                      "date": "17-03-30",
+                      "stock": 28142,
+                      "balance": 26007,
+                      "cover": -4232,
+                      "gain": -0.0017,
+                      "userCode": "root",
+                      "totalGain": -0.0017
+                    }
+                  ],
+                  "total": 4
+                }
+              }
+
+/trade/find_trade:
+  description: 根据日期查询交易记录
+  get:
+    queryParameters:
+      date:
+        required: true
+        type: string
+        description: 格式形如  17-01-01
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "code": 0,
+                "data": {
+                  "entities": [
+                    {
+                      "id": 1,          //主键
+                      "type": "稳定型",    //类型
+                      "name": "AOBC",     //名称
+                      "action": "卖出",   //动作
+                      "oldDate": "17-03-02",  //买入日期
+                      "oldPrice": 19.38,      //买入价格
+                      "newDate": "17-03-30",   //交易是日期
+                      "newPrice": 19.64,      //交易时价格
+                      "amount": 100,          //股票份数
+                      "userCode": "root"      //用户码 不要展示
+                    },,
+                    {
+                      "id": 11,
+                      "type": "做空(稳定型)",
+                      "name": "VRX",
+                      "action": "做空",
+                      "oldDate": "17-03-08",
+                      "oldPrice": 11.88,
+                      "newDate": "17-03-30",
+                      "newPrice": 11.08,
+                      "amount": 200,
+                      "userCode": "root"
+                    }
+                  ]
+                }

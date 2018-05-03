@@ -126,11 +126,11 @@ public class TradeController {
     }
 
     /**
-     * 127.0.0.1:8082/trade/search
-     * 分页查看交易记录，按照天分页
+     * 127.0.0.1:8082/trade/find_trade
+     * 查找指定的日期的交易记录
      */
-    @GetMapping(path = "/search")
-    public ResultEntity search(LocalDate date) {
+    @GetMapping(path = "/find_trade")
+    public ResultEntity findTrade(@RequestParam("date") LocalDate date) {
         String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         ValidationUtils.validateParameter(date, "日期不能为空");
@@ -182,11 +182,11 @@ public class TradeController {
 
     private void saveAccess(HttpServletRequest httpServletRequest) {
         String ip = httpServletRequest.getRemoteAddr();
-        if(!ip.startsWith("127")){
+        if (!ip.startsWith("127")) {
             IpInfoBo ipInfo = externalService.getIpInfo(ip);
             Access access = Access.builder().address(ip).city(ipInfo.getCity())
                     .country(ipInfo.getCountry()).date(LocalDateTime.now()).build();
-            if(Objects.nonNull(access.getCountry())){
+            if (Objects.nonNull(access.getCountry())) {
                 accessService.save(access);
             }
         }
