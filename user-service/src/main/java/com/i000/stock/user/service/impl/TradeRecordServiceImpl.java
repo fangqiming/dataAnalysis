@@ -32,4 +32,9 @@ public class TradeRecordServiceImpl implements TradeRecordService {
     public List<TradeRecord> find(LocalDate date, String userCode) {
         return tradeRecordMapper.find(date, userCode);
     }
+
+    @Override
+    public LocalDate getMaxDate(String userCode) {
+        return tradeRecordMapper.getMaxDate(userCode);
+    }
 }

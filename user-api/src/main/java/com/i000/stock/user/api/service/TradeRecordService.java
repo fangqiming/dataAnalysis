@@ -28,4 +28,12 @@ public interface TradeRecordService {
      * @return
      */
     List<TradeRecord> find(LocalDate date, String userCode);
+
+    /**
+     * 查找指定userCode的最大日期
+     *
+     * @param userCode
+     * @return
+     */
+    LocalDate getMaxDate(String userCode);
 }

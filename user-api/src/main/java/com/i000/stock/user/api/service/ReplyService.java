@@ -5,6 +5,7 @@ import com.i000.stock.user.api.entity.vo.ReplyVos;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.model.Reply;
+
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public interface ReplyService {
      * @param reply
      * @return
      */
-    Long create(Reply reply);
+    Reply create(Reply reply);
 
     /**
      * 分页查找回复信息
@@ -51,6 +52,7 @@ public interface ReplyService {
 
     /**
      * 点赞
+     *
      * @param id
      * @return
      */
@@ -58,8 +60,17 @@ public interface ReplyService {
 
     /**
      * 踩
+     *
      * @param id
      * @return
      */
     Long doBad(Long id);
+
+    /**
+     * 获取某个主键的用户码
+     *
+     * @param id
+     * @return
+     */
+    String getUserCode(Long id);
 }

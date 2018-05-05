@@ -2,6 +2,7 @@ package com.i000.stock.user.web.controller;
 
 import com.i000.stock.user.api.entity.vo.TopicVo;
 import com.i000.stock.user.api.service.TopicService;
+import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 @Slf4j
 @RestController
 @RequestMapping("/topic")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class TopicController {
 
     @Resource
@@ -33,11 +35,14 @@ public class TopicController {
 
     /**
      * 127.0.0.1:8082/topic/create
+     *
      * @param topicVo
      * @return
      */
     @PostMapping("/create")
     public ResultEntity create(@RequestBody TopicVo topicVo) {
+        String userCode = RequestContext.getInstance().getAccountCode();
+        topicVo.setUserCode(userCode);
         ValidationUtils.validate(topicVo);
         Topic topic = ConvertUtils.beanConvert(topicVo, new Topic());
         topic.setClickNum(0);
@@ -48,6 +53,7 @@ public class TopicController {
 
     /**
      * 127.0.0.1:8082/topic/search
+     *
      * @param baseSearchVo
      * @return
      */
@@ -62,6 +68,7 @@ public class TopicController {
 
     /**
      * 127.0.0.1:8082/topic/get
+     *
      * @param id
      * @return
      */

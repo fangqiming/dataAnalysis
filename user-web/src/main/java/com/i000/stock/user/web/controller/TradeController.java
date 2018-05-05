@@ -78,7 +78,7 @@ public class TradeController {
         List<BigDecimal> gain = new ArrayList<>();
         List<String> time = new ArrayList<>();
         for (Asset asset : collect) {
-            gain.add(asset.getTotalGain());
+            gain.add(asset.getTotalGain().multiply(new BigDecimal(100)));
             time.add(asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")));
         }
         return Results.newSingleResultEntity(YieldRateVo.builder().gain(gain).time(time).build());
@@ -139,6 +139,21 @@ public class TradeController {
     }
 
     /**
+     * 查找最新交易记录
+     * 127.0.0.1:8082/trade/find_new_trade
+     *
+     * @return
+     */
+    @GetMapping(path = "/find_new_trade")
+    public ResultEntity findNewTrade() {
+        String userCode = RequestContext.getInstance().getAccountCode();
+        ValidationUtils.validateParameter(userCode, "用户码不能为空");
+        LocalDate date = tradeRecordService.getMaxDate(userCode);
+        List<TradeRecord> tradeRecords = tradeRecordService.find(date, userCode);
+        return Results.newListResultEntity(ConvertUtils.listConvert(tradeRecords, TradeRecordVo.class));
+    }
+
+    /**
      * 127.0.0.1:8082/trade/find_stock
      * 获取当前持股信息
      *
@@ -182,13 +197,11 @@ public class TradeController {
 
     private void saveAccess(HttpServletRequest httpServletRequest) {
         String ip = httpServletRequest.getRemoteAddr();
-        if (!ip.startsWith("127")) {
-            IpInfoBo ipInfo = externalService.getIpInfo(ip);
-            Access access = Access.builder().address(ip).city(ipInfo.getCity())
-                    .country(ipInfo.getCountry()).date(LocalDateTime.now()).build();
-            if (Objects.nonNull(access.getCountry())) {
-                accessService.save(access);
-            }
+        IpInfoBo ipInfo = externalService.getIpInfo(ip);
+        Access access = Access.builder().address(ip).city(ipInfo.getCity())
+                .country(ipInfo.getCountry()).date(LocalDateTime.now()).build();
+        if (Objects.nonNull(access.getCountry())) {
+            accessService.save(access);
         }
     }
 

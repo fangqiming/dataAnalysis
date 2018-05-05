@@ -34,9 +34,9 @@ public class ReplyServiceImpl implements ReplyService {
     private TopicMapper topicMapper;
 
     @Override
-    public Long create(Reply reply) {
+    public Reply create(Reply reply) {
         replyMapper.insert(reply);
-        return reply.getId();
+        return reply;
     }
 
     @Override
@@ -78,6 +78,7 @@ public class ReplyServiceImpl implements ReplyService {
         return result;
     }
 
+
     @Override
     public Long doGood(Long id) {
         return replyMapper.doGood(id);
@@ -86,5 +87,10 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     public Long doBad(Long id) {
         return replyMapper.doBad(id);
+    }
+
+    @Override
+    public String getUserCode(Long id) {
+        return replyMapper.getUserCode(id);
     }
 }

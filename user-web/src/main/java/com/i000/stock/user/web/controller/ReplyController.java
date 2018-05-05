@@ -30,6 +30,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/reply")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class ReplyController {
 
     @Resource
@@ -50,8 +51,7 @@ public class ReplyController {
         ValidationUtils.validate(replyFirstVo);
         Reply reply = ConvertUtils.beanConvert(replyFirstVo, new Reply());
         reply.setCreatedTime(LocalDateTime.now());
-        Long id = replyService.create(reply);
-        return Results.newNormalResultEntity("id", id);
+        return getReplyVo(reply);
     }
 
     /**
@@ -66,7 +66,15 @@ public class ReplyController {
         ValidationUtils.validate(replyVo);
         Reply reply = ConvertUtils.beanConvert(replyVo, new Reply());
         reply.setCreatedTime(LocalDateTime.now());
-        return Results.newNormalResultEntity("id", replyService.create(reply));
+        return getReplyVo(reply);
+    }
+
+
+    private ResultEntity getReplyVo(Reply reply) {
+        Reply reply1 = replyService.create(reply);
+        ReplyVo replyVo = ConvertUtils.beanConvert(reply1, new ReplyVo());
+        replyVo.setReplyUserCode(replyService.getUserCode(reply1.getId()));
+        return Results.newSingleResultEntity(replyVo);
     }
 
     /**
@@ -75,19 +83,19 @@ public class ReplyController {
      * 根据分页条件 和 话题主键 查询评论回复信息
      *
      * @param baseSearchVo
-     * @param id
+     * @param topicId
      * @return
      */
     @GetMapping("/search")
-    public ResultEntity search(BaseSearchVo baseSearchVo, @RequestParam Long id) {
+    public ResultEntity search(BaseSearchVo baseSearchVo, @RequestParam Long topicId) {
         ValidationUtils.validate(baseSearchVo);
-        ValidationUtils.validateId(id, "话题主键不合法");
+        ValidationUtils.validateId(topicId, "话题主键不合法");
         List<ReplyVo> result = new ArrayList<>();
-        Page<ReplyVos> search = replyService.search(baseSearchVo, id);
+        Page<ReplyVos> search = replyService.search(baseSearchVo, topicId);
         if (CollectionUtils.isEmpty(search.getList())) {
             return Results.newPageResultEntity(0L, new ArrayList<>(0));
         }
-        String userCode = topicService.getUserCode(id);
+        String userCode = topicService.getUserCode(topicId);
         List<ReplyVo> format = format(search.getList(), result, userCode);
         return Results.newPageResultEntity(search.getTotal(), format);
     }

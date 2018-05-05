@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.Reply;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
@@ -45,4 +46,7 @@ public interface ReplyMapper extends BaseMapper<Reply> {
 
     @Update("update reply set bad_num=bad_num+1 where id=${id}")
     Long doBad(@Param("id") Long id);
+
+    @Select("select user_code from reply where id=#{id}")
+    String getUserCode(@Param("id") Long id);
 }

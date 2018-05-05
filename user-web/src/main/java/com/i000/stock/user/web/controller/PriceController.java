@@ -6,10 +6,7 @@ import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.dao.model.Price;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -23,6 +20,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/price")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class PriceController {
 
     @Resource

@@ -24,7 +24,6 @@ public class TopicVo {
     @NotNull(message = "标题不能为空")
     private String title;
 
-    @NotNull(message = "用户码不能为空")
     private String userCode;
 
     private Integer clickNum;
