@@ -5,6 +5,7 @@ import com.i000.stock.user.api.entity.vo.ReplyVo;
 import com.i000.stock.user.api.entity.vo.ReplyVos;
 import com.i000.stock.user.api.service.ReplyService;
 import com.i000.stock.user.api.service.TopicService;
+import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
@@ -71,6 +72,9 @@ public class ReplyController {
 
 
     private ResultEntity getReplyVo(Reply reply) {
+        String userCode = RequestContext.getInstance().getAccountCode();
+        ValidationUtils.validateParameter(userCode, "用户码不能为空");
+        reply.setUserCode(userCode);
         Reply reply1 = replyService.create(reply);
         ReplyVo replyVo = ConvertUtils.beanConvert(reply1, new ReplyVo());
         replyVo.setReplyUserCode(replyService.getUserCode(reply1.getId()));

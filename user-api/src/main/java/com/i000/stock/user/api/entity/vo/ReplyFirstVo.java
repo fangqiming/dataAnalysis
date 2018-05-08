@@ -19,7 +19,6 @@ public class ReplyFirstVo {
     @NotNull(message = "话题主键不能为空")
     private Long topicId;
 
-    @NotBlank(message = "用户码不能为空")
     private String userCode;
 
     @NotBlank(message = "内容不能不空")

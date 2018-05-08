@@ -21,7 +21,6 @@ public class ReplyVo {
 
     private Long topicId;
 
-    @NotBlank(message = "用户码不能为空")
     private String userCode;
 
     @NotBlank(message = "内容不能为空")
