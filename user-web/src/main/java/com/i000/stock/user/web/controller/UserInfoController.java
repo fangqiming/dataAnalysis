@@ -80,4 +80,5 @@ public class UserInfoController {
         UserInfo login = userInfoService.login(userInfo);
         return Results.newSingleResultEntity(ConvertUtils.beanConvert(login, new UserInfoVo()));
     }
+
 }

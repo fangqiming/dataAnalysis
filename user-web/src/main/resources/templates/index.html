@@ -18,6 +18,31 @@
     //注意此处必须指明文件名，否则后台会报错
     editor.customConfig.uploadFileName = 'file';
     editor.customConfig.uploadImgServer = 'http://192.168.43.202:8082/file/upload_user';
+    editor.customConfig.emotions = [
+        {
+            // tab 的标题
+            title: '默认',
+            // type -> 'emoji' / 'image'
+            type: 'image',
+            // content -> 数组
+            content: [
+                {
+                    src: 'https://aisharev1.oss-cn-beijing.aliyuncs.com/share/2.gif'
+                },
+                {
+                    src: 'https://aisharev1.oss-cn-beijing.aliyuncs.com/share/1.gif'
+                }
+            ]
+        }
+        // {
+        //
+        //     title: 'emoji',
+        //     // type -> 'emoji' / 'image'
+        //     type: 'emoji',
+        //     // content -> 数组
+        //     content: ['😀', '😃', '😄', '😁', '😆']
+        // }
+    ]
     editor.create()
 </script>
 
@@ -34,8 +59,8 @@
             console.log(json);
             $.ajax({
                 type: "post",
-                url: "http://127.0.0.1:8082/reply/createFirst",
-                contentType : "application/json",
+                url: "http://127.0.0.1:8081/reply/createFirst",
+                contentType: "application/json",
                 data: JSON.stringify(json),
                 cache: false,
                 async: false,

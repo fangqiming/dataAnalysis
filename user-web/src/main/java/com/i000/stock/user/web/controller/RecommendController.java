@@ -104,8 +104,7 @@ public class RecommendController {
         //1.分页获取获利信息
 
         ValidationUtils.validate(baseSearchVo);
-        String userCode = "root";
-//        String userCode = RequestContext.getInstance().getAccountCode();
+        String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
 
         Page<Asset> pageData = assetService.search(baseSearchVo, userCode);
