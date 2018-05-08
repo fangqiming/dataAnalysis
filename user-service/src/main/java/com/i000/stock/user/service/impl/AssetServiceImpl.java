@@ -7,6 +7,7 @@ import com.i000.stock.user.api.service.AssetService;
 import com.i000.stock.user.api.service.HoldNowService;
 import com.i000.stock.user.api.service.HoldService;
 import com.i000.stock.user.api.service.UserInfoService;
+import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.mapper.AssetMapper;
@@ -51,6 +52,9 @@ public class AssetServiceImpl implements AssetService {
     @Resource
     private HoldNowService holdNowService;
 
+    @Resource
+    private UserInfoService userInfoService;
+
 
     @Override
     public Asset getLately(String userCode) {
@@ -73,25 +77,44 @@ public class AssetServiceImpl implements AssetService {
      * @param date
      */
     @Override
-    public void calculate(LocalDate date, String userCode, List<Hold> trade) {
-        Asset now = assetMapper.getLately(userCode);
-        if (Objects.nonNull(now) && Objects.nonNull(date)
-                && !CollectionUtils.isEmpty(trade) && date.compareTo(now.getDate()) <= 0) {
+    public void calculate(LocalDate date, String userCode, List<Hold> trade, List<Hold> initTrade) {
+        Asset init = assetMapper.getLately(userCode);
+        Boolean isNewUser = false;
+        if (Objects.isNull(init)) {
+            isNewUser = true;
+            init = getAssetByUserCode(userCode);
+        }
+        Asset now = ConvertUtils.beanConvert(init, new Asset());
+        now.setDate(date);
+        if (Objects.nonNull(date) && !CollectionUtils.isEmpty(trade) && date.compareTo(now.getDate()) < 0) {
             return;
         }
-        now.setDate(date);
-        updateAsset(trade, now);
+        //此处需要有地方标记需要使用心得trade
+        updateAsset(isNewUser ? initTrade : trade, now);
         holdNowService.updatePrice(date);
         //设置股票金额
         now.setStock(getStockAmount(userCode));
         //设置相对上一次的收益率
         Asset lately = getLately(userCode);
+        lately = Objects.isNull(lately) ? init : lately;
         now.setGain(getGain(now, lately));
         //设置相对最开的的总的收益率
         Asset diff = assetMapper.getDiff(date, 36500, userCode);
+        diff = Objects.isNull(diff) ? init : diff;
         now.setTotalGain(getGain(now, diff));
         //保存到数据
         assetMapper.insert(now);
+    }
+
+    private Asset getAssetByUserCode(String userCode) {
+        UserInfo byName = userInfoService.getByName(userCode);
+        return Asset.builder()
+                .balance(byName.getInitAmount())
+                .cover(new BigDecimal(0))
+                .gain(new BigDecimal(0))
+                .stock(new BigDecimal(0))
+                .totalGain(new BigDecimal(0))
+                .userCode(userCode).build();
     }
 
     private Asset updateAsset(List<Hold> trade, Asset now) {
@@ -151,6 +174,11 @@ public class AssetServiceImpl implements AssetService {
     public AssetDiffVo getSummary(String userCode) {
 
         Asset now = assetMapper.getLately(userCode);
+        if (Objects.isNull(now)) {
+            UserInfo byName = userInfoService.getByName(userCode);
+            return AssetDiffVo.builder().balance(byName.getInitAmount())
+                    .date(LocalDate.now()).startDate(LocalDate.now()).build();
+        }
         Asset old = assetMapper.getDiff(now.getDate(), 36500, userCode);
         return AssetDiffVo.builder().startDate(old.getDate())
                 .date(now.getDate())

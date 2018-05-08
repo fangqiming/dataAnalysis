@@ -27,4 +27,17 @@ public interface UserInfoService {
      * @return
      */
     Page<UserInfo> search(BaseSearchVo baseSearchVo);
+
+    /**
+     * 注册
+     */
+    UserInfo register(UserInfo userInfo);
+
+    /**
+     * 登录
+     *
+     * @param userInfo
+     * @return
+     */
+    UserInfo login(UserInfo userInfo);
 }

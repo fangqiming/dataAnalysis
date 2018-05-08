@@ -73,15 +73,18 @@ public class TradeController {
         String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         Asset lately = assetService.getLately(userCode);
-        List<Asset> diff = assetService.findDiff(lately.getDate(), 365, userCode);
-        List<Asset> collect = diff.stream().sorted(Comparator.comparing(Asset::getDate)).collect(toList());
-        List<BigDecimal> gain = new ArrayList<>();
-        List<String> time = new ArrayList<>();
-        for (Asset asset : collect) {
-            gain.add(asset.getTotalGain().multiply(new BigDecimal(100)));
-            time.add(asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")));
+        if (Objects.nonNull(lately)) {
+            List<Asset> diff = assetService.findDiff(lately.getDate(), 365, userCode);
+            List<Asset> collect = diff.stream().sorted(Comparator.comparing(Asset::getDate)).collect(toList());
+            List<BigDecimal> gain = new ArrayList<>();
+            List<String> time = new ArrayList<>();
+            for (Asset asset : collect) {
+                gain.add(asset.getTotalGain().multiply(new BigDecimal(100)));
+                time.add(asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")));
+            }
+            return Results.newSingleResultEntity(YieldRateVo.builder().gain(gain).time(time).build());
         }
-        return Results.newSingleResultEntity(YieldRateVo.builder().gain(gain).time(time).build());
+        return Results.newSingleResultEntity(YieldRateVo.builder().gain(new ArrayList<>(0)).time(new ArrayList<>(0)).build());
     }
 
     /**

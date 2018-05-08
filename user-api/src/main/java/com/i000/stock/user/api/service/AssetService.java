@@ -49,7 +49,7 @@ public interface AssetService {
      *
      * @param date
      */
-    void calculate(LocalDate date, String userCode, List<Hold> trade);
+    void calculate(LocalDate date, String userCode, List<Hold> trade, List<Hold> init);
 
 
     /**

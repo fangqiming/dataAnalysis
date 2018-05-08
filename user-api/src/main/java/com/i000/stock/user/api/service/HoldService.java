@@ -1,9 +1,7 @@
 package com.i000.stock.user.api.service;
 
-import com.i000.stock.user.api.entity.bo.TradeDetailBo;
 import com.i000.stock.user.dao.model.Hold;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,7 +21,6 @@ public interface HoldService {
     List<Hold> findHold();
 
 
-
     /**
      * 获取当天的交易详情
      *
@@ -31,6 +28,13 @@ public interface HoldService {
      */
     List<Hold> getTrade();
 
+    /**
+     * 当用户为空时将全部的持股当做交易来进行
+     *
+     * @param date
+     * @return
+     */
+    List<Hold> findHoldInit(LocalDate date);
 
 
 }

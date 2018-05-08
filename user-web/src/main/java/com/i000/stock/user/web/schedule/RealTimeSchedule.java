@@ -22,24 +22,24 @@ public class RealTimeSchedule {
     @Resource
     private CompanyService companyService;
 
-    @Resource
-    private IndexService indexService;
-
-    @Resource
-    private PriceService priceService;
+//    @Resource
+//    private IndexService indexService;
+//
+//    @Resource
+//    private PriceService priceService;
 
     @Scheduled(cron = "0 15 2 * * ?")
     public void updateCompany() {
         companyService.updateInfo();
     }
 
-    @Scheduled(cron = "0 10 15 * * ?")
-    public void updatePrice() {
-        priceService.save();
-    }
+//    @Scheduled(cron = "0 10 15 * * ?")
+//    public void updatePrice() {
+//        priceService.save();
+//    }
 
-    @Scheduled(cron = "0 15 15 * * ?")
-    public void updateIndex() {
-        indexService.save();
-    }
+//    @Scheduled(cron = "0 15 15 * * ?")
+//    public void updateIndex() {
+//        indexService.save();
+//    }
 }

@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @Author:qmfang
@@ -37,8 +40,18 @@ public class CommonConfig {
     }
 
     @Bean
-    public AssetInitBo assetInitBo(){
+    public AssetInitBo assetInitBo() {
         return new AssetInitBo();
+    }
+
+    @Bean
+    public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor result = new ThreadPoolTaskExecutor();
+        result.setMaxPoolSize(6);
+        result.setCorePoolSize(2);
+        result.setKeepAliveSeconds(180);
+        result.setQueueCapacity(6);
+        return result;
     }
 
 }

@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
  */
 public interface MailParseService {
 
-//    Pattern section = Pattern.compile("\n\\*\n");
-//    Pattern line = Pattern.compile("\\*\n");
+    Pattern section = Pattern.compile("\n\\*\n");
+    Pattern line = Pattern.compile("\\*\n");
 
-    Pattern section = Pattern.compile("\r\n\\*\r\n");
-    Pattern line = Pattern.compile("\\*\r\n");
+//    Pattern section = Pattern.compile("\r\n\\*\r\n");
+//    Pattern line = Pattern.compile("\\*\r\n");
 
     Pattern date = Pattern.compile("^[0-9]{4}\\/[0-9]{2}\\/[0-9]{2}");
 

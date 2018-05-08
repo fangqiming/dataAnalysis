@@ -42,15 +42,7 @@ public class HoldServiceImpl implements HoldService {
         List<LocalDate> twoDay = holdMapper.findTwoDay();
         if (!CollectionUtils.isEmpty(twoDay)) {
             if (twoDay.size() == 1) {
-                //初始情况
-                List<Hold> today = holdMapper.findByDate(twoDay.get(0));
-                List<Hold> aLong = today.stream().filter(a -> a.getType().contains("LONG")).collect(toList());
-                aLong.forEach(a -> a.setAction("BUY"));
-                result.addAll(aLong);
-
-                List<Hold> aShort = today.stream().filter(a -> a.getType().equals("SHORT")).collect(toList());
-                aShort.forEach(a -> a.setAction("SHORT"));
-                result.addAll(aShort);
+                result.addAll(findHoldInit(twoDay.get(0)));
             } else {
                 //当天持股
                 Optional<LocalDate> max = twoDay.stream().max(LocalDate::compareTo);
@@ -86,6 +78,20 @@ public class HoldServiceImpl implements HoldService {
                 }
             }
         }
+        return result;
+    }
+
+    @Override
+    public List<Hold> findHoldInit(LocalDate date) {
+        List<Hold> result = new ArrayList<>(24);
+        List<Hold> today = holdMapper.findByDate(date);
+        List<Hold> aLong = today.stream().filter(a -> a.getType().contains("LONG")).collect(toList());
+        aLong.forEach(a -> a.setAction("BUY"));
+        result.addAll(aLong);
+
+        List<Hold> aShort = today.stream().filter(a -> a.getType().equals("SHORT")).collect(toList());
+        aShort.forEach(a -> a.setAction("SHORT"));
+        result.addAll(aShort);
         return result;
     }
 }
