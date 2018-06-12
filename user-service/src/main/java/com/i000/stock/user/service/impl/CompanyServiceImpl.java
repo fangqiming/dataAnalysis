@@ -37,7 +37,7 @@ public class CompanyServiceImpl implements CompanyService {
             for (Element li : ul) {
                 String info = li.text();
                 String code = getCode(info);
-                if (code.startsWith("60") || code.startsWith("000") || code.startsWith("002")) {
+                if (code.startsWith("60") || code.startsWith("000") || code.startsWith("002") || code.startsWith("300")) {
                     Company company = Company.builder().prefix(prefix).code(code).name(getName(info)).build();
                     companyMapper.insert(company);
                 }

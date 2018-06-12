@@ -51,7 +51,7 @@ public class EngineController {
 
 
     /**
-     * 用于接收推荐信息
+     * 用于接收推荐信息 注意没有考虑拆股与分红
      *
      * @return
      */
@@ -59,20 +59,35 @@ public class EngineController {
     public ResultEntity receiveRecommend(@RequestBody String content) {
         ValidationUtils.validateParameter(content, "内容不能为空");
         log.info(content);
-        receiveRecommendThread.execute(() -> {
-            LocalDate date = recommendParse.parse(content);
-            List<Hold> trade = holdService.getTrade();
-            List<Hold> holdInit = holdService.findHoldInit(date);
-            if (Objects.nonNull(date)) {
-                Page<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
-                double ceil = Math.ceil(search.getTotal() / 50.0);
-                calculate(search, date, trade, holdInit);
-                for (int i = 2; i <= ceil; i++) {
-                    Page<UserInfo> page = userInfoService.search(BaseSearchVo.builder().pageNo(i).pageSize(50).build());
-                    calculate(page, date, trade, holdInit);
-                }
+
+        LocalDate date = recommendParse.parse(content);
+        List<Hold> trade = holdService.getTrade();
+        List<Hold> holdInit = holdService.findHoldInit(date);
+        if (Objects.nonNull(date)) {
+            Page<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
+            double ceil = Math.ceil(search.getTotal() / 50.0);
+            calculate(search, date, trade, holdInit);
+            for (int i = 2; i <= ceil; i++) {
+                Page<UserInfo> page = userInfoService.search(BaseSearchVo.builder().pageNo(i).pageSize(50).build());
+                calculate(page, date, trade, holdInit);
             }
-        });
+        }
+
+
+//        receiveRecommendThread.execute(() -> {
+//            LocalDate date = recommendParse.parse(content);
+//            List<Hold> trade = holdService.getTrade();
+//            List<Hold> holdInit = holdService.findHoldInit(date);
+//            if (Objects.nonNull(date)) {
+//                Page<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
+//                double ceil = Math.ceil(search.getTotal() / 50.0);
+//                calculate(search, date, trade, holdInit);
+//                for (int i = 2; i <= ceil; i++) {
+//                    Page<UserInfo> page = userInfoService.search(BaseSearchVo.builder().pageNo(i).pageSize(50).build());
+//                    calculate(page, date, trade, holdInit);
+//                }
+//            }
+//        });
         return Results.newNormalResultEntity("result", "success");
     }
 

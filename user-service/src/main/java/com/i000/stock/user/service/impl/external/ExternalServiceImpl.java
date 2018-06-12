@@ -122,10 +122,13 @@ public class ExternalServiceImpl {
                             .isOpen(Byte.valueOf(info[32]))
                             .low(new BigDecimal(info[5]))
                             .name(info[0])
+                            .price(new BigDecimal(info[3]))
+                            .amount(new BigDecimal(info[9]))
                             .volume(new BigDecimal(info[8]))
                             .open(new BigDecimal(info[1]))
                             .sell(new BigDecimal(info[7]))
                             .date(info[30]).build());
+
                 }
 
             }

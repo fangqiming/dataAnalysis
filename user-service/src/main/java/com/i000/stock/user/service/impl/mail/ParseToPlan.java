@@ -25,7 +25,7 @@ public class ParseToPlan implements MailParseService {
     @Resource
     private PlanMapper planMapper;
 
-    private String start = "------ Tomorrows Plan ------*";
+    private String start = "------ Tomorrows Plan ------";
 
 
     public boolean needSave(String part) {

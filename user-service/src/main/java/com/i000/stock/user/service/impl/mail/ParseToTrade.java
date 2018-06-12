@@ -25,7 +25,7 @@ public class ParseToTrade implements MailParseService {
     @Resource
     private TradeMapper tradeMapper;
 
-    private String start = "------ Todays Trades ------*";
+    private String start = "------ Todays Trades ------";
 
     public boolean needSave(String part) {
         LocalDate maxDate = tradeMapper.getMaxDate();

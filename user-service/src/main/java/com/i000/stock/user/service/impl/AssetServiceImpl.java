@@ -79,6 +79,9 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public void calculate(LocalDate date, String userCode, List<Hold> trade, List<Hold> initTrade) {
         Asset init = assetMapper.getLately(userCode);
+        if (!Objects.isNull(init) && init.getDate().compareTo(date) >= 0) {
+            return;
+        }
         Boolean isNewUser = false;
         if (Objects.isNull(init)) {
             isNewUser = true;

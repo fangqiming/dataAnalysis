@@ -5,6 +5,7 @@ import com.i000.stock.user.dao.mapper.HoldMapper;
 import com.i000.stock.user.dao.model.Hold;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -34,12 +35,15 @@ public class ParseToHold implements MailParseService {
         List<String> parts = getPart(original);
         LocalDate maxDate = holdMapper.getMaxDate();
         LocalDate parse = null;
+        LocalDate today = getData(parts.get(0));
         Map<String, List<String>> stringListMap = fetchLines(parts);
+        boolean hasData = false;
         for (String key : stringListMap.keySet()) {
             for (String line : stringListMap.get(key)) {
                 String[] split = line.split("\t");
                 parse = LocalDate.parse(split[5], DateTimeFormatter.ofPattern("yyyyMMdd"));
                 if (Objects.isNull(maxDate) || parse.compareTo(maxDate) > 0) {
+                    hasData = true;
                     holdMapper.insert(Hold.builder().gain(new BigDecimal(split[8]).divide(new BigDecimal(100), 5, RoundingMode.HALF_UP))
                             .holdDay(Integer.valueOf(split[7]))
                             .name(split[0])
@@ -53,7 +57,17 @@ public class ParseToHold implements MailParseService {
                 }
             }
         }
+        //如果没有就保存空的数据到数据库中，当做当前的持股
+        if (!hasData) {
+            holdMapper.insert(Hold.builder().newDate(today).build());
+        }
+
         return parse;
+    }
+
+    private LocalDate getData(String info) {
+        String date = info.split("for ")[1].split(" , ")[0];
+        return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
 

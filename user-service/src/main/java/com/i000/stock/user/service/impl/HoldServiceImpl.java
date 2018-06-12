@@ -6,6 +6,7 @@ import com.i000.stock.user.dao.model.Hold;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
@@ -38,6 +39,7 @@ public class HoldServiceImpl implements HoldService {
 
     @Override
     public List<Hold> getTrade() {
+
         List<Hold> result = new ArrayList<>();
         List<LocalDate> twoDay = holdMapper.findTwoDay();
         if (!CollectionUtils.isEmpty(twoDay)) {
@@ -47,9 +49,12 @@ public class HoldServiceImpl implements HoldService {
                 //当天持股
                 Optional<LocalDate> max = twoDay.stream().max(LocalDate::compareTo);
                 List<Hold> today = holdMapper.findByDate(max.get());
+                today = today.stream().filter(a -> !StringUtils.isEmpty(a.getName())).collect(toList());
                 //上次持股
                 Optional<LocalDate> min = twoDay.stream().min(LocalDate::compareTo);
                 List<Hold> yesterday = holdMapper.findByDate(min.get());
+                yesterday = yesterday.stream().filter(a -> !StringUtils.isEmpty(a.getName())).collect(toList());
+
                 for (Hold hold : today) {
                     if (!yesterday.contains(hold)) {
                         //今天相对昨天多了一个股票==>推出是今天买入的
@@ -85,13 +90,17 @@ public class HoldServiceImpl implements HoldService {
     public List<Hold> findHoldInit(LocalDate date) {
         List<Hold> result = new ArrayList<>(24);
         List<Hold> today = holdMapper.findByDate(date);
-        List<Hold> aLong = today.stream().filter(a -> a.getType().contains("LONG")).collect(toList());
-        aLong.forEach(a -> a.setAction("BUY"));
-        result.addAll(aLong);
+        today = today.stream().filter(a -> !StringUtils.isEmpty(a.getName())).collect(toList());
+        if (!CollectionUtils.isEmpty(today)) {
+            List<Hold> aLong = today.stream().filter(a -> a.getType().contains("LONG")).collect(toList());
+            aLong.forEach(a -> a.setAction("BUY"));
+            result.addAll(aLong);
 
-        List<Hold> aShort = today.stream().filter(a -> a.getType().equals("SHORT")).collect(toList());
-        aShort.forEach(a -> a.setAction("SHORT"));
-        result.addAll(aShort);
+            List<Hold> aShort = today.stream().filter(a -> a.getType().equals("SHORT")).collect(toList());
+            aShort.forEach(a -> a.setAction("SHORT"));
+            result.addAll(aShort);
+        }
+
         return result;
     }
 }
