@@ -1,6 +1,6 @@
 package com.i000.stock.user.api.service;
 
-import com.i000.stock.user.dao.model.IndexInfo;
+import com.i000.stock.user.api.entity.bo.IndexInfo;
 
 import java.util.List;
 
@@ -19,16 +19,9 @@ public interface IndexService {
      */
     List<IndexInfo> get();
 
-    /**
-     * 获取某一天的指数数据
-     *
-     * @param date
-     * @return
-     */
-    List<IndexInfo> get(String date);
 
-    /**
-     * 将获取到的指数信息保存到数据库
-     */
-    void save();
+
+
+
+
 }

@@ -1,11 +1,10 @@
 package com.i000.stock.user.service.impl;
 
+import com.i000.stock.user.api.entity.bo.IndexInfo;
+import com.i000.stock.user.api.service.CompanyService;
+import com.i000.stock.user.api.service.IndexService;
 import com.i000.stock.user.api.service.PriceService;
-import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.mapper.CompanyMapper;
-import com.i000.stock.user.dao.mapper.PriceMapper;
-import com.i000.stock.user.dao.model.Company;
-import com.i000.stock.user.dao.model.Price;
+import com.i000.stock.user.api.entity.bo.Price;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @Author:qmfang
@@ -26,53 +27,88 @@ import java.util.stream.Collectors;
 @Transactional
 public class PriceServiceImpl implements PriceService {
 
-    @Resource
-    private PriceMapper priceMapper;
+    private static final String comma = ",";
+    private static final String newLine = "\r\n";
 
     @Resource
-    private CompanyMapper companyMapper;
+    private CompanyService companyService;
 
     @Autowired
     private ExternalServiceImpl externalService;
 
-    @Override
-    public Price get(String code) {
-        return externalService.getPrice(code);
-    }
+    @Resource
+    private IndexService indexService;
+
 
     @Override
-    public Price get(String code, String time) {
-        return priceMapper.find(code, time);
-    }
-
-    @Override
-    public void save() {
+    public StringBuffer get() throws IOException {
+        List<IndexInfo> indexInfos = indexService.get();
         List<Price> prices = findNotLazy();
+        StringBuffer result = new StringBuffer();
+        return result.append(createIndex(indexInfos)).append(createPrice(prices));
+    }
+
+    private List<Price> findNotLazy() throws IOException {
+        List<Price> result = new ArrayList<>(4000);
+        List<String> codes = companyService.getCode();
+        List<List<String>> cutList = cutting(codes, 100.0);
+        for (List<String> list : cutList) {
+            result.addAll(externalService.getPrice(list));
+        }
+        return result;
+    }
+
+
+    private static List<List<String>> cutting(List<String> codes, double num) {
+        List<List<String>> result = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(codes)) {
+            int length = (int) Math.ceil(codes.size() / num);
+            for (int i = 0; i < length; i++) {
+                int end = (i + 1) * (int) num > codes.size() ? codes.size() : (i + 1) * (int) num;
+                result.add(codes.subList(i * (int) num, end));
+            }
+        }
+        return result;
+    }
+
+    private StringBuffer createPrice(List<Price> prices) {
+        StringBuffer result = new StringBuffer();
         if (!CollectionUtils.isEmpty(prices)) {
-            if (priceMapper.findCount(prices.get(0).getDate()) > 0) {
-                return;
-            }
             for (Price price : prices) {
-                priceMapper.insert(price);
+                result.append(price.getCode()).append(comma)
+                        .append(price.getDate()).append(comma)
+                        .append(price.getOpen()).append(comma)
+                        .append(price.getHigh()).append(comma)
+                        .append(price.getLow()).append(comma)
+                        .append(price.getPrice()).append(comma)
+                        .append(price.getClose()).append(comma)
+                        .append(price.getVolume()).append(comma)
+                        .append(price.getAmount()).append(newLine);
             }
         }
+        return result;
     }
 
-    @Override
-    public List<Price> findNotLazy() {
-        List<Price> prices = findPrice(BaseSearchVo.builder().pageSize(100).pageNo(1).build());
-        int pageSize = (int) (companyMapper.count() / 100 + 1);
-        for (int i = 2; i <= pageSize; i++) {
-            prices.addAll(findPrice(BaseSearchVo.builder().pageNo(i).pageSize(100).build()));
+    private StringBuffer createIndex(List<IndexInfo> indexs) {
+        List<String> needIndex = Arrays.asList("sh000001", "sh000016", "sz399001", "sz399005", "sz399006");
+        StringBuffer result = new StringBuffer();
+        if (!CollectionUtils.isEmpty(indexs)) {
+            for (IndexInfo indexInfo : indexs) {
+                if (needIndex.contains(indexInfo.getCode().replace("\n", ""))) {
+                    result.append(indexInfo.getCode().replace("\n", "")).append(comma)
+                            .append(indexInfo.getDate()).append(comma)
+                            .append(indexInfo.getOpen()).append(comma)
+                            .append(indexInfo.getHigh()).append(comma)
+                            .append(indexInfo.getLow()).append(comma)
+                            .append(indexInfo.getClose()).append(comma)
+                            .append(indexInfo.getPreClose()).append(comma)
+                            .append(indexInfo.getVolume()).append(comma)
+                            .append(indexInfo.getAmount()).append(newLine);
+                }
+            }
         }
-        return prices;
+        return result;
     }
 
 
-    private List<Price> findPrice(BaseSearchVo baseSearchVo) {
-        baseSearchVo.setStart();
-        List<Company> search = companyMapper.search(baseSearchVo);
-        List<String> index = search.stream().map(a -> a.getCode()).collect(Collectors.toList());
-        return externalService.getPrice(index);
-    }
 }

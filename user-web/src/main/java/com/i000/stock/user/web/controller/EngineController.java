@@ -1,8 +1,6 @@
 package com.i000.stock.user.web.controller;
 
-import com.i000.stock.user.api.service.AssetService;
-import com.i000.stock.user.api.service.HoldService;
-import com.i000.stock.user.api.service.UserInfoService;
+import com.i000.stock.user.api.service.*;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ValidationUtils;
@@ -49,6 +47,12 @@ public class EngineController {
     @Autowired
     private ReceiveRecommendThread receiveRecommendThread;
 
+    @Resource
+    private FileService fileService;
+
+    @Autowired
+    private EmailService emailService;
+
 
     /**
      * 用于接收推荐信息 注意没有考虑拆股与分红
@@ -56,38 +60,38 @@ public class EngineController {
      * @return
      */
     @PostMapping(value = "/receive_recommend")
-    public ResultEntity receiveRecommend(@RequestBody String content) {
+    public ResultEntity receiveRecommend(@RequestBody String content, @RequestParam(defaultValue = "1") Integer needSave) {
         ValidationUtils.validateParameter(content, "内容不能为空");
-        log.info(content);
-
-        LocalDate date = recommendParse.parse(content);
-        List<Hold> trade = holdService.getTrade();
-        List<Hold> holdInit = holdService.findHoldInit(date);
-        if (Objects.nonNull(date)) {
-            Page<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
-            double ceil = Math.ceil(search.getTotal() / 50.0);
-            calculate(search, date, trade, holdInit);
-            for (int i = 2; i <= ceil; i++) {
-                Page<UserInfo> page = userInfoService.search(BaseSearchVo.builder().pageNo(i).pageSize(50).build());
-                calculate(page, date, trade, holdInit);
-            }
+        if (needSave > 0) {
+            fileService.saveFile(content);
         }
 
-
-//        receiveRecommendThread.execute(() -> {
-//            LocalDate date = recommendParse.parse(content);
-//            List<Hold> trade = holdService.getTrade();
-//            List<Hold> holdInit = holdService.findHoldInit(date);
-//            if (Objects.nonNull(date)) {
-//                Page<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
-//                double ceil = Math.ceil(search.getTotal() / 50.0);
-//                calculate(search, date, trade, holdInit);
-//                for (int i = 2; i <= ceil; i++) {
-//                    Page<UserInfo> page = userInfoService.search(BaseSearchVo.builder().pageNo(i).pageSize(50).build());
-//                    calculate(page, date, trade, holdInit);
-//                }
-//            }
-//        });
+        receiveRecommendThread.execute(() -> {
+            try {
+                LocalDate date = recommendParse.parse(content);
+                List<Hold> trade = holdService.getTrade();
+                List<Hold> holdInit = holdService.findHoldInit(date);
+                if (Objects.nonNull(date)) {
+                    Page<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
+                    double ceil = Math.ceil(search.getTotal() / 50.0);
+                    calculate(search, date, trade, holdInit);
+                    for (int i = 2; i <= ceil; i++) {
+                        Page<UserInfo> page = userInfoService.search(BaseSearchVo.builder().pageNo(i).pageSize(50).build());
+                        calculate(page, date, trade, holdInit);
+                    }
+                }
+                if (needSave > 0) {
+                    emailService.sendMail("【千古:数据解析成功】", content);
+                }
+            } catch (Exception e) {
+                log.error("[DATA PARES ERROR] e=[{}]", e);
+                StringBuffer email = new StringBuffer(content);
+                email.append("\r\n\r\n\r\n\r\n\r\n");
+                email.append("-------------EXCEPTION INFO----------------\r\n");
+                email.append(e);
+                emailService.sendMail("【千古:推荐数据解析错误-相关人员请立即查看】", email.toString());
+            }
+        });
         return Results.newNormalResultEntity("result", "success");
     }
 

@@ -1,0 +1,39 @@
+------ Daily Snapshot ------
+   date   	LONG1	#cash	maxsect	maxindu	market	total	gain%
+>>> 201-80102 : 5000000 : 33483.3
+2018地方改的反射光栅方大哥单方事故讽德诵功是大法官方大哥fdg/01/02	0	4	0	0	33483	33483dfg	0.0%
+2018/-01/03	0	4	0	0	33691	33483	-0.6%
+2018/01/04	0	4	0	0	33857	33483	-1.1%
+2018/0-1/05	0	4	0	0	33918	33483	-1.3%
+2018/0-1/08	1	3	0	0	34095	33475	-1.8%
+2018/0-1/09	1	3	0	0	34139	dfgdfsgs	-0.1%
+2018/01地方改的反射光栅方大哥单方事故讽德诵功是大法官方大哥方大哥fdg/10	1	3	0	0	34218	34240	0.1%
+2018/01-/11	1	3	0	0	34253	34地方改的反射光栅fdg240	-0.0%
+2018/0-1/12	1	3	0	0	34289	34210	-0.2%
+2018/0-1/15	1	3	0	0	34105	34510	1.2%
+2018/01-地方改的反射光栅方大哥单方事故讽德诵功是大法官方大哥方大哥方大哥方大哥-/16	2	2	0	0	34366	34681	0.9%
+beta =地方改的反射光栅方大哥单方事故讽德诵功是大法官方大哥方大哥方大哥fdg -0.41
+benchmark_volatility = 4	portfolio_volatility = 3
+avg_cas-h_pct = -1
+-
+------ -Portfolio for 20180116 , LONG1 ------
+type	L地方改的反射光栅方大哥dfsg
+cash-	-2540863.04472
+value	178913.01528
+num_-posi-tions	2
+000725	5.58	20180108	0.68	6.39	20180116	20.60	6	14.5%
+6016-99	11.07	20180116	0.42	11.07	20180116	0.68	0	0.0%
+total gain = 7.1 %
+-
+------- Details for closed positions on 20180116 , LONG1 ------
+-
+--------- Todays Trades ------
+cat /home/longji/MMdata/201412CHDtest/simu201412zoardXppm/daily//201801/20180116/trade_desc_20180116.txt
+d-ate	category地方改的反射光栅方大哥单方事故fdsg	symbol	action	price	shares	capital	note
+2018/01/16	LONG1	601699	BUY	11.07	116380	1288327	601699 | -industry-
+-
+-----地方改的反射光栅方大哥单方事故讽德诵功是大法官fdg- Tomorrows 地方改的反射光栅方大哥单方事故讽德诵功sdfgPlan ------
+cat /home/longji/MMdata/201412CHDtest/simu201412zoardXppm/daily//201801/20180116/plan_desc_20180116.txt
+date	category	symbol	action	price	shares	capital	score	note
+2018/01/16	LONG1	002456	BUY	TBD	TBD	1 unit	0.54	002456 | -industry-
+2018/01/16	LONG1	600703	BUY	TBD	TBD	1 unit	0.14	600703 | -industry-

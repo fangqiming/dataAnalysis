@@ -3,7 +3,7 @@ package com.i000.stock.user.web.controller;
 import com.i000.stock.user.api.service.IndexService;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
-import com.i000.stock.user.dao.model.IndexInfo;
+import com.i000.stock.user.api.entity.bo.IndexInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,26 +40,4 @@ public class IndexController {
         return Results.newListResultEntity(indices);
     }
 
-    /**
-     * 获取某一天的指数信息
-     * 127.0.0.1:8082/index/get_old?date='2018-04-25'
-     * @param date
-     * @return
-     */
-    @GetMapping("/get_old")
-    public ResultEntity getOld(String date) {
-        List<IndexInfo> indices = indexService.get(date);
-        return Results.newListResultEntity(indices);
-    }
-
-    /**
-     * 127.0.0.1:8082/index/save
-     * 测试：用于保存指数信息
-     * @return
-     */
-    @GetMapping("/save")
-    public ResultEntity save() {
-        indexService.save();
-        return Results.newEmptyResultEntity();
-    }
 }

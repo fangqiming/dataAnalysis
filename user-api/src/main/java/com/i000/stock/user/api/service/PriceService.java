@@ -1,7 +1,8 @@
 package com.i000.stock.user.api.service;
 
-import com.i000.stock.user.dao.model.Price;
+import com.i000.stock.user.api.entity.bo.Price;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -13,31 +14,10 @@ import java.util.List;
 public interface PriceService {
 
     /**
-     * 根据指定的股票代码获取股票的实时价格
-     *
-     * @param code
-     * @return
-     */
-    Price get(String code);
-
-    /**
-     * 根据指定的股票代码和时间查询股票价格
-     *
-     * @param code
-     * @param time
-     * @return
-     */
-    Price get(String code, String time);
-
-    /**
-     * 用于将全部的股票价格保存到数据库
-     */
-    void save();
-
-    /**
-     * 获取全部的股票价格（懒加载）
+     * 获取全部的股票价格
      *
      * @return
+     * @throws IOException
      */
-    List<Price> findNotLazy();
+    public StringBuffer get() throws IOException;
 }

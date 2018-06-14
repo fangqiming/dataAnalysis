@@ -63,10 +63,9 @@ public class RecommendController {
     @GetMapping(path = "/get_contrast")
     public ResultEntity getBaseLineTrend(@RequestParam String step) {
         StepEnum stepEnum = CodeEnumUtil.transformationStr2Enum(step, StepEnum.class);
-        List<LineGroupQuery> baseLines =
-                stepIsDay(stepEnum) ?
-                        lineService.findBaseLineDay(stepEnum) :
-                        lineService.findBaseLineGroup(stepEnum);
+        List<LineGroupQuery> baseLines = stepIsDay(stepEnum)
+                ? lineService.findBaseLineDay(stepEnum)
+                : lineService.findBaseLineGroup(stepEnum);
 
         BaseLineTrendVO baseLineTrendVO = new BaseLineTrendVO();
         baseLines.stream().sorted(Comparator.comparing(LineGroupQuery::getTime)).forEach(baseLine -> {

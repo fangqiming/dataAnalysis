@@ -1,4 +1,4 @@
-package com.i000.stock.user.dao.model;
+package com.i000.stock.user.api.entity.bo;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import lombok.AllArgsConstructor;

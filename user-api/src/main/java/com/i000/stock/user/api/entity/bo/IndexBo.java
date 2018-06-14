@@ -1,6 +1,5 @@
 package com.i000.stock.user.api.entity.bo;
 
-import com.i000.stock.user.dao.model.IndexInfo;
 import lombok.Data;
 
 import java.util.List;

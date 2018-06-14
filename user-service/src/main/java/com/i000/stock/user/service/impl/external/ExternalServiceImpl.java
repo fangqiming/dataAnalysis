@@ -3,7 +3,7 @@ package com.i000.stock.user.service.impl.external;
 import com.alibaba.fastjson.JSONObject;
 import com.i000.stock.user.api.entity.bo.IndexBo;
 import com.i000.stock.user.api.entity.bo.IpInfoBo;
-import com.i000.stock.user.dao.model.Price;
+import com.i000.stock.user.api.entity.bo.Price;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -114,7 +114,6 @@ public class ExternalServiceImpl {
                 if (price.length() > 50) {
                     String code = price.split("=")[0].split("sh|sz")[1];
                     String[] info = price.split("=")[1].split(";")[0].split(",");
-                    System.out.println(info[32]);
                     result.add(Price.builder().code(code)
                             .buy(new BigDecimal(info[6]))
                             .close(new BigDecimal(info[2]))

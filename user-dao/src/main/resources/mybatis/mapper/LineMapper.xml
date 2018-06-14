@@ -5,7 +5,7 @@
 <mapper namespace="com.i000.stock.user.dao.mapper.LineMapper">
 
     <resultMap id="LineGroup" type="com.i000.stock.user.dao.bo.LineGroupQuery">
-        <result column="groupCondition" property="date"/>
+        <result column="groupCondition" property="time"/>
         <result column="base_market" property="baseMarket"/>
         <result column="ai_market" property="aiMarket"/>
         <result column="gain" property="gain"/>

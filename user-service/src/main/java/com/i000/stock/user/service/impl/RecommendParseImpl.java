@@ -1,8 +1,6 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.entity.bo.MailBo;
 import com.i000.stock.user.api.service.MailParseService;
-import com.i000.stock.user.service.impl.config.MailConfigure;
 import com.i000.stock.user.service.impl.mail.ParseToHold;
 import com.i000.stock.user.service.impl.mail.ParseToLine;
 import com.i000.stock.user.service.impl.mail.ParseToPlan;
@@ -13,8 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import javax.mail.Message;
-import javax.mail.internet.MimeMessage;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;

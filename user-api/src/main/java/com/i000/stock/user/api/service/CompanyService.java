@@ -1,5 +1,8 @@
 package com.i000.stock.user.api.service;
 
+import java.io.IOException;
+import java.util.List;
+
 /**
  * @Author:qmfang
  * @Description:
@@ -9,9 +12,9 @@ package com.i000.stock.user.api.service;
 public interface CompanyService {
 
     /**
-     * 更新公司信息（与东方财富同步所有的A股股票）
+     * 从网页上爬取股票数据
      *
      * @return
      */
-    Boolean updateInfo();
+    List<String> getCode() throws IOException;
 }

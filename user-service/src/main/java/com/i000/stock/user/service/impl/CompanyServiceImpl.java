@@ -13,6 +13,8 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author:qmfang
@@ -24,10 +26,10 @@ import java.io.IOException;
 @Transactional
 public class CompanyServiceImpl implements CompanyService {
 
-    @Resource
-    private CompanyMapper companyMapper;
 
-    private void save() throws IOException {
+    @Override
+    public List<String> getCode() throws IOException {
+        List<String> result = new ArrayList<>(4000);
         Document doc = Jsoup.connect("http://quote.eastmoney.com/stocklist.html").get();
         Elements sltit = doc.getElementsByClass("sltit");
         for (Element element : sltit) {
@@ -38,16 +40,13 @@ public class CompanyServiceImpl implements CompanyService {
                 String info = li.text();
                 String code = getCode(info);
                 if (code.startsWith("60") || code.startsWith("000") || code.startsWith("002") || code.startsWith("300")) {
-                    Company company = Company.builder().prefix(prefix).code(code).name(getName(info)).build();
-                    companyMapper.insert(company);
+                    result.add(code);
                 }
             }
         }
+        return result;
     }
 
-    private void clear() {
-        companyMapper.truncate();
-    }
 
     private String getName(String str) {
         if (!StringUtils.isEmpty(str)) {
@@ -59,7 +58,6 @@ public class CompanyServiceImpl implements CompanyService {
         return "";
     }
 
-
     private String getCode(String str) {
         if (!StringUtils.isEmpty(str)) {
             try {
@@ -70,14 +68,4 @@ public class CompanyServiceImpl implements CompanyService {
         return "";
     }
 
-    @Override
-    public Boolean updateInfo() {
-        clear();
-        try {
-            save();
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
-    }
 }
