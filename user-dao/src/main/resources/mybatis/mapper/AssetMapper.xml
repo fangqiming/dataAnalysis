@@ -32,7 +32,7 @@
     </select>
 
     <select id="search" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo" resultMap="Asset">
-        select sql_calc_found_rows  * from asset ORDER BY date DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
+        select sql_calc_found_rows  * from asset where user_code=#{userCode}   ORDER BY date DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
 </mapper>

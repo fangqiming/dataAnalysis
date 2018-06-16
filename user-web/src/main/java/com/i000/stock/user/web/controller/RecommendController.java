@@ -123,9 +123,13 @@ public class RecommendController {
         //获取结果
         List<RecommendPageVO> result = new ArrayList<>(pageData.getList().size());
         for (Asset userProfit : pageData.getList()) {
+            List<Plan> list = map.get(userProfit.getDate());
+            if (CollectionUtils.isNotEmpty(list) && list.size() == 1 && StringUtils.isBlank(list.get(0).getName())) {
+                list = new ArrayList<>(0);
+            }
             RecommendPageVO recommendPageVO = RecommendPageVO.builder().date(userProfit.getDate())
                     .gainRate(userProfit.getGain())
-                    .recommend(ConvertUtils.listConvert(map.get(userProfit.getDate()), PlanVo.class)).build();
+                    .recommend(ConvertUtils.listConvert(list, PlanVo.class)).build();
             result.add(recommendPageVO);
         }
         return Results.newPageResultEntity(pageData.getTotal(), result);
