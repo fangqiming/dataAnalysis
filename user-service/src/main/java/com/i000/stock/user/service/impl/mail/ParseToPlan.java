@@ -4,9 +4,11 @@ import com.i000.stock.user.api.service.MailParseService;
 import com.i000.stock.user.dao.mapper.PlanMapper;
 import com.i000.stock.user.dao.model.Plan;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,12 +35,23 @@ public class ParseToPlan implements MailParseService {
         if (Objects.isNull(maxDate)) {
             return true;
         }
-        for (String line : fetchLines(part)) {
-            LocalDate parse = LocalDate.parse(line.substring(0, 10), DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-            if (parse.compareTo(maxDate) > 0) {
-                return true;
+        List<String> parts = fetchLines(part);
+        if (!CollectionUtils.isEmpty(parts)) {
+            for (String line : parts) {
+                LocalDate parse = LocalDate.parse(line.substring(0, 10), DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+                if (parse.compareTo(maxDate) > 0) {
+                    return true;
+                }
+            }
+        } else {
+            //如果当前的推荐信息为空,就保存空数据的数据库中
+            LocalDate nowDate = LocalDate.parse(part.split("plan_desc_")[1].split("\\.txt")[0],
+                    DateTimeFormatter.ofPattern("yyyyMMdd"));
+            if (maxDate.compareTo(nowDate) < 0) {
+                planMapper.insert(Plan.builder().newDate(nowDate).build());
             }
         }
+
         return false;
     }
 

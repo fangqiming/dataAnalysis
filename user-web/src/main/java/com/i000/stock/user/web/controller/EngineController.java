@@ -9,6 +9,7 @@ import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.model.Hold;
 import com.i000.stock.user.dao.model.UserInfo;
 import com.i000.stock.user.service.impl.RecommendParseImpl;
+import com.i000.stock.user.web.config.MailSendConfig;
 import com.i000.stock.user.web.thread.ReceiveRecommendThread;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,9 @@ public class EngineController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private MailSendConfig mailSendConfig;
+
 
     /**
      * 用于接收推荐信息 注意没有考虑拆股与分红
@@ -81,7 +85,7 @@ public class EngineController {
                     }
                 }
                 if (needSave > 0) {
-                    emailService.sendMail("【千古:数据解析成功】", content);
+                    emailService.sendMail("【千古:数据解析成功】", content, mailSendConfig.isSendSuccessNotice());
                 }
             } catch (Exception e) {
                 log.error("[DATA PARES ERROR] e=[{}]", e);
@@ -89,7 +93,7 @@ public class EngineController {
                 email.append("\r\n\r\n\r\n\r\n\r\n");
                 email.append("-------------EXCEPTION INFO----------------\r\n");
                 email.append(e);
-                emailService.sendMail("【千古:推荐数据解析错误-相关人员请立即查看】", email.toString());
+                emailService.sendMail("【千古:推荐数据解析错误-相关人员请立即查看】", email.toString(), mailSendConfig.isSendSuccessNotice());
             }
         });
         return Results.newNormalResultEntity("result", "success");

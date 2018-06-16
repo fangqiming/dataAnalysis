@@ -35,14 +35,14 @@ public class FileController {
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private IndexPriceSchedule indexPriceSchedule;
+//    @Autowired
+//    private IndexPriceSchedule indexPriceSchedule;
 
-    @GetMapping(value = "/email")
-    public ResultEntity send() {
-        indexPriceSchedule.saveIndexPrice();
-        return Results.newEmptyResultEntity();
-    }
+//    @GetMapping(value = "/email")
+//    public ResultEntity send() {
+//        indexPriceSchedule.saveIndexPrice();
+//        return Results.newEmptyResultEntity();
+//    }
 
     @GetMapping(value = "/restore_data")
     public ResultEntity restoreData(@RequestParam String start, @RequestParam String end) {

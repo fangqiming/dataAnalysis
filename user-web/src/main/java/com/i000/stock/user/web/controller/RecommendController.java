@@ -20,6 +20,7 @@ import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.Plan;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -86,9 +87,12 @@ public class RecommendController {
     @CrossOrigin(origins = "*", maxAge = 3600)
     @GetMapping(path = "/find")
     public ResultEntity find() {
+        //获取到了最大的日期
         LocalDate date = planService.getMaxDate();
         List<Plan> byDate = planService.findByDate(date);
-        return Results.newListResultEntity(ConvertUtils.listConvert(byDate, PlanVo.class));
+        return byDate.size() == 1 && StringUtils.isBlank(byDate.get(0).getName()) ?
+                Results.newListResultEntity(new ArrayList<>(0)) :
+                Results.newListResultEntity(ConvertUtils.listConvert(byDate, PlanVo.class));
     }
 
     /**

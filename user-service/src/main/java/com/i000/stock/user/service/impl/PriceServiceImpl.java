@@ -2,10 +2,12 @@ package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.bo.IndexInfo;
 import com.i000.stock.user.api.service.CompanyService;
+import com.i000.stock.user.api.service.EmailService;
 import com.i000.stock.user.api.service.IndexService;
 import com.i000.stock.user.api.service.PriceService;
 import com.i000.stock.user.api.entity.bo.Price;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import java.util.List;
  * @Date:Created in 16:43 2018/4/25
  * @Modified By:
  */
+@Slf4j
 @Service
 @Transactional
 public class PriceServiceImpl implements PriceService {
@@ -39,10 +42,13 @@ public class PriceServiceImpl implements PriceService {
     @Resource
     private IndexService indexService;
 
+    @Resource
+    private EmailService emailService;
+
 
     @Override
     public StringBuffer get() throws IOException {
-        List<IndexInfo> indexInfos = indexService.get();
+        List<IndexInfo> indexInfos = getIndexInfo();
         List<Price> prices = findNotLazy();
         StringBuffer result = new StringBuffer();
         return result.append(createIndex(indexInfos)).append(createPrice(prices));
@@ -108,6 +114,30 @@ public class PriceServiceImpl implements PriceService {
             }
         }
         return result;
+    }
+
+    private List<IndexInfo> getIndexInfo() {
+        for (int i = 0; i < 5; i++) {
+            try {
+                List<IndexInfo> indexInfos = indexService.get();
+                if (!CollectionUtils.isEmpty(indexInfos)) {
+                    return indexInfos;
+                }
+            } catch (Exception e) {
+                sleep(3000L);
+            }
+        }
+        emailService.sendMail("【千古：获取指数的接口异常】", "指数接口重试超过5次仍旧异常请确认网络是否正常", true);
+        return null;
+    }
+
+
+    private void sleep(Long second) {
+        try {
+            Thread.sleep(second);
+        } catch (InterruptedException e) {
+            log.debug("重试发生中断异常");
+        }
     }
 
 

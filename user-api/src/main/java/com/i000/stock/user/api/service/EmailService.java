@@ -13,6 +13,16 @@ public interface EmailService {
      *
      * @param title
      * @param content
+     * @param needSend
      */
-    void sendMail(String title, String content);
+    void sendMail(String title, String content, boolean needSend);
+
+    /**
+     * 发送带附件的邮件
+     *
+     * @param title
+     * @param content
+     * @param needSend
+     */
+    void sendFilMail(String title, String content, boolean needSend);
 }
