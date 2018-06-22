@@ -28,9 +28,11 @@ public interface IndexPriceService {
     void save(IndexPrice indexPrice);
 
     /**
-     * 获取最新的指数信息
+     * 获取当天的指数价格信息
      *
      * @return
+     * @throws IOException
      */
     StringBuffer get() throws IOException;
+
 }

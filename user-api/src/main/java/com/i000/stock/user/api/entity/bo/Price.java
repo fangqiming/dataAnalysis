@@ -39,7 +39,7 @@ public class Price {
     private BigDecimal open;
 
     /**
-     * 昨收盘价
+     * 昨天收盘价。
      */
     private BigDecimal close;
 

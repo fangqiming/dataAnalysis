@@ -8,6 +8,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +35,8 @@ public class EmailServiceImpl implements EmailService {
     private String[] to;
 
     @Autowired
-    private JavaMailSender sender;
+    private JavaMailSenderImpl javaMailSender;
+
 
     private SimpleDateFormat sd = new SimpleDateFormat("yyyyMMdd");
 
@@ -46,14 +48,14 @@ public class EmailServiceImpl implements EmailService {
             message.setTo(to);
             message.setSubject(title);
             message.setText(content);
-            sender.send(message);
+            javaMailSender.send(message);
         }
     }
 
     @Override
     public void sendFilMail(String title, String content, boolean needSend) {
         if (needSend) {
-            MimeMessage mimeMessage = sender.createMimeMessage();
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             try {
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
                 helper.setFrom(from);
@@ -61,7 +63,7 @@ public class EmailServiceImpl implements EmailService {
                 helper.setSubject(title);
                 InputStreamSource source = () -> new ByteArrayInputStream(content.getBytes());
                 helper.addAttachment(String.format("%s.txt", sd.format(new Date())), source);
-                sender.send(mimeMessage);
+                javaMailSender.send(mimeMessage);
             } catch (Exception e) {
                 log.error("[SEND PRICE INDEX INFO ERROR] e=[{}]", e);
                 sendMail("【千古:价格指数邮件推送失败】", e.toString(), true);

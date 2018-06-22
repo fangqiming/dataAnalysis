@@ -47,4 +47,14 @@ public interface HoldNowMapper extends BaseMapper<HoldNow> {
      */
     void updatePrice(@Param("price") BigDecimal price, @Param("name") String name, @Param("date") LocalDate date);
 
+    /**
+     * 更新股票的数量==>应对拆股与并股
+     *
+     * @param rate
+     * @param code
+     * @param date
+     * @return
+     */
+    @Update("update hold_now set amount=amount*#{rate} where `name`=#{code} and old_date=#{date}")
+    Integer updateAmount(@Param("rate") BigDecimal rate, @Param("code") String code, @Param("date") LocalDate date);
 }

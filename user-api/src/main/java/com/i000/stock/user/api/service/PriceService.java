@@ -1,9 +1,6 @@
 package com.i000.stock.user.api.service;
 
-import com.i000.stock.user.api.entity.bo.Price;
-
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @Author:qmfang
@@ -19,5 +16,5 @@ public interface PriceService {
      * @return
      * @throws IOException
      */
-    public StringBuffer get() throws IOException;
+    StringBuffer get() throws IOException;
 }

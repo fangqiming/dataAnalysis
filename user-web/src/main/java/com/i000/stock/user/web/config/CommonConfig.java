@@ -3,13 +3,16 @@ package com.i000.stock.user.web.config;
 import com.i000.stock.user.api.entity.bo.AssetInitBo;
 import com.i000.stock.user.core.file.oss.OSSFileUpload;
 import com.i000.stock.user.core.file.oss.OSSUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Properties;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -60,4 +63,22 @@ public class CommonConfig {
         return new RestTemplate();
     }
 
+    @Autowired
+    private MailServiceConfig mailServiceConfig;
+
+    @Bean
+    public JavaMailSenderImpl javaMailSender() {
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+        javaMailSender.setHost(mailServiceConfig.getHost());
+        javaMailSender.setUsername(mailServiceConfig.getUsername());
+        javaMailSender.setPassword(mailServiceConfig.getPassword());
+        javaMailSender.setDefaultEncoding(mailServiceConfig.getEncoding());
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", mailServiceConfig.getAuth());
+        properties.put("mail.smtp.timeout", mailServiceConfig.getTimeout());
+        properties.put("mail.smtp.port", mailServiceConfig.getPort());
+        properties.put("mail.smtp.socketFactory.class", mailServiceConfig.getSocketFactory());
+        javaMailSender.setJavaMailProperties(properties);
+        return javaMailSender;
+    }
 }

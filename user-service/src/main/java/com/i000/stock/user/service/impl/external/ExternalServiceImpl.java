@@ -54,12 +54,31 @@ public class ExternalServiceImpl {
             for (String index : indexs) {
                 param += index.startsWith("60") ? "sh" + index + "," : "sz" + index + ",";
             }
-            String priceStr = execute(service.getPrice(param));
-            return parsePriceStr(priceStr);
+            return parsePriceStr(getPrice(param));
 
         }
         return new ArrayList<>(0);
     }
+
+
+    private String getPrice(String param) {
+        for (int i = 0; i < 5; i++) {
+            try {
+                String priceStr = execute(service.getPrice(param));
+                if (!StringUtils.isBlank(priceStr)) {
+                    return priceStr;
+                }
+            } catch (Exception e) {
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception e2) {
+                    log.error("中断异常", e2);
+                }
+            }
+        }
+        return null;
+    }
+
 
     /**
      * 获取一个价格
@@ -67,15 +86,15 @@ public class ExternalServiceImpl {
      * @param index
      * @return
      */
-    public Price getPrice(String index) {
-        List list = Arrays.asList(index);
-        List<Price> prices = getPrice(list);
-        if (!CollectionUtils.isEmpty(prices)) {
-            return prices.get(0);
-        }
-        return new Price();
-
-    }
+//    public Price getPrice(String index) {
+//        List list = Arrays.asList(index);
+//        List<Price> prices = getPrice(list);
+//        if (!CollectionUtils.isEmpty(prices)) {
+//            return prices.get(0);
+//        }
+//        return new Price();
+//
+//    }
 
     /**
      * 获取ip地址的信息

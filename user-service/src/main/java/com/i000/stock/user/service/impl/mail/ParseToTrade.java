@@ -2,8 +2,11 @@ package com.i000.stock.user.service.impl.mail;
 
 import com.i000.stock.user.api.service.MailParseService;
 import com.i000.stock.user.dao.mapper.TradeMapper;
+import com.i000.stock.user.dao.model.Plan;
 import com.i000.stock.user.dao.model.Trade;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -28,11 +31,22 @@ public class ParseToTrade implements MailParseService {
     private String start = "------ Todays Trades ------";
 
     public boolean needSave(String part) {
+        List<String> parts = fetchLines(part);
         LocalDate maxDate = tradeMapper.getMaxDate();
+
+        if (CollectionUtils.isEmpty(parts)) {
+            //如果时空就保存
+            LocalDate nowDate = LocalDate.parse(part.split("trade_desc_")[1].split("\\.txt")[0],
+                    DateTimeFormatter.ofPattern("yyyyMMdd"));
+            if (Objects.isNull(maxDate) || maxDate.compareTo(nowDate) < 0) {
+                tradeMapper.insert(Trade.builder().date(nowDate).build());
+            }
+        }
         if (Objects.isNull(maxDate)) {
+            //如果为空也应该记录下来
             return true;
         }
-        for (String line : fetchLines(part)) {
+        for (String line : parts) {
             LocalDate parse = LocalDate.parse(line.substring(0, 10), DateTimeFormatter.ofPattern("yyyy/MM/dd"));
             if (parse.compareTo(maxDate) > 0) {
                 return true;
@@ -46,7 +60,8 @@ public class ParseToTrade implements MailParseService {
         String part = getPart(original);
         LocalDate parse = null;
         if (needSave(part)) {
-            for (String line : fetchLines(part)) {
+            List<String> parts = fetchLines(part);
+            for (String line : parts) {
                 String[] split = line.split("\t");
                 parse = LocalDate.parse(split[0], DateTimeFormatter.ofPattern("yyyy/MM/dd"));
                 tradeMapper.insert(Trade.builder().date(parse)

@@ -48,6 +48,7 @@ public class PriceServiceImpl implements PriceService {
 
     @Override
     public StringBuffer get() throws IOException {
+        //todo 此处需要做重试处理
         List<IndexInfo> indexInfos = getIndexInfo();
         List<Price> prices = findNotLazy();
         StringBuffer result = new StringBuffer();

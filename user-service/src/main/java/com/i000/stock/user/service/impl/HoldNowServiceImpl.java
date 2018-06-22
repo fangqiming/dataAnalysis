@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class HoldNowServiceImpl implements HoldNowService {
 
     @Override
     public List<HoldNow> find(String userCode) {
+        //还必须有一个最大的日期  根据最大的日期查询当前持股才行。
         return holdNowMapper.find(userCode);
     }
 
@@ -57,5 +59,10 @@ public class HoldNowServiceImpl implements HoldNowService {
             result++;
         }
         return result;
+    }
+
+    @Override
+    public Integer updateAmount(BigDecimal rate, String code, LocalDate date) {
+        return holdNowMapper.updateAmount(rate, code, date);
     }
 }

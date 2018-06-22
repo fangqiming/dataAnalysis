@@ -17,6 +17,8 @@ public class MailSendConfig {
     private boolean sendSuccessNotice;
     private boolean sendFailNotice;
     private boolean sendIndexPriceInfo;
+
+
 }
 
 

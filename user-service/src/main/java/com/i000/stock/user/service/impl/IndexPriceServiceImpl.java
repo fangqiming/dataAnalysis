@@ -46,4 +46,5 @@ public class IndexPriceServiceImpl implements IndexPriceService {
     public StringBuffer get() throws IOException {
         return priceService.get();
     }
+
 }

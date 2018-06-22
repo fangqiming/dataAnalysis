@@ -2,7 +2,9 @@ package com.i000.stock.user.api.service;
 
 import com.i000.stock.user.dao.model.HoldNow;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -55,4 +57,11 @@ public interface HoldNowService {
      * @return
      */
     Integer updatePrice(LocalDate date);
+
+
+    /**
+     * 更新股票的份数
+     */
+
+    Integer updateAmount(BigDecimal rate, String code, LocalDate date);
 }

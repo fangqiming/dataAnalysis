@@ -1,8 +1,6 @@
 package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.service.CompanyService;
-import com.i000.stock.user.dao.mapper.CompanyMapper;
-import com.i000.stock.user.dao.model.Company;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

@@ -72,12 +72,19 @@ public class EngineController {
 
         receiveRecommendThread.execute(() -> {
             try {
+                //获取了推荐日期 保存了原始数据
                 LocalDate date = recommendParse.parse(content);
+
+                //通过今天的持股和上一次的持股做对比获取到今天的交易信息
                 List<Hold> trade = holdService.getTrade();
+
+                //根据推荐日期获取到现在的持股情况
                 List<Hold> holdInit = holdService.findHoldInit(date);
                 if (Objects.nonNull(date)) {
+                    //分页获取用户
                     Page<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
                     double ceil = Math.ceil(search.getTotal() / 50.0);
+                    //开始计算每一个用户的收益，同时记录用户交易记录，持股记录
                     calculate(search, date, trade, holdInit);
                     for (int i = 2; i <= ceil; i++) {
                         Page<UserInfo> page = userInfoService.search(BaseSearchVo.builder().pageNo(i).pageSize(50).build());

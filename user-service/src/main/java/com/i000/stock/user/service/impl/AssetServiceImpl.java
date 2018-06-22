@@ -78,23 +78,32 @@ public class AssetServiceImpl implements AssetService {
      */
     @Override
     public void calculate(LocalDate date, String userCode, List<Hold> trade, List<Hold> initTrade) {
+        //获取最初的资产信息
         Asset init = assetMapper.getLately(userCode);
+        //推荐的日期小于现在的资产日期，直接退出
         if (!Objects.isNull(init) && init.getDate().compareTo(date) >= 0) {
             return;
         }
+        //是新用户的标记
         Boolean isNewUser = false;
         if (Objects.isNull(init)) {
             isNewUser = true;
+            //获取到用户的初始资产信息
             init = getAssetByUserCode(userCode);
         }
+        //深拷贝
         Asset now = ConvertUtils.beanConvert(init, new Asset());
         now.setDate(date);
         if (Objects.nonNull(date) && !CollectionUtils.isEmpty(trade) && date.compareTo(now.getDate()) < 0) {
             return;
         }
-        //此处需要有地方标记需要使用心得trade
+
+        // todo 根据当天的交易记录，更新用户的资产信息,,此处如果判断交易记录为空保存空即可满足要求
         updateAsset(isNewUser ? initTrade : trade, now);
+
+        //根据推送过来的股票价格，更新持股的价格数据
         holdNowService.updatePrice(date);
+
         //设置股票金额
         now.setStock(getStockAmount(userCode));
         //设置相对上一次的收益率
@@ -122,7 +131,7 @@ public class AssetServiceImpl implements AssetService {
 
     private Asset updateAsset(List<Hold> trade, Asset now) {
         if (!CollectionUtils.isEmpty(trade)) {
-            //先处理卖的，这样余额就能增加，以便能够买别的股票
+            //先处理卖的，这样余额就能增加，以便能够买别的股票  如果有拆股的就需要更新股票的价格......
             List<Hold> sell = trade.stream().filter(a -> a.getAction().equals("SELL")).collect(toList());
             for (Hold hold : sell) {
                 now = updateAsset.getParse(hold.getAction()).update(now, hold);

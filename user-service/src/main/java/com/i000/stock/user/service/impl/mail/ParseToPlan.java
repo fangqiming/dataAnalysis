@@ -29,29 +29,31 @@ public class ParseToPlan implements MailParseService {
 
     private String start = "------ Tomorrows Plan ------";
 
-
     public boolean needSave(String part) {
+        List<String> parts = fetchLines(part);
         LocalDate maxDate = planMapper.getMaxDate();
+
+        if (CollectionUtils.isEmpty(parts)) {
+            //如果时空就保存
+            LocalDate nowDate = LocalDate.parse(part.split("plan_desc_")[1].split("\\.txt")[0],
+                    DateTimeFormatter.ofPattern("yyyyMMdd"));
+            if (Objects.isNull(maxDate) || maxDate.compareTo(nowDate) < 0) {
+                planMapper.insert(Plan.builder().newDate(nowDate).build());
+            }
+        }
+
         if (Objects.isNull(maxDate)) {
             return true;
         }
-        List<String> parts = fetchLines(part);
         if (!CollectionUtils.isEmpty(parts)) {
             for (String line : parts) {
+                //主要是处理了是否需要保存的问题
                 LocalDate parse = LocalDate.parse(line.substring(0, 10), DateTimeFormatter.ofPattern("yyyy/MM/dd"));
                 if (parse.compareTo(maxDate) > 0) {
                     return true;
                 }
             }
-        } else {
-            //如果当前的推荐信息为空,就保存空数据的数据库中
-            LocalDate nowDate = LocalDate.parse(part.split("plan_desc_")[1].split("\\.txt")[0],
-                    DateTimeFormatter.ofPattern("yyyyMMdd"));
-            if (maxDate.compareTo(nowDate) < 0) {
-                planMapper.insert(Plan.builder().newDate(nowDate).build());
-            }
         }
-
         return false;
     }
 
