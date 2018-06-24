@@ -1,6 +1,7 @@
 package com.i000.stock.user.web.controller;
 
 import com.i000.stock.user.api.service.EmailService;
+import com.i000.stock.user.web.schedule.IndexPriceSchedule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,9 +26,18 @@ public class TestController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private IndexPriceSchedule indexPriceSchedule;
+
     @GetMapping("/test")
     public String create() throws IOException {
         emailService.sendMail("测试邮件", "hahahahaah", true);
         return "haha";
+    }
+
+    @GetMapping("/test1")
+    public String create2() {
+        indexPriceSchedule.saveIndexPrice();
+        return "xixi";
     }
 }

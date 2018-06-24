@@ -38,7 +38,7 @@ public class FileServiceImpl implements FileService {
                 System.out.println("文件已创建");
                 folder.mkdir();
             }
-            File file = new File(String.format("./recommend/%s", sdf.format(new Date())));
+            File file = new File(String.format("./recommend/%s.report", sdf.format(new Date())));
             file.deleteOnExit();
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
@@ -55,6 +55,8 @@ public class FileServiceImpl implements FileService {
             log.error("[RESTORE DATA ERROR] start=[{}] end=[{}]", start, end);
             return "param error";
         }
+        start += start + ".report";
+        end += end + ".report";
         File file = new File("./recommend");
         File[] files = file.listFiles();
         List<File> fileList = new ArrayList<>(Arrays.asList(files));
@@ -68,7 +70,7 @@ public class FileServiceImpl implements FileService {
                     return "error " + report.getName();
                 }
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(4000);
                 } catch (Exception e) {
                 }
             }

@@ -1,0 +1,25 @@
+
+------ Daily Snapshot ------
+   date   	LONG1	#cash	maxsect	maxindu	market	total	gain%
+>>> 20180102 : 5000000 : 33483.3
+2018/01/02	0	4	0	0	33483	33483	0.0%
+beta = 0
+benchmark_volatility = 0	portfolio_volatility = 0
+avg_cash_pct = -1
+
+------ Portfolio for 20180102 , LONG1 ------
+type	L
+cash	0
+value	0
+num_positions	0
+Total gain = 0.0 %
+
+------ Details for closed positions on 20180102 , LONG1 ------
+
+------ Todays Trades ------
+cat /home/longji/MMdata/chprod/daily/china/201801/20180102/trade_desc_20180102.txt
+date	category	symbol	action	price	shares	capital	note
+
+------ Tomorrows Plan ------
+cat /home/longji/MMdata/chprod/daily/china/201801/20180102/plan_desc_20180102.txt
+date	category	symbol	action	price	shares	capital	score	note
