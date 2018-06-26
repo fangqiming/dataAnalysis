@@ -31,7 +31,7 @@ import java.util.List;
 public class PriceServiceImpl implements PriceService {
 
     private static final String comma = ",";
-    private static final String newLine = "\r\n";
+    private static final String newLine = "\n";
 
     @Resource
     private CompanyService companyService;

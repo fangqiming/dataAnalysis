@@ -1,5 +1,6 @@
 package com.i000.stock.user.web.controller;
 
+import com.i000.stock.user.api.service.CompanyService;
 import com.i000.stock.user.api.service.EmailService;
 import com.i000.stock.user.web.schedule.IndexPriceSchedule;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,10 @@ public class TestController {
     @Autowired
     private IndexPriceSchedule indexPriceSchedule;
 
+    @Autowired
+    private CompanyService companyService;
+
+
     @GetMapping("/test")
     public String create() throws IOException {
         emailService.sendMail("测试邮件", "hahahahaah", true);
@@ -36,8 +41,8 @@ public class TestController {
     }
 
     @GetMapping("/test1")
-    public String create2() {
-        indexPriceSchedule.saveIndexPrice();
+    public String create2() throws IOException {
+        System.out.println(companyService.getCode());
         return "xixi";
     }
 }

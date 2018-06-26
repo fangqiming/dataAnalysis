@@ -6,6 +6,7 @@ import com.i000.stock.user.dao.model.Asset;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -66,4 +67,13 @@ public interface AssetMapper extends BaseMapper<Asset> {
      */
     @Select("select found_rows()")
     Long pageTotal();
+
+    /**
+     * 获取资金的闲置率
+     *
+     * @param user
+     * @return
+     */
+    @Select("select avg(balance/(balance+stock+cover)) from asset where user_code=#{user}")
+    BigDecimal getIdleRate(@Param("user") String user);
 }

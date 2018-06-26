@@ -4,19 +4,16 @@ import com.i000.stock.user.api.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import javax.mail.internet.MimeMessage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Author:qmfang
@@ -31,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.to}")
     private String[] to;
 
     @Autowired

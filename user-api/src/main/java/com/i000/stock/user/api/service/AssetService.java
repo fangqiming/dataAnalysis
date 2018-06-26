@@ -7,6 +7,7 @@ import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.model.Hold;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -75,4 +76,12 @@ public interface AssetService {
      * @return
      */
     AssetDiffVo getSummary(String userCode);
+
+    /**
+     * 获取资金的闲置率
+     *
+     * @param userCode
+     * @return
+     */
+    BigDecimal getIdleRate(String userCode);
 }

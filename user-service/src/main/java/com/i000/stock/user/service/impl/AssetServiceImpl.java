@@ -203,4 +203,9 @@ public class AssetServiceImpl implements AssetService {
                 .coverAmount(now.getCover()).build();
 
     }
+
+    @Override
+    public BigDecimal getIdleRate(String userCode) {
+        return assetMapper.getIdleRate(userCode);
+    }
 }

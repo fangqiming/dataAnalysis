@@ -193,6 +193,13 @@ public class TradeController {
         return Results.newSingleResultEntity(assetService.getSummary(userCode));
     }
 
+    @GetMapping(path = "/get_idle_rate")
+    public ResultEntity getIdleRate() {
+        String userCode = RequestContext.getInstance().getAccountCode();
+        ValidationUtils.validateParameter(userCode, "用户码不能为空");
+        return Results.newNormalResultEntity("idleRate", assetService.getIdleRate(userCode).multiply(new BigDecimal(100)));
+    }
+
     private GainVo getGain(LocalDate date, int day, String DateStr, String userCode) {
         GainBo gain = assetService.getGain(date, day, userCode);
         return GainVo.builder().date(DateStr).profit(gain.getProfit()).build();

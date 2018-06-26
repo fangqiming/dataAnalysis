@@ -27,8 +27,6 @@ import java.util.Date;
 @Component
 public class IndexPriceSchedule {
 
-    private boolean isStockDay;
-
     @Resource
     private IndexPriceService indexPriceService;
 
@@ -38,12 +36,11 @@ public class IndexPriceSchedule {
     @Autowired
     private MailSendConfig mailSendConfig;
 
-    @Autowired
-    private OffsetPriceService offsetPriceService;
 
     private SimpleDateFormat sd = new SimpleDateFormat("yyyyMMdd");
 
     /**
+     *
      * 每天 3:35收盘的时候将价格指数信息保存到数据库中
      */
     @Scheduled(cron = "0 35 15 * * ?")
@@ -55,33 +52,33 @@ public class IndexPriceSchedule {
             //价格保存到数据库中
             indexPriceService.save(indexPrice);
             //发送邮件推送
-            if(isStockDay){
-                emailService.sendFilMail(String.format("数据 %s(txt)", sd.format(new Date())), stringBuffer.toString(), mailSendConfig.isSendIndexPriceInfo());
-            }
+//            if(setStockDay(stringBuffer)){
+//                emailService.sendFilMail(String.format("数据 %s(txt)", sd.format(new Date())), stringBuffer.toString(), mailSendConfig.isSendIndexPriceInfo());
+//            }
         } catch (Exception e) {
             log.error("[SAVE PRICE INDEX ERROR] e=[{}]", e);
         }
     }
 
     /**
-     * 处理拆并股的问题
+     * 处理拆并股的问题  此处也是存在问题。报了一个空指针
      */
-    @Scheduled(cron = "0 35 9 * * ?")
-    public void updateAmount() {
-        try {
-            offsetPriceService.updateAmount();
-        } catch (IOException e) {
-            log.error("处理股票的拆股失败", e);
-        }
-    }
+//    @Scheduled(cron = "0 35 9 * * ?")
+//    public void updateAmount() {
+//        try {
+//            offsetPriceService.updateAmount();
+//        } catch (IOException e) {
+//            log.error("处理股票的拆股失败", e);
+//        }
+//    }
 
 
-    private void setStockDay(StringBuffer stringBuffer) {
+    private boolean setStockDay(StringBuffer stringBuffer) {
         CharSequence charSequence = stringBuffer.subSequence(0, 20);
         String str = charSequence.toString();
         String[] split = str.split(",");
         LocalDate localDates = LocalDate.parse(split[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         System.out.println(localDates);
-        isStockDay = LocalDate.now().compareTo(localDates) == 0;
+        return LocalDate.now().compareTo(localDates) == 0;
     }
 }

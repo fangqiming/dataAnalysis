@@ -36,7 +36,7 @@ public class CompanyServiceImpl implements CompanyService {
             for (Element li : ul) {
                 String info = li.text();
                 String code = getCode(info);
-                if (code.startsWith("60") || code.startsWith("000") || code.startsWith("002") || code.startsWith("300")) {
+                if (code.startsWith("60") || code.startsWith("000") || code.startsWith("002") || code.startsWith("300") || code.startsWith("001")) {
                     result.add(code);
                 }
             }
