@@ -2,6 +2,7 @@ package com.i000.stock.user.web.controller;
 
 import com.i000.stock.user.api.service.CompanyService;
 import com.i000.stock.user.api.service.EmailService;
+import com.i000.stock.user.service.impl.mail.ParseToPlan;
 import com.i000.stock.user.web.schedule.IndexPriceSchedule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class TestController {
     private EmailService emailService;
 
     @Autowired
-    private IndexPriceSchedule indexPriceSchedule;
+    private ParseToPlan parseToPlan;
 
     @Autowired
     private CompanyService companyService;
@@ -36,8 +37,7 @@ public class TestController {
 
     @GetMapping("/test")
     public String create() throws IOException {
-        emailService.sendMail("测试邮件", "hahahahaah", true);
-        return "haha";
+        return null;
     }
 
     @GetMapping("/test1")

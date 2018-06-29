@@ -93,7 +93,7 @@ public class ParseToPlan implements MailParseService {
         String[] split = original.split(line.pattern());
         for (String line : split) {
             if (date.matcher(line).find()) {
-                result.add(line.substring(0, line.length() - 1));
+                result.add(line.substring(0, line.length()));
             }
         }
         return result;

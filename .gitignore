@@ -66,3 +66,4 @@ dist/
 nbdist/
 .nb-gradle/
 mvnw
+/user-web/src/main/resources/214671736220252.pfx

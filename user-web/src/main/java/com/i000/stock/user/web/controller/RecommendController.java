@@ -25,10 +25,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -116,8 +114,13 @@ public class RecommendController {
         }
         //需要根据日期查询全部的推荐历史
         List<LocalDate> dataInfo = pageData.getList().stream().map(a -> a.getDate()).collect(toList());
+        //分页查询了paln 然后在
         List<Plan> plans = planService.findByDate(dataInfo);
+
+        //此处需要做错位处理
         Map<LocalDate, List<Plan>> map = plans.stream().collect(groupingBy(Plan::getNewDate));
+
+
         List<List<PlanVo>> plan = new ArrayList<>(16);
         map.forEach((k, v) -> plan.add(ConvertUtils.listConvert(v, PlanVo.class)));
         //获取结果
@@ -138,4 +141,5 @@ public class RecommendController {
     private boolean stepIsDay(StepEnum step) {
         return step.equals(StepEnum.WEEK) || step.equals(StepEnum.MONTH);
     }
+
 }
