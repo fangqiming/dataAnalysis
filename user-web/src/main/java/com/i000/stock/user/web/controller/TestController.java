@@ -1,8 +1,5 @@
 package com.i000.stock.user.web.controller;
 
-import com.i000.stock.user.api.service.CompanyService;
-import com.i000.stock.user.api.service.EmailService;
-import com.i000.stock.user.service.impl.mail.ParseToPlan;
 import com.i000.stock.user.web.schedule.IndexPriceSchedule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +22,10 @@ import java.io.IOException;
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class TestController {
 
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private ParseToPlan parseToPlan;
-
-    @Autowired
-    private CompanyService companyService;
 
 
     @GetMapping("/test")
     public String create() throws IOException {
-        return null;
-    }
-
-    @GetMapping("/test1")
-    public String create2() throws IOException {
-        System.out.println(companyService.getCode());
         return "xixi";
     }
 }

@@ -1,68 +1,45 @@
 package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.service.CompanyService;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import com.i000.stock.user.dao.mapper.CompanyMapper;
+import com.i000.stock.user.dao.model.Company;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @Author:qmfang
  * @Description:
- * @Date:Created in 15:04 2018/4/25
+ * @Date:Created in 17:48 2018/7/3
  * @Modified By:
  */
 @Service
 @Transactional
 public class CompanyServiceImpl implements CompanyService {
 
+    @Autowired
+    private CompanyMapper companyMapper;
+
 
     @Override
-    public List<String> getCode() throws IOException {
-        List<String> result = new ArrayList<>(4000);
-        Document doc = Jsoup.connect("http://quote.eastmoney.com/stocklist.html").get();
-        Elements sltit = doc.getElementsByClass("sltit");
-        for (Element element : sltit) {
-            String prefix = element.child(0).attr("name");
-            Element companys = element.nextElementSibling();
-            Elements ul = companys.children();
-            for (Element li : ul) {
-                String info = li.text();
-                String code = getCode(info);
-                if (code.startsWith("60") || code.startsWith("000") || code.startsWith("002") || code.startsWith("300") || code.startsWith("001")) {
-                    result.add(code);
-                }
+    public void batchSave(Map<String, String> info) {
+        if (!CollectionUtils.isEmpty(info)) {
+            //先清空
+            companyMapper.truncate();
+            for (Map.Entry<String, String> entry : info.entrySet()) {
+                Company company = new Company();
+                company.setCode(entry.getKey());
+                company.setName(entry.getValue());
+                companyMapper.insert(company);
             }
         }
-        return result;
     }
 
-
-    private String getName(String str) {
-        if (!StringUtils.isEmpty(str)) {
-            try {
-                return str.split("\\(")[0];
-            } catch (Exception e) {
-            }
-        }
-        return "";
+    @Override
+    public String getNameByCode(String code) {
+        return companyMapper.getNameByCode(code);
     }
-
-    private String getCode(String str) {
-        if (!StringUtils.isEmpty(str)) {
-            try {
-                return str.split("\\(")[1].split("\\)")[0];
-            } catch (Exception e) {
-            }
-        }
-        return "";
-    }
-
 }

@@ -1,0 +1,36 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i000.stock.user.dao.mapper.IndexGainMapper">
+
+    <resultMap id="IndexGain" type="com.i000.stock.user.dao.model.IndexGain">
+        <id column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="sz" property="sz"/>
+        <result column="hs" property="hs"/>
+        <result column="cyb" property="cyb"/>
+        <result column="sz_gain" property="szGain"/>
+        <result column="hs_gain" property="hsGain"/>
+        <result column="cyb_gain" property="cybGain"/>
+        <result column="sz_total" property="szTotal"/>
+        <result column="hs_total" property="hsTotal"/>
+        <result column="cyb_total" property="cybTotal"/>
+    </resultMap>
+
+    <select id="getFirstIndexGain" resultMap="IndexGain">
+        select * from index_gain where id in (select min(id) from index_gain)
+    </select>
+
+    <select id="getLastIndexGain" resultMap="IndexGain">
+        select * from index_gain where id in (select max(id) from index_gain)
+    </select>
+
+    <select id="find" resultMap="IndexGain">
+         select * from index_gain
+    </select>
+
+    <select id="getDiff" resultMap="IndexGain">
+        select * from index_gain where date >= DATE_SUB(#{date}, INTERVAL ${diff} DAY) limit 1
+    </select>
+</mapper>

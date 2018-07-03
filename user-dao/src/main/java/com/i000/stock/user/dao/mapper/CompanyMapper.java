@@ -5,6 +5,7 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.Company;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -25,17 +26,11 @@ public interface CompanyMapper extends BaseMapper<Company> {
     Long truncate();
 
     /**
-     * 分页查询公司信息
+     * 通过股票代码获取公司名称
      *
-     * @param baseSearchVo
+     * @param code
      * @return
      */
-    List<Company> search(@Param("baseSearchVo") BaseSearchVo baseSearchVo);
-
-    /**
-     * 获取分页数量
-     *
-     * @return
-     */
-    Long count();
+    @Select("select `name` from company where `code`=#{code}")
+    String getNameByCode(@Param("code") String code);
 }

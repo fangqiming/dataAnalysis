@@ -1,38 +1,38 @@
 package com.i000.stock.user.web.controller;
 
+import com.i000.stock.user.api.entity.bo.EndAssetBo;
 import com.i000.stock.user.api.entity.bo.IpInfoBo;
+import com.i000.stock.user.api.entity.bo.PageIndexValueBo;
+import com.i000.stock.user.api.entity.bo.StartAssetBo;
 import com.i000.stock.user.api.entity.vo.*;
-import com.i000.stock.user.api.service.AccessService;
-import com.i000.stock.user.api.service.AssetService;
-import com.i000.stock.user.api.service.HoldNowService;
-import com.i000.stock.user.api.service.TradeRecordService;
+import com.i000.stock.user.api.service.*;
 import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
+import com.i000.stock.user.core.util.CodeEnumUtil;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
+import com.i000.stock.user.dao.bo.LineGroupQuery;
 import com.i000.stock.user.dao.bo.Page;
-import com.i000.stock.user.dao.model.Access;
-import com.i000.stock.user.dao.model.Asset;
-import com.i000.stock.user.dao.model.HoldNow;
-import com.i000.stock.user.dao.model.TradeRecord;
+import com.i000.stock.user.dao.bo.StepEnum;
+import com.i000.stock.user.dao.model.*;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -54,44 +54,45 @@ public class TradeController {
     private HoldNowService holdNowService;
 
     @Resource
-    private TradeRecordService tradeRecordService;
-
-    @Resource
     private AccessService accessService;
 
     @Resource
     private ExternalServiceImpl externalService;
 
+    @Resource
+    private IndexGainService indexGainService;
+
+
+    @Resource
+    private LineService lineService;
+
+    @Resource
+    private UserInfoService userInfoService;
+
+    @Autowired
+    private CompanyService companyService;
+
     /**
-     * 127.0.0.1:8082/trade/get_contrast
-     * 获取用户从开始投入到目前的收益率之和的曲线
-     *
+     * 获取预期年化收益
+     * 通过测试
      * @return
      */
-    @GetMapping(path = "/get_contrast")
-    public ResultEntity getContrast() {
+    @GetMapping(path = "/get_year_rate")
+    public ResultEntity getYearRate() {
         String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
-        Asset lately = assetService.getLately(userCode);
-        if (Objects.nonNull(lately)) {
-            List<Asset> diff = assetService.findDiff(lately.getDate(), 365, userCode);
-            List<Asset> collect = diff.stream().sorted(Comparator.comparing(Asset::getDate)).collect(toList());
-            List<BigDecimal> gain = new ArrayList<>();
-            List<String> time = new ArrayList<>();
-            for (Asset asset : collect) {
-                gain.add(asset.getTotalGain().multiply(new BigDecimal(100)));
-                time.add(asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")));
-            }
-            return Results.newSingleResultEntity(YieldRateVo.builder().gain(gain).time(time).build());
-        }
-        return Results.newSingleResultEntity(YieldRateVo.builder().gain(new ArrayList<>(0)).time(new ArrayList<>(0)).build());
+        Asset asset = assetService.getLately(userCode);
+        int days = asset.getDate().getDayOfYear();
+        BigDecimal yearRate = asset.getTotalGain().multiply(new BigDecimal(36500)).divide(new BigDecimal(days), 2, BigDecimal.ROUND_UP);
+        return Results.newNormalResultEntity("yearRate", yearRate);
     }
 
     /**
-     * 127.0.0.1:8082/trade/find_gain
-     * 首先首页获取最新的收益情况，他需要知道目前最新的日期是什么
-     * 首页获取最新获利情况的展示
+     * 127.0.0.1:8081/trade/find_gain
+     * 获取首页的最近获利情况描述
+     * 基本完成
      *
+     * @param httpServletRequest
      * @return
      */
     @GetMapping(path = "/find_gain")
@@ -99,12 +100,15 @@ public class TradeController {
         String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         Asset lately = assetService.getLately(userCode);
-        List<GainVo> result = new ArrayList<>();
+        List<PageGainVo> result = new ArrayList<>(4);
         if (Objects.nonNull(lately) && Objects.nonNull(lately.getDate())) {
-            result.add(GainVo.builder().date(lately.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).profit(lately.getGain()).build());
+            LocalDate current = lately.getDate();
+            result.add(getGain(current, 1, current.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), userCode));
             result.add(getGain(lately.getDate(), 31, "最近一月", userCode));
-            result.add(getGain(lately.getDate(), 365, "最近一年", userCode));
-            result.add(getGain(lately.getDate(), 365 * 3, "最近三年", userCode));
+            //todo 实际是最近1年，需要修改代码
+            result.add(getGain(lately.getDate(), 365, "今年以来", userCode));
+            //todo 实际是近3年来 需要修改代码
+            result.add(getGain(lately.getDate(), 365 * 3, "成立以来", userCode));
         }
         saveAccess(httpServletRequest);
         return Results.newListResultEntity(result);
@@ -112,53 +116,93 @@ public class TradeController {
 
 
     /**
-     * 分页查找收益信息
-     * 127.0.0.1:8082/trade/search_gain
+     * 127.0.0.1:8082/recommend/get_index_contrast
+     * 获取首页上证指数与千古指数的对比折线图
      *
-     * @param baseSearchVo
+     * @param step
      * @return
      */
-    @GetMapping(path = "/search_gain")
-    public ResultEntity searchGain(BaseSearchVo baseSearchVo) {
-        String userCode = RequestContext.getInstance().getAccountCode();
-        ValidationUtils.validateParameter(userCode, "用户码不能为空");
-        ValidationUtils.validate(baseSearchVo);
-        Page<Asset> search = assetService.search(baseSearchVo, userCode);
-        return CollectionUtils.isEmpty(search.getList()) ? Results.newPageResultEntity(0L, new ArrayList<>(0)) :
-                Results.newPageResultEntity(search.getTotal(), ConvertUtils.listConvert(search.getList(), AssetVo.class));
+    @GetMapping(path = "/get_index_contrast")
+    public ResultEntity getBaseLineTrend(@RequestParam String step) {
+        StepEnum stepEnum = CodeEnumUtil.transformationStr2Enum(step, StepEnum.class);
+        List<LineGroupQuery> baseLines = stepIsDay(stepEnum)
+                ? lineService.findBaseLineDay(stepEnum)
+                : lineService.findBaseLineGroup(stepEnum);
+
+        BaseLineTrendVO baseLineTrendVO = new BaseLineTrendVO();
+        baseLines.stream().sorted(Comparator.comparing(LineGroupQuery::getTime)).forEach(baseLine -> {
+            baseLineTrendVO.getAiMarket().add(baseLine.getAiMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_UP));
+            baseLineTrendVO.getBaseMarket().add(baseLine.getBaseMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_UP));
+            baseLineTrendVO.getTime().add(baseLine.getTime());
+        });
+        return Results.newSingleResultEntity(baseLineTrendVO);
     }
 
-    /**
-     * 127.0.0.1:8082/trade/find_trade
-     * 查找指定的日期的交易记录
-     */
-    @GetMapping(path = "/find_trade")
-    public ResultEntity findTrade(@RequestParam("date") LocalDate date) {
-        String userCode = RequestContext.getInstance().getAccountCode();
-        ValidationUtils.validateParameter(userCode, "用户码不能为空");
-        ValidationUtils.validateParameter(date, "日期不能为空");
-        List<TradeRecord> tradeRecords = tradeRecordService.find(date, userCode);
-        return Results.newListResultEntity(ConvertUtils.listConvert(tradeRecords, TradeRecordVo.class));
-    }
 
     /**
-     * 查找最新交易记录
-     * 127.0.0.1:8082/trade/find_new_trade
+     * 127.0.0.1:8081/trade/get_gain_contrast
+     * 获取首页各种指数收益的折线对比
+     * todo 应该已经完成，导入指数数据之后进行测试
      *
      * @return
      */
-    @GetMapping(path = "/find_new_trade")
-    public ResultEntity findNewTrade() {
+    @GetMapping(path = "/get_gain_contrast")
+    public ResultEntity getContrast() {
         String userCode = RequestContext.getInstance().getAccountCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
-        LocalDate date = tradeRecordService.getMaxDate(userCode);
-        List<TradeRecord> tradeRecords = tradeRecordService.find(date, userCode);
-        return Results.newListResultEntity(ConvertUtils.listConvert(tradeRecords, TradeRecordVo.class));
+        Asset lately = assetService.getLately(userCode);
+        YieldRateVo result = new YieldRateVo();
+        if (Objects.nonNull(lately)) {
+            //查询了最近一年的账户信息  todo 代码需要修改 365和下面的find 需要统一。
+            List<Asset> diff = assetService.findDiff(lately.getDate(), 365, userCode);
+            //获取到指数信息
+            Map<LocalDate, List<IndexGain>> indexInfo = indexGainService.find().stream().collect(groupingBy(IndexGain::getDate));
+
+            List<Asset> collect = diff.stream().sorted(Comparator.comparing(Asset::getDate)).collect(toList());
+
+            for (Asset asset : collect) {
+                result.getStockGain().add(asset.getTotalGain().multiply(new BigDecimal(100)));
+                result.getTime().add(asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")));
+                result.getCybGain().add(indexInfo.get(asset.getDate()).get(0).getCybTotal().multiply(new BigDecimal(100)));
+                result.getSzGain().add(indexInfo.get(asset.getDate()).get(0).getSzTotal().multiply(new BigDecimal(100)));
+                result.getHsGain().add(indexInfo.get(asset.getDate()).get(0).getHsTotal().multiply(new BigDecimal(100)));
+            }
+        }
+        return Results.newSingleResultEntity(result);
     }
 
+
     /**
-     * 127.0.0.1:8082/trade/find_stock
-     * 获取当前持股信息
+     * 127.0.0.1:8081//trade/get_asset_summary
+     * 获取首页的账户总览信息
+     * 经过测试基本可用
+     */
+    @GetMapping(path = "/get_asset_summary")
+    public ResultEntity getAssetSummary() {
+        String userCode = RequestContext.getInstance().getAccountCode();
+        Asset asset = assetService.getLately(userCode);
+        UserInfo userInfo = userInfoService.getByName(userCode);
+        StartAssetBo startAssetBo = StartAssetBo.builder().date("18-01-01")
+                .totalAsset(userInfo.getInitAmount())
+                .balanceAmount(BigDecimal.ZERO)
+                .stockAmount(BigDecimal.ZERO)
+                .todayProfit(asset.getGain())
+                .avgPosition((BigDecimal.ONE.subtract(assetService.getAvgIdleRate(userCode))).multiply(new BigDecimal(100))).build();
+        EndAssetBo endAssetBo = EndAssetBo.builder().date(asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
+                .totalAsset(asset.getBalance().add(asset.getStock()))
+                .balanceAmount(asset.getBalance())
+                .stockAmount(asset.getStock())
+                .totalProfit(asset.getTotalGain())
+                .todayPosition((BigDecimal.ONE.subtract(assetService.getIdleRate(userCode))).multiply(new BigDecimal(100))).build();
+        AssetSummaryVo result = AssetSummaryVo.builder().start(startAssetBo).end(endAssetBo).build();
+        return Results.newSingleResultEntity(result);
+    }
+
+
+    /**
+     * //现在查一个股票名称的字段
+     * 127.0.0.1:8081/trade/find_stock
+     * 首页获取当前的持仓信息  基本通过测试
      *
      * @return
      */
@@ -174,36 +218,27 @@ public class TradeController {
                 holdNowVo.setCost(holdNowVo.getOldPrice().multiply(new BigDecimal(holdNowVo.getAmount())));
                 holdNowVo.setValue(holdNowVo.getNewPrice().multiply(new BigDecimal(holdNowVo.getAmount())));
                 holdNowVo.setEarning(holdNowVo.getValue().subtract(holdNowVo.getCost()));
+                holdNowVo.setStockName(companyService.getNameByCode(holdNowVo.getName()));
             }
             return Results.newListResultEntity(holdNowVos);
         }
         return Results.newListResultEntity(new ArrayList<>(0));
     }
 
-    /**
-     * 127.0.0.1:8082/trade/get_overview
-     * 获取账户总览信息
-     *
-     * @return
-     */
-    @GetMapping(path = "/get_overview")
-    public ResultEntity getOverview() {
-        String userCode = RequestContext.getInstance().getAccountCode();
-        ValidationUtils.validateParameter(userCode, "用户码不能为空");
-        return Results.newSingleResultEntity(assetService.getSummary(userCode));
-    }
 
-    @GetMapping(path = "/get_idle_rate")
-    public ResultEntity getIdleRate() {
-        String userCode = RequestContext.getInstance().getAccountCode();
-        ValidationUtils.validateParameter(userCode, "用户码不能为空");
-        return Results.newNormalResultEntity("idleRate", assetService.getIdleRate(userCode).multiply(new BigDecimal(100)));
-    }
 
-    private GainVo getGain(LocalDate date, int day, String DateStr, String userCode) {
-        GainBo gain = assetService.getGain(date, day, userCode);
-        return GainVo.builder().date(DateStr).profit(gain.getProfit()).build();
-    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void saveAccess(HttpServletRequest httpServletRequest) {
         String ip = httpServletRequest.getRemoteAddr();
@@ -213,6 +248,21 @@ public class TradeController {
         if (Objects.nonNull(access.getCountry())) {
             accessService.save(access);
         }
+    }
+
+    private PageGainVo getGain(LocalDate date, Integer diff, String title, String userCode) {
+        PageIndexValueBo indexGain = indexGainService.getDiffGain(date, diff);
+        GainBo gain = assetService.getGain(date, diff, userCode);
+        List<GainVo> gainVos = new ArrayList<>(4);
+        gainVos.add(GainVo.builder().indexName("千古指数").profit(gain.getProfit()).build());
+        gainVos.add(GainVo.builder().indexName("上证指数").profit(indexGain.getSzGain()).build());
+        gainVos.add(GainVo.builder().indexName("沪深300指").profit(indexGain.getHsGain()).build());
+        gainVos.add(GainVo.builder().indexName("创业板指").profit(indexGain.getCybGain()).build());
+        return PageGainVo.builder().Title(title).gain(gainVos).build();
+    }
+
+    private boolean stepIsDay(StepEnum step) {
+        return step.equals(StepEnum.WEEK) || step.equals(StepEnum.MONTH);
     }
 
 }

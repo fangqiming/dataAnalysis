@@ -67,7 +67,7 @@ public class BuyAssetImpl implements AssetUpdateService {
     private void record(Asset asset, HoldNow trade) {
         if (trade.getAmount() > 0) {
             TradeRecord build = TradeRecord.builder().type(trade.getType()).name(trade.getName())
-                    .action(trade.getAction()).oldDate(trade.getOldDate()).oldPrice(trade.getOldPrice())
+                    .action("BUY").oldDate(trade.getOldDate()).oldPrice(trade.getOldPrice())
                     .newDate(asset.getDate()).newPrice(trade.getNewPrice()).amount(new BigDecimal(trade.getAmount()))
                     .userCode(asset.getUserCode()).build();
             tradeRecordService.save(build);

@@ -1,20 +1,27 @@
 package com.i000.stock.user.api.service;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @Author:qmfang
  * @Description:
- * @Date:Created in 15:03 2018/4/25
+ * @Date:Created in 17:46 2018/7/3
  * @Modified By:
  */
 public interface CompanyService {
 
     /**
-     * 从网页上爬取股票数据
+     * 批量保存公司信息
      *
+     * @param info
+     */
+    void batchSave(Map<String, String> info);
+
+    /**
+     * 通过股票代码获取股票名称
+     *
+     * @param code
      * @return
      */
-    List<String> getCode() throws IOException;
+    String getNameByCode(String code);
 }

@@ -69,11 +69,22 @@ public interface AssetMapper extends BaseMapper<Asset> {
     Long pageTotal();
 
     /**
-     * 获取资金的闲置率
+     * 获取平均资金的闲置率
      *
      * @param user
      * @return
      */
     @Select("select avg(balance/(balance+stock+cover)) from asset where user_code=#{user}")
+    BigDecimal getAvgIdleRate(@Param("user") String user);
+
+    /**
+     * 获取当日的之间闲置率
+     *
+     * @param user
+     * @return
+     */
+    @Select("select balance/(stock+balance+cover) from asset where id in (select max(id) from asset) and user_code=#{user}")
     BigDecimal getIdleRate(@Param("user") String user);
+
+
 }

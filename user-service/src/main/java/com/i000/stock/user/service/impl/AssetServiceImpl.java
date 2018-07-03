@@ -5,18 +5,14 @@ import com.i000.stock.user.api.entity.vo.AssetDiffVo;
 import com.i000.stock.user.api.entity.vo.GainBo;
 import com.i000.stock.user.api.service.AssetService;
 import com.i000.stock.user.api.service.HoldNowService;
-import com.i000.stock.user.api.service.HoldService;
 import com.i000.stock.user.api.service.UserInfoService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.mapper.AssetMapper;
-import com.i000.stock.user.dao.mapper.HoldMapper;
-import com.i000.stock.user.dao.mapper.TradeMapper;
 import com.i000.stock.user.dao.model.*;
 import com.i000.stock.user.service.impl.asset.amount.UpdateAssetImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -27,7 +23,6 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
@@ -159,10 +154,12 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public GainBo getGain(LocalDate start, Integer day, String userCode) {
         GainBo result = GainBo.builder().startDate(start).profit(new BigDecimal(0)).build();
+        //查询到了当前的账户情况
         Asset byDate = assetMapper.getByDate(start, userCode);
         if (Objects.isNull(byDate)) {
             return result;
         }
+        //查询到了之前的账户情况
         Asset diff = getDiff(start, day, userCode);
         if (Objects.isNull(diff)) {
             return result;
@@ -202,6 +199,11 @@ public class AssetServiceImpl implements AssetService {
                 .totalGain(now.getTotalGain())
                 .coverAmount(now.getCover()).build();
 
+    }
+
+    @Override
+    public BigDecimal getAvgIdleRate(String userCode) {
+        return assetMapper.getAvgIdleRate(userCode);
     }
 
     @Override

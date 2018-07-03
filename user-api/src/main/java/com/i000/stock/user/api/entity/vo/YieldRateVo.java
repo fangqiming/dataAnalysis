@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,9 +18,38 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class YieldRateVo {
 
-    private List<BigDecimal> gain;
+    /**
+     * 千古指数获利
+     */
+    private List<BigDecimal> stockGain;
+
+    /**
+     * 上证的获利
+     */
+    private List<BigDecimal> szGain;
+
+    /**
+     * 沪深300的获利
+     */
+    private List<BigDecimal> hsGain;
+
+    /**
+     * 创业板的获利
+     */
+    private List<BigDecimal> cybGain;
+
+    /**
+     * 时间
+     */
     private List<String> time;
+
+    public YieldRateVo() {
+        stockGain = new ArrayList<>(300);
+        szGain = new ArrayList<>(300);
+        hsGain = new ArrayList<>(300);
+        cybGain = new ArrayList<>(300);
+        time = new ArrayList<>(300);
+    }
 }

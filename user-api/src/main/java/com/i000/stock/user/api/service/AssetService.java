@@ -1,7 +1,10 @@
 package com.i000.stock.user.api.service;
 
+import com.i000.stock.user.api.entity.bo.EndAssetBo;
+import com.i000.stock.user.api.entity.bo.StartAssetBo;
 import com.i000.stock.user.api.entity.vo.AssetDiffVo;
 import com.i000.stock.user.api.entity.vo.GainBo;
+import com.i000.stock.user.api.entity.vo.GainVo;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.bo.Page;
@@ -25,6 +28,7 @@ public interface AssetService {
      * @return
      */
     Asset getLately(String userCode);
+
 
     /**
      * 获取到指定日期之前的前几天的资产信息
@@ -78,10 +82,19 @@ public interface AssetService {
     AssetDiffVo getSummary(String userCode);
 
     /**
-     * 获取资金的闲置率
+     * 获取平均资金的闲置率
+     *
+     * @param userCode
+     * @return
+     */
+    BigDecimal getAvgIdleRate(String userCode);
+
+    /**
+     * 获取资金闲置率
      *
      * @param userCode
      * @return
      */
     BigDecimal getIdleRate(String userCode);
+
 }

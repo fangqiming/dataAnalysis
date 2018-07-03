@@ -41,5 +41,7 @@ public class HoldNowVo {
     private BigDecimal value;
     //收益绝对值
     private BigDecimal earning;
+    //股票名称
+    private String stockName;
 
 }

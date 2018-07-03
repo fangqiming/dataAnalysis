@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
@@ -52,28 +53,7 @@ public class RecommendController {
     @Resource
     private AssetService assetService;
 
-    /**
-     * 127.0.0.1:8082/recommend/get_contrast
-     * 用于获取推荐记录中的 大盘与引擎的对比曲线图
-     *
-     * @param step
-     * @return
-     */
-    @GetMapping(path = "/get_contrast")
-    public ResultEntity getBaseLineTrend(@RequestParam String step) {
-        StepEnum stepEnum = CodeEnumUtil.transformationStr2Enum(step, StepEnum.class);
-        List<LineGroupQuery> baseLines = stepIsDay(stepEnum)
-                ? lineService.findBaseLineDay(stepEnum)
-                : lineService.findBaseLineGroup(stepEnum);
 
-        BaseLineTrendVO baseLineTrendVO = new BaseLineTrendVO();
-        baseLines.stream().sorted(Comparator.comparing(LineGroupQuery::getTime)).forEach(baseLine -> {
-            baseLineTrendVO.getAiMarket().add(baseLine.getAiMarket());
-            baseLineTrendVO.getBaseMarket().add(baseLine.getBaseMarket());
-            baseLineTrendVO.getTime().add(baseLine.getTime());
-        });
-        return Results.newSingleResultEntity(baseLineTrendVO);
-    }
 
 
     /**
@@ -85,7 +65,6 @@ public class RecommendController {
     @CrossOrigin(origins = "*", maxAge = 3600)
     @GetMapping(path = "/find")
     public ResultEntity find() {
-        //获取到了最大的日期
         LocalDate date = planService.getMaxDate();
         List<Plan> byDate = planService.findByDate(date);
         return byDate.size() == 1 && StringUtils.isBlank(byDate.get(0).getName()) ?
@@ -138,8 +117,6 @@ public class RecommendController {
         return Results.newPageResultEntity(pageData.getTotal(), result);
     }
 
-    private boolean stepIsDay(StepEnum step) {
-        return step.equals(StepEnum.WEEK) || step.equals(StepEnum.MONTH);
-    }
+
 
 }

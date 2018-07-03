@@ -21,8 +21,8 @@ public class ActionSerializer extends JsonSerializer<String> {
     private static Map<String, String> map = new HashMap<>(4);
 
     static {
-        map.put("SELL", "买入");
-        map.put("BUY", "卖出");
+        map.put("SELL", "卖出");
+        map.put("BUY", "买入");
         map.put("SHORT", "做空");
         map.put("COVER", "平仓");
     }

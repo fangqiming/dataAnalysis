@@ -1,7 +1,7 @@
 package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.bo.IndexInfo;
-import com.i000.stock.user.api.service.CompanyService;
+import com.i000.stock.user.api.service.CompanyCrawlerService;
 import com.i000.stock.user.api.service.EmailService;
 import com.i000.stock.user.api.service.IndexService;
 import com.i000.stock.user.api.service.PriceService;
@@ -34,7 +34,7 @@ public class PriceServiceImpl implements PriceService {
     private static final String newLine = "\n";
 
     @Resource
-    private CompanyService companyService;
+    private CompanyCrawlerService companyCrawlerService;
 
     @Autowired
     private ExternalServiceImpl externalService;
@@ -56,7 +56,7 @@ public class PriceServiceImpl implements PriceService {
 
     private List<Price> findNotLazy() throws IOException {
         List<Price> result = new ArrayList<>(4000);
-        List<String> codes = companyService.getCode();
+        List<String> codes = companyCrawlerService.getCode();
         List<List<String>> cutList = cutting(codes, 100.0);
         for (List<String> list : cutList) {
             result.addAll(externalService.getPrice(list));

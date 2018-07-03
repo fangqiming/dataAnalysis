@@ -5,19 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @Author:qmfang
  * @Description:
- * @Date:Created in 10:19 2018/4/27
+ * @Date:Created in 15:37 2018/7/3
  * @Modified By:
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GainVo {
-    private String indexName;
-    private BigDecimal profit;
+public class PageGainVo {
+    private String Title;
+    private List<GainVo> gain;
 }

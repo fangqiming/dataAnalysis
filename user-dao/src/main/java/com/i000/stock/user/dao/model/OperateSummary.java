@@ -9,19 +9,20 @@ import lombok.NoArgsConstructor;
 /**
  * @Author:qmfang
  * @Description:
- * @Date:Created in 14:57 2018/4/25
+ * @Date:Created in 18:18 2018/7/3
  * @Modified By:
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Company {
+public class OperateSummary {
 
     @TableId
-    private Long id;
-
-    private String name;
-
-    private String code;
+    private Integer id;
+    private Integer sellNumber;
+    private Integer buyNumber;
+    private Integer profitNumber;
+    private Integer lossNumber;
+    private Integer holdNumber;
 }
