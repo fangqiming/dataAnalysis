@@ -35,4 +35,11 @@
         select sql_calc_found_rows  * from asset where user_code=#{userCode}   ORDER BY date DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
+    <select id="findByDateUser" resultMap="Asset">
+        select * from asset where user_code=#{userCode}
+        <foreach collection="dates" item="item" open="and date IN(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

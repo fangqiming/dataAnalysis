@@ -20,6 +20,9 @@ import java.util.Objects;
 public class SellAssetImpl implements AssetUpdateService {
 
     @Resource
+    private OperateSummaryService operateSummaryService;
+
+    @Resource
     private HoldNowService holdNowService;
 
     @Resource
@@ -51,6 +54,15 @@ public class SellAssetImpl implements AssetUpdateService {
                     .action("SELL").oldDate(trade.getOldDate()).oldPrice(trade.getOldPrice())
                     .newDate(asset.getDate()).newPrice(trade.getNewPrice()).amount(new BigDecimal(trade.getAmount()))
                     .userCode(asset.getUserCode()).build();
+            //todo 此处有待优化，如果不是同一年就会出现问题
+            int holdDay = asset.getDate().getDayOfYear() - trade.getOldDate().getDayOfYear();
+
+            if (trade.getNewPrice().compareTo(trade.getOldPrice()) >= 0) {
+                //获利
+                operateSummaryService.updateSell(holdDay, 1, 0, asset.getUserCode());
+            } else {
+                operateSummaryService.updateSell(holdDay, 0, 1, asset.getUserCode());
+            }
             tradeRecordService.save(build);
         }
     }

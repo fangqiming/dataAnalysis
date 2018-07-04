@@ -1,9 +1,6 @@
 package com.i000.stock.user.service.impl.asset.amount;
 
-import com.i000.stock.user.api.service.AssetUpdateService;
-import com.i000.stock.user.api.service.HoldNowService;
-import com.i000.stock.user.api.service.TradeRecordService;
-import com.i000.stock.user.api.service.UserInfoService;
+import com.i000.stock.user.api.service.*;
 import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.core.util.ConvertUtils;
@@ -25,6 +22,9 @@ import java.util.Objects;
 public class BuyAssetImpl implements AssetUpdateService {
 
     @Resource
+    private OperateSummaryService operateSummaryService;
+
+    @Resource
     private HoldNowService holdNowService;
 
     @Resource
@@ -44,6 +44,8 @@ public class BuyAssetImpl implements AssetUpdateService {
         BigDecimal oneShareMoney = userInfo.getInitAmount().divide(userInfo.getInitNum(), 4, RoundingMode.HALF_UP);
         BigDecimal canBuyHandNum = oneShareMoney.divide(oneHandMoney, 0, BigDecimal.ROUND_HALF_UP);
         BigDecimal balance = asset.getBalance();
+
+        //此处计算的是买入的份数
         for (int i = 1; i <= canBuyHandNum.intValue(); i++) {
             balance = balance.subtract(oneHandMoney);
             if (balance.compareTo(BigDecimal.ZERO) >= 0) {
@@ -60,6 +62,9 @@ public class BuyAssetImpl implements AssetUpdateService {
 
         record(asset, holdNow);
         holdNowService.save(holdNow);
+
+        //更新买操作
+        operateSummaryService.updateBuy(holdNow.getUserCode());
         return asset;
     }
 

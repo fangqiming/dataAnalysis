@@ -1,36 +1,24 @@
 package com.i000.stock.user.web.controller;
 
-import com.i000.stock.user.api.entity.vo.BaseLineTrendVO;
+import com.i000.stock.user.api.entity.vo.PlanInfoVo;
 import com.i000.stock.user.api.entity.vo.PlanVo;
-import com.i000.stock.user.api.entity.vo.RecommendPageVO;
-import com.i000.stock.user.api.service.AssetService;
-import com.i000.stock.user.api.service.LineService;
+import com.i000.stock.user.api.service.CompanyInfoCrawlerService;
 import com.i000.stock.user.api.service.PlanService;
-import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
-import com.i000.stock.user.core.util.CodeEnumUtil;
 import com.i000.stock.user.core.util.ConvertUtils;
-import com.i000.stock.user.core.util.ValidationUtils;
-import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.LineGroupQuery;
-import com.i000.stock.user.dao.bo.Page;
-import com.i000.stock.user.dao.bo.StepEnum;
-import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.Plan;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author:qmfang
@@ -45,16 +33,10 @@ import static java.util.stream.Collectors.toList;
 public class RecommendController {
 
     @Resource
-    private LineService lineService;
-
-    @Resource
     private PlanService planService;
 
     @Resource
-    private AssetService assetService;
-
-
-
+    private CompanyInfoCrawlerService companyInfoCrawlerService;
 
     /**
      * 127.0.0.1:8082/recommend/find
@@ -66,57 +48,32 @@ public class RecommendController {
     @GetMapping(path = "/find")
     public ResultEntity find() {
         LocalDate date = planService.getMaxDate();
-        List<Plan> byDate = planService.findByDate(date);
-        return byDate.size() == 1 && StringUtils.isBlank(byDate.get(0).getName()) ?
+        List<Plan> plans = planService.findByDate(date);
+        return plans.size() == 1 && StringUtils.isBlank(plans.get(0).getName()) ?
                 Results.newListResultEntity(new ArrayList<>(0)) :
-                Results.newListResultEntity(ConvertUtils.listConvert(byDate, PlanVo.class));
+                Results.newListResultEntity(ConvertUtils.listConvert(plans, PlanVo.class));
     }
 
-    /**
-     * 分页查询推荐信息
-     * 127.0.0.1:8082/recommend/search
-     *
-     * @param baseSearchVo
-     * @return
-     */
-    @GetMapping(path = "/search")
-    public ResultEntity search(BaseSearchVo baseSearchVo) {
-        //1.分页获取获利信息
-
-        ValidationUtils.validate(baseSearchVo);
-        String userCode = RequestContext.getInstance().getAccountCode();
-        ValidationUtils.validateParameter(userCode, "用户码不能为空");
-
-        Page<Asset> pageData = assetService.search(baseSearchVo, userCode);
-        if (CollectionUtils.isEmpty(pageData.getList())) {
-            return Results.newPageResultEntity(0L, null);
+    @GetMapping(path = "/get_info")
+    public ResultEntity getInfo() {
+        LocalDate date = planService.getMaxDate();
+        List<Plan> plans = planService.findByDate(date);
+        List<PlanInfoVo> result = new ArrayList<>(plans.size());
+        for (Plan plan : plans) {
+            PlanInfoVo tmp = create(plan.getName());
+            tmp.setInfo(companyInfoCrawlerService.getInfo(plan.getName()));
+            result.add(tmp);
         }
-        //需要根据日期查询全部的推荐历史
-        List<LocalDate> dataInfo = pageData.getList().stream().map(a -> a.getDate()).collect(toList());
-        //分页查询了paln 然后在
-        List<Plan> plans = planService.findByDate(dataInfo);
-
-        //此处需要做错位处理
-        Map<LocalDate, List<Plan>> map = plans.stream().collect(groupingBy(Plan::getNewDate));
-
-
-        List<List<PlanVo>> plan = new ArrayList<>(16);
-        map.forEach((k, v) -> plan.add(ConvertUtils.listConvert(v, PlanVo.class)));
-        //获取结果
-        List<RecommendPageVO> result = new ArrayList<>(pageData.getList().size());
-        for (Asset userProfit : pageData.getList()) {
-            List<Plan> list = map.get(userProfit.getDate());
-            if (CollectionUtils.isNotEmpty(list) && list.size() == 1 && StringUtils.isBlank(list.get(0).getName())) {
-                list = new ArrayList<>(0);
-            }
-            RecommendPageVO recommendPageVO = RecommendPageVO.builder().date(userProfit.getDate())
-                    .gainRate(userProfit.getGain())
-                    .recommend(ConvertUtils.listConvert(list, PlanVo.class)).build();
-            result.add(recommendPageVO);
-        }
-        return Results.newPageResultEntity(pageData.getTotal(), result);
+        return Results.newListResultEntity(result);
     }
 
-
+    private PlanInfoVo create(String code) {
+        String stockCode = code.startsWith("60") ? "sh" + code : "sz" + code;
+        return PlanInfoVo.builder()
+                .min(String.format("http://image.sinajs.cn/newchart/min/n/%s.gif", stockCode))
+                .daily(String.format("http://image.sinajs.cn/newchart/daily/n/%s.gif", stockCode))
+                .weekly(String.format("http://image.sinajs.cn/newchart/weekly/n/%s.gif", stockCode))
+                .monthly(String.format("http://image.sinajs.cn/newchart/monthly/n/%s.gif", stockCode)).build();
+    }
 
 }

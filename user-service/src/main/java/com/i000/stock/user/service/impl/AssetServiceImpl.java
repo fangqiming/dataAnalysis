@@ -23,6 +23,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
@@ -209,5 +210,10 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public BigDecimal getIdleRate(String userCode) {
         return assetMapper.getIdleRate(userCode);
+    }
+
+    @Override
+    public List<Asset> findByDateUser(String userCode, Set<LocalDate> dates) {
+        return assetMapper.findByDateUser(userCode, dates);
     }
 }

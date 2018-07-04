@@ -1,0 +1,20 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i000.stock.user.dao.mapper.OperateSummaryMapper">
+
+    <resultMap id="OperateSummary" type="com.i000.stock.user.dao.model.OperateSummary">
+        <result column="sell_number" property="sellNumber"/>
+        <result column="buy_number" property="buyNumber"/>
+        <result column="profit_number" property="profitNumber"/>
+        <result column="loss_number" property="lossNumber"/>
+        <result column="hold_total_day" property="holdTotalDay"/>
+        <result column="user_code" property="userCode"/>
+    </resultMap>
+
+    <select id="getByUserCode" resultMap="OperateSummary">
+        select * from operate_summary where user_code=#{userCode}
+    </select>
+
+</mapper>

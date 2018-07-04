@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Select;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Author:qmfang
@@ -86,5 +87,10 @@ public interface AssetMapper extends BaseMapper<Asset> {
     @Select("select balance/(stock+balance+cover) from asset where id in (select max(id) from asset) and user_code=#{user}")
     BigDecimal getIdleRate(@Param("user") String user);
 
+
+    /**
+     * 根据日期和userCode查询满足条件的资金信息
+     */
+    List<Asset> findByDateUser(@Param("userCode") String userCode, @Param("dates") Set<LocalDate> dates);
 
 }

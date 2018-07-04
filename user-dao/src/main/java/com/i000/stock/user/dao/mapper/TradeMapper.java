@@ -1,6 +1,7 @@
 package com.i000.stock.user.dao.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.Plan;
 import com.i000.stock.user.dao.model.Trade;
 import org.apache.ibatis.annotations.Param;
@@ -51,5 +52,8 @@ public interface TradeMapper extends BaseMapper<Trade> {
      */
     @Select("select price from trade where `name`=#{name} and action='COVER' order by id limit 1")
     BigDecimal getCoverPriceByName(@Param("name") String name);
+
+
+
 
 }

@@ -1,5 +1,7 @@
 package com.i000.stock.user.service.impl.mail;
 
+import com.i000.stock.user.api.entity.bo.KVBo;
+import com.i000.stock.user.api.service.CompanyInfoCrawlerService;
 import com.i000.stock.user.api.service.MailParseService;
 import com.i000.stock.user.dao.mapper.PlanMapper;
 import com.i000.stock.user.dao.model.Plan;
@@ -8,7 +10,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ public class ParseToPlan implements MailParseService {
 
     @Resource
     private PlanMapper planMapper;
+
+    @Resource
+    private CompanyInfoCrawlerService companyInfoCrawlerService;
 
     private String start = "------ Tomorrows Plan ------";
 
@@ -62,9 +66,14 @@ public class ParseToPlan implements MailParseService {
         String part = getPart(original);
         LocalDate parse = null;
         if (needSave(part)) {
+            companyInfoCrawlerService.clear();
             for (String line : fetchLines(part)) {
                 String[] split = line.split("\t");
                 parse = LocalDate.parse(split[0], DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+                //这里就表名有推荐信息 在此处缓存起来
+                List<KVBo> companyInfo = companyInfoCrawlerService.putCache(split[2]);
+                CompanyInfoCrawlerService.CACHE.put(split[2], companyInfo);
+
                 planMapper.insert(Plan.builder().action(split[3])
                         .name(split[2])
                         .newDate(parse)

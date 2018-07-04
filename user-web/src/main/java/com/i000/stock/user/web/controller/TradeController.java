@@ -72,9 +72,16 @@ public class TradeController {
     @Autowired
     private CompanyService companyService;
 
+    @Autowired
+    private OperateSummaryService operateSummaryService;
+
+    @Autowired
+    private TradeRecordService tradeRecordService;
+
     /**
      * 获取预期年化收益
      * 通过测试
+     *
      * @return
      */
     @GetMapping(path = "/get_year_rate")
@@ -142,7 +149,6 @@ public class TradeController {
     /**
      * 127.0.0.1:8081/trade/get_gain_contrast
      * 获取首页各种指数收益的折线对比
-     * todo 应该已经完成，导入指数数据之后进行测试
      *
      * @return
      */
@@ -225,19 +231,35 @@ public class TradeController {
         return Results.newListResultEntity(new ArrayList<>(0));
     }
 
+    /**
+     * 获取操作统计的接口
+     * 基本通过测试
+     *
+     * @return
+     */
+    @GetMapping(path = "/get_operator_summary")
+    public ResultEntity getOperator() {
+        String userCode = RequestContext.getInstance().getAccountCode();
+        ValidationUtils.validateParameter(userCode, "用户码不能为空");
+        OperatorVo operatorSummary = operateSummaryService.getOperatorSummary(userCode);
+        return Results.newSingleResultEntity(operatorSummary);
+    }
 
 
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * 分页获取交易详情的接口
+     * 需要获取每天的交易记录
+     */
+    @GetMapping(path = "/search_trade")
+    public ResultEntity searchTrade(BaseSearchVo baseSearchVo) {
+        ValidationUtils.validate(baseSearchVo);
+        String userCode = RequestContext.getInstance().getAccountCode();
+        ValidationUtils.validateParameter(userCode, "用户码不能为空");
+        Page<PageTradeRecordVo> result = tradeRecordService.searchTradeAsset(userCode, baseSearchVo);
+        return CollectionUtils.isEmpty(result.getList())
+                ? Results.newPageResultEntity(0L, new ArrayList<>(0))
+                : Results.newPageResultEntity(result.getTotal(), result.getList());
+    }
 
 
     private void saveAccess(HttpServletRequest httpServletRequest) {

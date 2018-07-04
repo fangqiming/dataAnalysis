@@ -1,29 +1,37 @@
-package com.i000.stock.user.dao.model;
+package com.i000.stock.user.api.entity.vo;
 
-import com.baomidou.mybatisplus.annotations.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * @Author:qmfang
  * @Description:
- * @Date:Created in 18:18 2018/7/3
+ * @Date:Created in 10:34 2018/7/4
  * @Modified By:
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OperateSummary {
+public class OperatorVo {
 
-    @TableId
-    private Integer id;
     private Integer sellNumber;
+
     private Integer buyNumber;
+
     private Integer profitNumber;
+
     private Integer lossNumber;
-    private Integer holdTotalDay;
-    private String userCode;
+
+    private Integer avgHoldDay;
+
+    private BigDecimal winRate;
+
+    private BigDecimal avgProfitRate;
+
+    private Integer holdNumber;
 }

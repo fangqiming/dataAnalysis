@@ -2,10 +2,7 @@ package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.bo.IndexValueBo;
 import com.i000.stock.user.api.entity.bo.PageIndexValueBo;
-import com.i000.stock.user.api.entity.vo.GainVo;
 import com.i000.stock.user.api.service.IndexGainService;
-import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
-import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.dao.mapper.IndexGainMapper;
 import com.i000.stock.user.dao.model.IndexGain;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +35,16 @@ public class IndexGainServiceImpl implements IndexGainService {
         //查询出第一个实体
         IndexGain old = indexGainMapper.getFirstIndexGain();
         if (Objects.isNull(old)) {
-            throw new ServiceException(ApplicationErrorMessage.NOT_EXISTS.getCode(), "指数数据没有初始化");
+            return IndexGain.builder().sz(indexValueBo.getSz())
+                    .date(indexValueBo.getDate())
+                    .hs(indexValueBo.getHs())
+                    .cyb(indexValueBo.getCyb())
+                    .szTotal(BigDecimal.ZERO)
+                    .hsTotal(BigDecimal.ZERO)
+                    .cybTotal(BigDecimal.ZERO)
+                    .szGain(BigDecimal.ZERO)
+                    .hsGain(BigDecimal.ZERO)
+                    .cybGain(BigDecimal.ZERO).build();
         }
         IndexGain last = indexGainMapper.getLastIndexGain();
         //用来计算总的收益率

@@ -1,18 +1,16 @@
 package com.i000.stock.user.api.service;
 
-import com.i000.stock.user.api.entity.bo.EndAssetBo;
-import com.i000.stock.user.api.entity.bo.StartAssetBo;
 import com.i000.stock.user.api.entity.vo.AssetDiffVo;
 import com.i000.stock.user.api.entity.vo.GainBo;
-import com.i000.stock.user.api.entity.vo.GainVo;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.Hold;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Author:qmfang
@@ -96,5 +94,7 @@ public interface AssetService {
      * @return
      */
     BigDecimal getIdleRate(String userCode);
+
+    List<Asset> findByDateUser(String userCode, Set<LocalDate> dates);
 
 }

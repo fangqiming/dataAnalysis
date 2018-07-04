@@ -6,24 +6,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 /**
  * @Author:qmfang
  * @Description:
- * @Date:Created in 18:18 2018/7/3
+ * @Date:Created in 10:08 2018/7/4
  * @Modified By:
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OperateSummary {
-
+public class IndexValue {
     @TableId
-    private Integer id;
-    private Integer sellNumber;
-    private Integer buyNumber;
-    private Integer profitNumber;
-    private Integer lossNumber;
-    private Integer holdTotalDay;
-    private String userCode;
+    private Long id;
+    private LocalDate date;
+    private BigDecimal sh;
+    private BigDecimal cyb;
+    private BigDecimal hs;
 }

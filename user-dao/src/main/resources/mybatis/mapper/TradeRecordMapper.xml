@@ -21,4 +21,11 @@
         select * from trade_record where new_date=#{date} and user_code=#{userCode}
     </select>
 
+    <select id="findTradeRecord" resultMap="TradeRecord">
+        select * from trade_record where  user_code=#{userCode}
+        <foreach collection="dates" item="item" open="and old_date IN(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

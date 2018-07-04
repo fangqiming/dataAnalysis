@@ -1,5 +1,6 @@
 package com.i000.stock.user.api.service;
 
+import com.i000.stock.user.api.entity.vo.OperatorVo;
 import com.i000.stock.user.dao.model.OperateSummary;
 
 /**
@@ -11,19 +12,19 @@ import com.i000.stock.user.dao.model.OperateSummary;
 public interface OperateSummaryService {
 
     /**
-     * 获取操作统计
-     *
-     * @return
-     */
-    OperateSummary get();
-
-    /**
      * 更新卖出次数 和 累计持有天数 , 亏本数  , 获利数
      */
-    void updateSell(Integer holdDay, Integer profit, Integer loss);
+    void updateSell(Integer holdDay, Integer profit, Integer loss,String userCode);
 
     /**
      * 更新买入次数
      */
-    void updateBuy();
+    void updateBuy(String userCode);
+
+    /**
+     * 获取操作统计
+     *
+     * @return
+     */
+    OperatorVo getOperatorSummary(String userCode);
 }

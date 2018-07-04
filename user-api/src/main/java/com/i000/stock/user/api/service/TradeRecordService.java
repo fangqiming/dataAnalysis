@@ -1,5 +1,8 @@
 package com.i000.stock.user.api.service;
 
+import com.i000.stock.user.api.entity.vo.PageTradeRecordVo;
+import com.i000.stock.user.dao.bo.BaseSearchVo;
+import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.model.TradeRecord;
 
 import java.time.LocalDate;
@@ -36,4 +39,15 @@ public interface TradeRecordService {
      * @return
      */
     LocalDate getMaxDate(String userCode);
+
+    /**
+     * 分页查找交易记录
+     *
+     * @param baseSearchVo
+     * @return
+     */
+    Page<TradeRecord> search(String userCode, BaseSearchVo baseSearchVo);
+
+
+    Page<PageTradeRecordVo> searchTradeAsset(String userCode, BaseSearchVo baseSearchVo);
 }
