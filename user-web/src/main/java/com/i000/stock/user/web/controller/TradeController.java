@@ -117,7 +117,6 @@ public class TradeController {
             //todo 实际是近3年来 需要修改代码
             result.add(getGain(lately.getDate(), 365 * 3, "成立以来", userCode));
         }
-        saveAccess(httpServletRequest);
         return Results.newListResultEntity(result);
     }
 
@@ -206,7 +205,6 @@ public class TradeController {
 
 
     /**
-     * //现在查一个股票名称的字段
      * 127.0.0.1:8081/trade/find_stock
      * 首页获取当前的持仓信息  基本通过测试
      *
@@ -276,10 +274,10 @@ public class TradeController {
         PageIndexValueBo indexGain = indexGainService.getDiffGain(date, diff);
         GainBo gain = assetService.getGain(date, diff, userCode);
         List<GainVo> gainVos = new ArrayList<>(4);
-        gainVos.add(GainVo.builder().indexName("千古指数").profit(gain.getProfit()).build());
-        gainVos.add(GainVo.builder().indexName("上证指数").profit(indexGain.getSzGain()).build());
-        gainVos.add(GainVo.builder().indexName("沪深300指").profit(indexGain.getHsGain()).build());
-        gainVos.add(GainVo.builder().indexName("创业板指").profit(indexGain.getCybGain()).build());
+        gainVos.add(GainVo.builder().indexName("千古指数").profit(gain.getProfit().multiply(new BigDecimal(100))).build());
+        gainVos.add(GainVo.builder().indexName("上证指数").profit(indexGain.getSzGain().multiply(new BigDecimal(100))).build());
+        gainVos.add(GainVo.builder().indexName("沪深300指").profit(indexGain.getHsGain().multiply(new BigDecimal(100))).build());
+        gainVos.add(GainVo.builder().indexName("创业板指").profit(indexGain.getCybGain().multiply(new BigDecimal(100))).build());
         return PageGainVo.builder().Title(title).gain(gainVos).build();
     }
 

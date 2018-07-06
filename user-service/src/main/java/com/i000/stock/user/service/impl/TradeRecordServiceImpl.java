@@ -58,7 +58,7 @@ public class TradeRecordServiceImpl implements TradeRecordService {
         baseSearchVo.setStart();
         List<LocalDate> localDates = tradeRecordMapper.searchByDate(userCode, baseSearchVo);
         Long total = tradeRecordMapper.pageTotal();
-        List<TradeRecord> tradeRecord = tradeRecordMapper.findTradeRecord(userCode,localDates);
+        List<TradeRecord> tradeRecord = tradeRecordMapper.findTradeRecord(userCode, localDates);
         Page<TradeRecord> result = new Page<>();
         result.setTotal(total);
         result.setList(tradeRecord);
@@ -77,12 +77,24 @@ public class TradeRecordServiceImpl implements TradeRecordService {
             for (Asset asset : assetInfo) {
                 PageTradeRecordVo tmp = PageTradeRecordVo.builder()
                         .asset(ConvertUtils.beanConvert(asset, new AssetVo()))
-                        .trade(ConvertUtils.listConvert(dateMapTrade.get(asset.getDate()), TradeRecordVo.class)).build();
+                        .trade(ConvertUtils.listConvert(updatePrice(dateMapTrade.get(asset.getDate())), TradeRecordVo.class)).build();
                 listResult.add(tmp);
             }
             result.setList(listResult);
         }
         result.setTotal(pageInfo.getTotal());
         return result;
+    }
+
+
+    private List<TradeRecord> updatePrice(List<TradeRecord> tradeRecords) {
+        for (TradeRecord tradeRecord : tradeRecords) {
+            //买入 没有卖出价格，，，卖出有买入价格  old是买入价 new是卖出价
+            if ("BUY".equals(tradeRecord.getAction())) {
+                tradeRecord.setNewDate(null);
+                tradeRecord.setNewPrice(null);
+            }
+        }
+        return tradeRecords;
     }
 }

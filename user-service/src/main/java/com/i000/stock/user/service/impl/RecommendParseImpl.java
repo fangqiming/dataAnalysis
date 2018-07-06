@@ -8,6 +8,7 @@ import com.i000.stock.user.service.impl.mail.ParseToTrade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
@@ -41,7 +42,7 @@ public class RecommendParseImpl {
         parseServiceList = Arrays.asList(parseToHold, parseToLine, parseToPlan, parseToTrade);
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     public LocalDate parse(String content) {
         log.debug(new Date() + "得到了推送的推荐信息");
         List<LocalDate> result = new ArrayList<>(4);

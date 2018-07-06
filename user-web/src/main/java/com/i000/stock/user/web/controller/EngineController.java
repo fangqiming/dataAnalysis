@@ -13,6 +13,7 @@ import com.i000.stock.user.web.config.MailSendConfig;
 import com.i000.stock.user.web.thread.ReceiveRecommendThread;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,6 +64,7 @@ public class EngineController {
      *
      * @return
      */
+    @Transactional
     @PostMapping(value = "/receive_recommend")
     public ResultEntity receiveRecommend(@RequestBody String content, @RequestParam(defaultValue = "1") Integer needSave) {
         ValidationUtils.validateParameter(content, "内容不能为空");

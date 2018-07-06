@@ -103,8 +103,8 @@ public class ExternalServiceImpl {
      * @return
      */
     public IpInfoBo getIpInfo(String ipAddress) {
-        Call<JSONObject> info = service.getIpInfo("json", ipAddress);
         try {
+            Call<JSONObject> info = service.getIpInfo("json", ipAddress);
             JSONObject result = execute(info);
             return JSONObject.parseObject(result.toString(), IpInfoBo.class);
         } catch (Exception e) {
