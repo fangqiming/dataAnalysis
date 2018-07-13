@@ -1,8 +1,7 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.dao.bo.StepEnum;
+import com.i000.stock.user.api.service.original.LineService;
 import com.i000.stock.user.dao.bo.LineGroupQuery;
-import com.i000.stock.user.api.service.LineService;
 import com.i000.stock.user.dao.mapper.LineMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +22,9 @@ public class LineServiceImpl implements LineService {
     @Resource
     private LineMapper lineMapper;
 
-    @Override
-    public List<LineGroupQuery> findBaseLineDay(StepEnum step) {
-        return lineMapper.findByStepDay(step);
-    }
 
     @Override
-    public List<LineGroupQuery> findBaseLineGroup(StepEnum step) {
-        return lineMapper.findByStepGroup(step);
+    public List<LineGroupQuery> find() {
+        return lineMapper.find();
     }
 }

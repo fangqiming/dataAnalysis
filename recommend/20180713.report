@@ -1,0 +1,8 @@
+{
+    "id":7,
+    "cryptocurrencyId":11,
+    "serviceFeeRate":0.121,
+    "minTradeLimitTime":0.131,
+    "maxTradeLimitTime":0.114,
+    "minTradeQuantity":0.115
+}

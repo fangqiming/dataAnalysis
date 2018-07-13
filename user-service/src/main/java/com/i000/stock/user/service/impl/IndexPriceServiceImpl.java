@@ -1,7 +1,7 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.IndexPriceService;
-import com.i000.stock.user.api.service.PriceService;
+import com.i000.stock.user.api.service.external.IndexPriceService;
+import com.i000.stock.user.api.service.buiness.PriceService;
 import com.i000.stock.user.dao.mapper.IndexPriceMapper;
 import com.i000.stock.user.dao.model.IndexPrice;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +34,7 @@ public class IndexPriceServiceImpl implements IndexPriceService {
         if (StringUtils.isNoneBlank(date)) {
             return indexPriceMapper.getContentByDate(date);
         }
-        return String.format("date (%s) error", date);
+        return String.format("DATE (%s) error", date);
     }
 
     @Override

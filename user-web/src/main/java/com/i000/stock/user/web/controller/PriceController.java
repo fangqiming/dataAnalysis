@@ -1,6 +1,6 @@
 package com.i000.stock.user.web.controller;
 
-import com.i000.stock.user.api.service.IndexPriceService;
+import com.i000.stock.user.api.service.external.IndexPriceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +24,7 @@ public class PriceController {
     private IndexPriceService indexPriceService;
 
     /**
-     * 用于提供邮件格式的指数信息和价格信息
+     * 提供最新的价格指数信息
      *
      * @return
      * @throws IOException
@@ -34,6 +34,12 @@ public class PriceController {
         return indexPriceService.get();
     }
 
+    /**
+     * 获取历史价格指数信息
+     *
+     * @param date
+     * @return
+     */
     @GetMapping("/get_old_index_price")
     public String getOldIndexPrice(@RequestParam String date) {
         return indexPriceService.getContent(date);

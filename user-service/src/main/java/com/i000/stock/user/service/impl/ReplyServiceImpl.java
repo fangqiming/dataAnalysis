@@ -2,7 +2,7 @@ package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.vo.ReplyVo;
 import com.i000.stock.user.api.entity.vo.ReplyVos;
-import com.i000.stock.user.api.service.ReplyService;
+import com.i000.stock.user.api.service.discuss.ReplyService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
@@ -76,17 +76,6 @@ public class ReplyServiceImpl implements ReplyService {
             result.setSon(son);
         }
         return result;
-    }
-
-
-    @Override
-    public Long doGood(Long id) {
-        return replyMapper.doGood(id);
-    }
-
-    @Override
-    public Long doBad(Long id) {
-        return replyMapper.doBad(id);
     }
 
     @Override

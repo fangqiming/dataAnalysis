@@ -1,6 +1,6 @@
 package com.i000.stock.user.web.controller;
 
-import com.i000.stock.user.api.service.AdService;
+import com.i000.stock.user.api.service.util.AdService;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ValidationUtils;

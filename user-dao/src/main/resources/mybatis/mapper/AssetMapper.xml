@@ -23,6 +23,10 @@
         select * from asset where user_code=#{userCode} and date >= DATE_SUB(#{date}, INTERVAL ${diff} DAY) limit 1
     </select>
 
+    <select id="getDiff_2" resultMap="Asset">
+        select * from asset where user_code=#{userCode} and date>=#{date} ORDER BY id limit 1
+    </select>
+
     <select id="findDiff" resultMap="Asset">
         select * from asset where user_code=#{userCode} and date >= DATE_SUB(#{date}, INTERVAL ${diff} DAY)
     </select>
@@ -40,6 +44,11 @@
         <foreach collection="dates" item="item" open="and date IN(" close=")" separator=",">
             #{item}
         </foreach>
+    </select>
+
+
+    <select id="findBetween" resultMap="Asset">
+        select * from asset  where user_code=#{userCode} and date between #{start} and #{end} ORDER BY date
     </select>
 
 </mapper>

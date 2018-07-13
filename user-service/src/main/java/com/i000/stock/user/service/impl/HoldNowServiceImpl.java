@@ -1,7 +1,7 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.HoldNowService;
-import com.i000.stock.user.api.service.HoldService;
+import com.i000.stock.user.api.service.buiness.HoldNowService;
+import com.i000.stock.user.api.service.original.HoldService;
 import com.i000.stock.user.dao.mapper.HoldNowMapper;
 import com.i000.stock.user.dao.model.Hold;
 import com.i000.stock.user.dao.model.HoldNow;

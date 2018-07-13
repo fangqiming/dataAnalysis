@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @Date:Created in 10:22 2018/4/23
  * @Modified By:
  */
+
 @EnableScheduling
 @EnableCaching
 @EnableFeignClients(basePackages = "com.i000.stock*")

@@ -11,15 +11,19 @@
         <result column="gain" property="gain"/>
     </resultMap>
 
-
-    <!--当周 当月按天划分-->
-    <select id="findByStepDay" resultMap="LineGroup">
-        select date as groupCondition,base_market,ai_market,gain from line where   DATE_SUB(CURDATE(), INTERVAL #{step.step} DAY) &lt;= date(date)
-
+    <select id="find" resultMap="LineGroup">
+        select date as groupCondition,base_market,ai_market,gain from line ORDER BY date
     </select>
 
+
+    <!--当周 当月按天划分-->
+    <!--<select id="findByStepDay" resultMap="LineGroup">
+        select date as groupCondition,base_market,ai_market,gain from line where   DATE_SUB(CURDATE(), INTERVAL #{step.step} DAY) &lt;= date(date)
+
+    </select>-->
+
     <!--当季 当年按 周/月划分-->
-    <select id="findByStepGroup" resultMap="LineGroup">
+  <!--  <select id="findByStepGroup" resultMap="LineGroup">
         select DATE_FORMAT(o.date,#{step.groupCondition}) groupCondition,
         AVG(o.ai_market) ai_market,
         AVG(o.base_market)base_market ,
@@ -28,7 +32,7 @@
         select * from line where DATE_SUB(CURDATE(), INTERVAL #{step.step} DAY) &lt;= date(date)
         ) o
         group by groupCondition;
-    </select>
+    </select>-->
 
 
 </mapper>

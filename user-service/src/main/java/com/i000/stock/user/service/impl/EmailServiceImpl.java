@@ -1,19 +1,14 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.EmailService;
+import com.i000.stock.user.api.service.util.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import javax.mail.internet.MimeMessage;
-import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @Author:qmfang
@@ -35,8 +30,6 @@ public class EmailServiceImpl implements EmailService {
     private JavaMailSenderImpl javaMailSender;
 
 
-    private SimpleDateFormat sd = new SimpleDateFormat("yyyyMMdd");
-
     @Override
     public void sendMail(String title, String content, boolean needSend) {
         if (needSend) {
@@ -46,25 +39,6 @@ public class EmailServiceImpl implements EmailService {
             message.setSubject(title);
             message.setText(content);
             javaMailSender.send(message);
-        }
-    }
-
-    @Override
-    public void sendFilMail(String title, String content, boolean needSend) {
-        if (needSend) {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            try {
-                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-                helper.setFrom(from);
-                helper.setTo(to);
-                helper.setSubject(title);
-                InputStreamSource source = () -> new ByteArrayInputStream(content.getBytes());
-                helper.addAttachment(String.format("%s.txt", sd.format(new Date())), source);
-                javaMailSender.send(mimeMessage);
-            } catch (Exception e) {
-                log.error("[SEND PRICE INDEX INFO ERROR] e=[{}]", e);
-                sendMail("【千古:价格指数邮件推送失败】", e.toString(), true);
-            }
         }
     }
 }

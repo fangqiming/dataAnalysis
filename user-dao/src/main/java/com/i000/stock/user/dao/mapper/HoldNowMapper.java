@@ -55,6 +55,6 @@ public interface HoldNowMapper extends BaseMapper<HoldNow> {
      * @param date
      * @return
      */
-    @Update("update hold_now set amount=amount*#{rate} where `name`=#{code} and old_date=#{date}")
+    @Update("update hold_now set amount=amount*#{rate} where `name`=#{code} and new_date=#{date}")
     Integer updateAmount(@Param("rate") BigDecimal rate, @Param("code") String code, @Param("date") LocalDate date);
 }

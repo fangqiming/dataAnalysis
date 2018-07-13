@@ -1,6 +1,6 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.HoldService;
+import com.i000.stock.user.api.service.original.HoldService;
 import com.i000.stock.user.dao.mapper.HoldMapper;
 import com.i000.stock.user.dao.model.Hold;
 import org.springframework.stereotype.Component;

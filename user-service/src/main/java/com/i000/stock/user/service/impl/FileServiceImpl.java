@@ -1,6 +1,6 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.FileService;
+import com.i000.stock.user.api.service.util.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class FileServiceImpl implements FileService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
     private static final String url = "http://127.0.0.1:8081/engine/receive_recommend?needSave=0";
 

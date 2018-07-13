@@ -1,9 +1,7 @@
 package com.i000.stock.user.service.impl;
 
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.i000.stock.user.api.service.TradeService;
-import com.i000.stock.user.core.util.TimeUtil;
+import com.i000.stock.user.api.service.original.TradeService;
 import com.i000.stock.user.dao.mapper.TradeMapper;
 import com.i000.stock.user.dao.model.Trade;
 import com.i000.stock.user.dao.service.AbstractService;
@@ -11,10 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 
 /**
@@ -27,20 +23,6 @@ import java.util.List;
 @Component
 @Transactional
 public class TradeServiceImpl extends AbstractService<Trade, TradeMapper> implements TradeService {
-
-
-    @Override
-    public List<Trade> findByDate(LocalDate date) {
-        return baseMapper.findByDate(date);
-    }
-
-    @Override
-    public List<Trade> findByDate(List<LocalDate> dates) {
-        List<String> date = TimeUtil.localData2StringList(dates);
-        EntityWrapper<Trade> entityWrapper = createEntityWrapper();
-        entityWrapper.in("date", date);
-        return baseMapper.selectList(entityWrapper);
-    }
 
     @Override
     public LocalDate getMaxDate() {
@@ -55,5 +37,10 @@ public class TradeServiceImpl extends AbstractService<Trade, TradeMapper> implem
     @Override
     public BigDecimal getCoverPrice(String name) {
         return baseMapper.getCoverPriceByName(name);
+    }
+
+    @Override
+    public void updatePrice(String name, BigDecimal rate) {
+        baseMapper.updatePrice(name, rate);
     }
 }

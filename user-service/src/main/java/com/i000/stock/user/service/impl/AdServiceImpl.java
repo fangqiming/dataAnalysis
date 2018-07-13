@@ -1,6 +1,6 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.AdService;
+import com.i000.stock.user.api.service.util.AdService;
 import com.i000.stock.user.dao.mapper.AdMapper;
 import com.i000.stock.user.dao.model.Ad;
 import lombok.extern.slf4j.Slf4j;

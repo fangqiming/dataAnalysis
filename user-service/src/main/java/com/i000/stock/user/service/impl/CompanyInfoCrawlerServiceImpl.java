@@ -1,7 +1,7 @@
 package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.bo.KVBo;
-import com.i000.stock.user.api.service.CompanyInfoCrawlerService;
+import com.i000.stock.user.api.service.external.CompanyInfoCrawlerService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

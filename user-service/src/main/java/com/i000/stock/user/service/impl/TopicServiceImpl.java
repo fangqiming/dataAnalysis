@@ -1,6 +1,6 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.TopicService;
+import com.i000.stock.user.api.service.discuss.TopicService;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.mapper.TopicMapper;
@@ -41,17 +41,6 @@ public class TopicServiceImpl implements TopicService {
         return result;
     }
 
-    @Override
-    public Long doLike(Long id) {
-        topicMapper.updateGood(id);
-        return 1L;
-    }
-
-    @Override
-    public Long doBad(Long id) {
-        topicMapper.updateBad(id);
-        return 1L;
-    }
 
     @Override
     public Topic get(Long id) {

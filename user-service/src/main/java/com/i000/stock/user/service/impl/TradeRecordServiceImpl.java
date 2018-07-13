@@ -1,26 +1,21 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.entity.vo.AssetVo;
-import com.i000.stock.user.api.entity.vo.PageTradeRecordVo;
 import com.i000.stock.user.api.entity.vo.TradeRecordVo;
-import com.i000.stock.user.api.service.AssetService;
-import com.i000.stock.user.api.service.TradeRecordService;
+import com.i000.stock.user.api.service.external.CompanyService;
+import com.i000.stock.user.api.service.buiness.TradeRecordService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.mapper.TradeRecordMapper;
-import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.TradeRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.groupingBy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author:qmfang
@@ -33,7 +28,7 @@ import static java.util.stream.Collectors.groupingBy;
 public class TradeRecordServiceImpl implements TradeRecordService {
 
     @Resource
-    private AssetService assetService;
+    private CompanyService companyService;
 
     @Resource
     private TradeRecordMapper tradeRecordMapper;
@@ -54,47 +49,36 @@ public class TradeRecordServiceImpl implements TradeRecordService {
     }
 
     @Override
-    public Page<TradeRecord> search(String userCode, BaseSearchVo baseSearchVo) {
+    public Page<TradeRecordVo> search(String userCode, BaseSearchVo baseSearchVo) {
         baseSearchVo.setStart();
-        List<LocalDate> localDates = tradeRecordMapper.searchByDate(userCode, baseSearchVo);
+        List<TradeRecord> recode = tradeRecordMapper.search(userCode, baseSearchVo);
         Long total = tradeRecordMapper.pageTotal();
-        List<TradeRecord> tradeRecord = tradeRecordMapper.findTradeRecord(userCode, localDates);
-        Page<TradeRecord> result = new Page<>();
+        Page<TradeRecordVo> result = new Page<>();
+        List<TradeRecordVo> tradeRecordVos = setRecode(recode);
+        result.setList(tradeRecordVos);
         result.setTotal(total);
-        result.setList(tradeRecord);
         return result;
     }
 
-    @Override
-    public Page<PageTradeRecordVo> searchTradeAsset(String userCode, BaseSearchVo baseSearchVo) {
-        Page<PageTradeRecordVo> result = new Page<>();
-        Page<TradeRecord> pageInfo = search(userCode, baseSearchVo);
-        if (!CollectionUtils.isEmpty(pageInfo.getList())) {
-            Map<LocalDate, List<TradeRecord>> dateMapTrade = pageInfo.getList().stream().collect(groupingBy(TradeRecord::getOldDate));
-            //降序排列才对
-            List<Asset> assetInfo = assetService.findByDateUser(userCode, dateMapTrade.keySet()).stream().sorted((a, b) -> b.getDate().compareTo(a.getDate())).collect(Collectors.toList());
-            List<PageTradeRecordVo> listResult = new ArrayList<>(assetInfo.size() * 4);
-            for (Asset asset : assetInfo) {
-                PageTradeRecordVo tmp = PageTradeRecordVo.builder()
-                        .asset(ConvertUtils.beanConvert(asset, new AssetVo()))
-                        .trade(ConvertUtils.listConvert(updatePrice(dateMapTrade.get(asset.getDate())), TradeRecordVo.class)).build();
-                listResult.add(tmp);
-            }
-            result.setList(listResult);
-        }
-        result.setTotal(pageInfo.getTotal());
-        return result;
-    }
-
-
-    private List<TradeRecord> updatePrice(List<TradeRecord> tradeRecords) {
-        for (TradeRecord tradeRecord : tradeRecords) {
-            //买入 没有卖出价格，，，卖出有买入价格  old是买入价 new是卖出价
+    private List<TradeRecordVo> setRecode(List<TradeRecord> recode) {
+        List<TradeRecordVo> result = new ArrayList<>();
+        for (TradeRecord tradeRecord : recode) {
+            TradeRecordVo tmp = ConvertUtils.beanConvert(tradeRecord, new TradeRecordVo());
             if ("BUY".equals(tradeRecord.getAction())) {
-                tradeRecord.setNewDate(null);
-                tradeRecord.setNewPrice(null);
+                tmp.setNewDate(null);
+                tmp.setNewPrice(null);
+                tmp.setTradeDate(tradeRecord.getOldDate());
+            } else {
+                tmp.setTradeDate(tradeRecord.getNewDate());
+                BigDecimal gainRate = (tradeRecord.getNewPrice().subtract(tradeRecord.getOldPrice()))
+                        .divide(tradeRecord.getOldPrice(), 4, BigDecimal.ROUND_UP)
+                        .multiply(new BigDecimal(100));
+                tmp.setGainRate(gainRate);
             }
+            tmp.setCompanyName(companyService.getNameByCode(tradeRecord.getName()));
+            result.add(tmp);
         }
-        return tradeRecords;
+        return result;
     }
+
 }

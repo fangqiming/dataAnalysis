@@ -2,8 +2,8 @@ package com.i000.stock.user.web.controller;
 
 import com.i000.stock.user.api.entity.vo.PlanInfoVo;
 import com.i000.stock.user.api.entity.vo.PlanVo;
-import com.i000.stock.user.api.service.CompanyInfoCrawlerService;
-import com.i000.stock.user.api.service.PlanService;
+import com.i000.stock.user.api.service.external.CompanyInfoCrawlerService;
+import com.i000.stock.user.api.service.original.PlanService;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
@@ -20,7 +20,6 @@ import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -63,11 +62,13 @@ public class RecommendController {
         List<Plan> plans = planService.findByDate(date);
         List<PlanInfoVo> result = new ArrayList<>(plans.size());
         for (Plan plan : plans) {
-            PlanInfoVo tmp = create(plan.getName(), true);
-            tmp.setInfo(companyInfoCrawlerService.getInfo(plan.getName()));
-            result.add(tmp);
+            if(StringUtils.isNoneBlank(plan.getName())){
+                PlanInfoVo tmp = create(plan.getName(), true);
+                tmp.setInfo(companyInfoCrawlerService.getInfo(plan.getName()));
+                result.add(tmp);
+            }
         }
-        if (CollectionUtils.isEmpty(plans)) {
+        if (CollectionUtils.isEmpty(result)) {
             for (String indexCode : Arrays.asList("sh000001", "sz399006", "sz399300")) {
                 PlanInfoVo tmp = create(indexCode, false);
                 result.add(tmp);
@@ -86,5 +87,4 @@ public class RecommendController {
                 .weekly(String.format("http://image.sinajs.cn/newchart/weekly/n/%s.gif", stockCode))
                 .monthly(String.format("http://image.sinajs.cn/newchart/monthly/n/%s.gif", stockCode)).build();
     }
-
 }

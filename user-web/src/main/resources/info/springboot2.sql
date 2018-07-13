@@ -3182,7 +3182,7 @@ INSERT INTO `index_info` VALUES ('51', '\nsz399333', '中小板R', '0.84%', '770
 INSERT INTO `index_info` VALUES ('52', '\nsz399606', '创业板R', '1.38%', '1866.0070', '1856.3950', '1881.9450', '1890.2550', '1854.4070', '1698916824', '28471504401', '2018-04-27');
 
 -- ----------------------------
--- Table structure for line
+-- Table structure for LINE
 -- ----------------------------
 DROP TABLE IF EXISTS `line`;
 CREATE TABLE `line` (
@@ -3196,7 +3196,7 @@ CREATE TABLE `line` (
 ) ENGINE=InnoDB AUTO_INCREMENT=319 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of line
+-- Records of LINE
 -- ----------------------------
 INSERT INTO `line` VALUES ('1', '2016-01-04', '2013.00', '2013.00', null, '0.00');
 INSERT INTO `line` VALUES ('2', '2016-01-05', '2017.00', '2012.00', null, '0.00');
@@ -3570,7 +3570,7 @@ CREATE TABLE `price` (
   `volume` decimal(14,0) DEFAULT NULL,
   `high` decimal(14,4) DEFAULT NULL,
   `low` decimal(14,4) DEFAULT NULL,
-  `date` varchar(15) DEFAULT NULL,
+  `DATE` varchar(15) DEFAULT NULL,
   `buy` decimal(14,4) DEFAULT NULL,
   `sell` decimal(14,4) DEFAULT NULL,
   `is_open` tinyint(4) DEFAULT NULL COMMENT '开盘标记 ',

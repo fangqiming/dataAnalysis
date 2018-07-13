@@ -1,6 +1,6 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.UserInfoService;
+import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.dao.bo.BaseSearchVo;

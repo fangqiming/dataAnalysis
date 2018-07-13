@@ -3,7 +3,7 @@ package com.i000.stock.user.web.controller;
 import com.i000.stock.user.api.entity.vo.UserInfoLoginVo;
 import com.i000.stock.user.api.entity.vo.UserInfoRegisterVo;
 import com.i000.stock.user.api.entity.vo.UserInfoVo;
-import com.i000.stock.user.api.service.UserInfoService;
+import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.core.result.Results;

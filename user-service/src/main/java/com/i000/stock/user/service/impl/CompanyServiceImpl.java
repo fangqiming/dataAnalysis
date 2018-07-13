@@ -1,6 +1,6 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.CompanyService;
+import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.dao.mapper.CompanyMapper;
 import com.i000.stock.user.dao.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;

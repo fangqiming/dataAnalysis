@@ -2,14 +2,13 @@ package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.bo.IndexBo;
 import com.i000.stock.user.api.entity.bo.IndexInfo;
-import com.i000.stock.user.api.service.EmailService;
-import com.i000.stock.user.api.service.IndexService;
+import com.i000.stock.user.api.service.util.EmailService;
+import com.i000.stock.user.api.service.external.IndexService;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class IndexServiceImpl implements IndexService {
 
 
     private IndexBo getIndexBo() {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 100; i++) {
             try {
                 IndexBo index = externalService.getIndex();
                 if (Objects.nonNull(index)) {

@@ -1,11 +1,12 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.IndexValueService;
+import com.i000.stock.user.api.service.original.IndexValueService;
 import com.i000.stock.user.dao.mapper.IndexValueMapper;
 import com.i000.stock.user.dao.model.IndexValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -23,5 +24,25 @@ public class IndexValueServiceImpl implements IndexValueService {
     @Override
     public List<IndexValue> findAll() {
         return indexValueMapper.selectList(null);
+    }
+
+    @Override
+    public List<IndexValue> findBetween(LocalDate start, LocalDate end) {
+        return indexValueMapper.findBetween(start, end);
+    }
+
+    @Override
+    public IndexValue getRecently(LocalDate date) {
+        return indexValueMapper.getLately(date);
+    }
+
+    @Override
+    public IndexValue getLately() {
+        return indexValueMapper.getNewest();
+    }
+
+    @Override
+    public void save(IndexValue indexValue) {
+        indexValueMapper.insert(indexValue);
     }
 }

@@ -6,6 +6,7 @@ import com.i000.stock.user.dao.model.Plan;
 import com.i000.stock.user.dao.model.Trade;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,14 +19,6 @@ import java.util.List;
  * @Modified By:
  */
 public interface TradeMapper extends BaseMapper<Trade> {
-
-    /**
-     * 根据日期查询当天的交易记录
-     *
-     * @param date
-     * @return
-     */
-    List<Trade> findByDate(@Param("date") LocalDate date);
 
     /**
      * 查询最大的发生过得交易
@@ -53,7 +46,13 @@ public interface TradeMapper extends BaseMapper<Trade> {
     @Select("select price from trade where `name`=#{name} and action='COVER' order by id limit 1")
     BigDecimal getCoverPriceByName(@Param("name") String name);
 
-
-
+    /**
+     * 更新交易记录中的股票价格（由于拆并股导致的价格变化）
+     *
+     * @param name
+     * @param rate
+     */
+    @Update("update trade set price=price*#{rate} where `name`=#{name} ORDER BY id DESC limit 1")
+    void updatePrice(@Param("name") String name, @Param("rate") BigDecimal rate);
 
 }

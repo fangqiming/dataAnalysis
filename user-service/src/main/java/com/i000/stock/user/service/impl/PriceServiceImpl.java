@@ -1,11 +1,12 @@
 package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.bo.IndexInfo;
-import com.i000.stock.user.api.service.CompanyCrawlerService;
-import com.i000.stock.user.api.service.EmailService;
-import com.i000.stock.user.api.service.IndexService;
-import com.i000.stock.user.api.service.PriceService;
+import com.i000.stock.user.api.service.external.CompanyCrawlerService;
+import com.i000.stock.user.api.service.util.EmailService;
+import com.i000.stock.user.api.service.external.IndexService;
+import com.i000.stock.user.api.service.buiness.PriceService;
 import com.i000.stock.user.api.entity.bo.Price;
+import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,48 +35,16 @@ public class PriceServiceImpl implements PriceService {
     private static final String newLine = "\n";
 
     @Resource
-    private CompanyCrawlerService companyCrawlerService;
-
-    @Autowired
-    private ExternalServiceImpl externalService;
-
-    @Resource
-    private IndexService indexService;
-
-    @Resource
-    private EmailService emailService;
-
+    private IndexPriceCacheService indexPriceCacheService;
 
     @Override
-    public StringBuffer get() throws IOException {
-        List<IndexInfo> indexInfos = getIndexInfo();
-        List<Price> prices = findNotLazy();
+    public StringBuffer get() {
+        List<IndexInfo> indexInfos = indexPriceCacheService.getIndex(5);
+        List<Price> prices = indexPriceCacheService.getPrice(5);
         StringBuffer result = new StringBuffer();
         return result.append(createIndex(indexInfos)).append(createPrice(prices));
     }
 
-    private List<Price> findNotLazy() throws IOException {
-        List<Price> result = new ArrayList<>(4000);
-        List<String> codes = companyCrawlerService.getCode();
-        List<List<String>> cutList = cutting(codes, 100.0);
-        for (List<String> list : cutList) {
-            result.addAll(externalService.getPrice(list));
-        }
-        return result;
-    }
-
-
-    private static List<List<String>> cutting(List<String> codes, double num) {
-        List<List<String>> result = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(codes)) {
-            int length = (int) Math.ceil(codes.size() / num);
-            for (int i = 0; i < length; i++) {
-                int end = (i + 1) * (int) num > codes.size() ? codes.size() : (i + 1) * (int) num;
-                result.add(codes.subList(i * (int) num, end));
-            }
-        }
-        return result;
-    }
 
     private StringBuffer createPrice(List<Price> prices) {
         StringBuffer result = new StringBuffer();
@@ -115,30 +84,5 @@ public class PriceServiceImpl implements PriceService {
         }
         return result;
     }
-
-    private List<IndexInfo> getIndexInfo() {
-        for (int i = 0; i < 5; i++) {
-            try {
-                List<IndexInfo> indexInfos = indexService.get();
-                if (!CollectionUtils.isEmpty(indexInfos)) {
-                    return indexInfos;
-                }
-            } catch (Exception e) {
-                sleep(3000L);
-            }
-        }
-        emailService.sendMail("【千古：获取指数的接口异常】", "指数接口重试超过5次仍旧异常请确认网络是否正常", true);
-        return null;
-    }
-
-
-    private void sleep(Long second) {
-        try {
-            Thread.sleep(second);
-        } catch (InterruptedException e) {
-            log.debug("重试发生中断异常");
-        }
-    }
-
 
 }

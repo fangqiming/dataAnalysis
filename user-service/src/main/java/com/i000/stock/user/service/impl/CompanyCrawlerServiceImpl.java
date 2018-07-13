@@ -1,6 +1,6 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.CompanyCrawlerService;
+import com.i000.stock.user.api.service.external.CompanyCrawlerService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 /**
  * @Author:qmfang
- * @Description:
+ * @Description: 公司信息
  * @Date:Created in 15:04 2018/4/25
  * @Modified By:
  */

@@ -27,6 +27,8 @@ public interface TradeRecordMapper extends BaseMapper<TradeRecord> {
      */
     List<TradeRecord> find(@Param("date") LocalDate date, @Param("userCode") String userCode);
 
+    List<TradeRecord> search(@Param("userCode") String userCode, @Param("baseSearchVo") BaseSearchVo baseSearchVo);
+
     /**
      * 查找指定userCode最新的交易日期
      *
@@ -40,18 +42,4 @@ public interface TradeRecordMapper extends BaseMapper<TradeRecord> {
     @Select("select found_rows()")
     Long pageTotal();
 
-    /**
-     * 根据分页查询查询出符合要求的日期
-     *
-     * @param userCode
-     * @param baseSearchVo
-     * @return
-     */
-    @Select("select sql_calc_found_rows\n" +
-            "        DISTINCT  old_date from trade_record  where user_code=#{userCode} ORDER BY old_date DESC\n" +
-            "         limit ${baseSearchVo.start},${baseSearchVo.pageSize};")
-    List<LocalDate> searchByDate(@Param("userCode") String userCode, @Param("baseSearchVo") BaseSearchVo baseSearchVo);
-
-
-    List<TradeRecord> findTradeRecord(@Param("userCode") String userCode, @Param("dates") List<LocalDate> dates);
 }

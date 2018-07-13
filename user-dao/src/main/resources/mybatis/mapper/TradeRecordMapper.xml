@@ -21,11 +21,10 @@
         select * from trade_record where new_date=#{date} and user_code=#{userCode}
     </select>
 
-    <select id="findTradeRecord" resultMap="TradeRecord">
-        select * from trade_record where  user_code=#{userCode}
-        <foreach collection="dates" item="item" open="and old_date IN(" close=")" separator=",">
-            #{item}
-        </foreach>
+    <select id="search" resultMap="TradeRecord" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo">
+        select sql_calc_found_rows * from trade_record
+        where user_code=#{userCode} ORDER BY new_date DESC limit
+          ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
 </mapper>

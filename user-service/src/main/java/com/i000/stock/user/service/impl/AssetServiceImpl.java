@@ -1,17 +1,16 @@
 package com.i000.stock.user.service.impl;
 
 
-import com.i000.stock.user.api.entity.vo.AssetDiffVo;
 import com.i000.stock.user.api.entity.vo.GainBo;
-import com.i000.stock.user.api.service.AssetService;
-import com.i000.stock.user.api.service.HoldNowService;
-import com.i000.stock.user.api.service.UserInfoService;
+import com.i000.stock.user.api.service.buiness.AssetService;
+import com.i000.stock.user.api.service.buiness.HoldNowService;
+import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.mapper.AssetMapper;
 import com.i000.stock.user.dao.model.*;
-import com.i000.stock.user.service.impl.asset.amount.UpdateAssetImpl;
+import com.i000.stock.user.service.impl.operate.UpdateAssetImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,6 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
@@ -60,6 +58,11 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Asset getDiff(LocalDate date, Integer day, String userCode) {
         return assetMapper.getDiff(date, day, userCode);
+    }
+
+    @Override
+    public Asset getDiff(LocalDate date, String userCode) {
+        return assetMapper.getDiff_2(userCode, date);
     }
 
     @Override
@@ -181,28 +184,6 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public AssetDiffVo getSummary(String userCode) {
-
-        Asset now = assetMapper.getLately(userCode);
-        if (Objects.isNull(now)) {
-            UserInfo byName = userInfoService.getByName(userCode);
-            return AssetDiffVo.builder().balance(byName.getInitAmount())
-                    .date(LocalDate.now()).startDate(LocalDate.now()).build();
-        }
-        Asset old = assetMapper.getDiff(now.getDate(), 36500, userCode);
-        return AssetDiffVo.builder().startDate(old.getDate())
-                .date(now.getDate())
-                .initAmount(old.getBalance())
-                .totalAmount(now.getBalance().add(now.getCover()).add(now.getStock()))
-                .stockAmount(now.getStock())
-                .balance(now.getBalance())
-                .todayGain(now.getGain())
-                .totalGain(now.getTotalGain())
-                .coverAmount(now.getCover()).build();
-
-    }
-
-    @Override
     public BigDecimal getAvgIdleRate(String userCode) {
         return assetMapper.getAvgIdleRate(userCode);
     }
@@ -213,7 +194,9 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public List<Asset> findByDateUser(String userCode, Set<LocalDate> dates) {
-        return assetMapper.findByDateUser(userCode, dates);
+    public List<Asset> findAssetBetween(String userCode, LocalDate start, LocalDate end) {
+        return assetMapper.findBetween(userCode, start, end);
     }
+
+
 }

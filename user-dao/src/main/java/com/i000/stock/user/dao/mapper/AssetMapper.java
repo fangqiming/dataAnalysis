@@ -5,6 +5,7 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.Asset;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.tomcat.jni.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,6 +26,15 @@ public interface AssetMapper extends BaseMapper<Asset> {
      * @return
      */
     Asset getLately(@Param("userCode") String userCode);
+
+    /**
+     * 新版的查询前多少天Asset记录
+     *
+     * @param userCode
+     * @param date
+     * @return
+     */
+    Asset getDiff_2(@Param("userCode") String userCode, @Param("date") LocalDate date);
 
     /**
      * 获取距离最后一次交易间隔diff个时间的资产情况
@@ -84,7 +94,7 @@ public interface AssetMapper extends BaseMapper<Asset> {
      * @param user
      * @return
      */
-    @Select("select balance/(stock+balance+cover) from asset where id in (select max(id) from asset) and user_code=#{user}")
+    @Select("select balance/(stock+balance+cover) from asset where user_code=#{user} ORDER BY id DESC limit 1")
     BigDecimal getIdleRate(@Param("user") String user);
 
 
@@ -92,5 +102,7 @@ public interface AssetMapper extends BaseMapper<Asset> {
      * 根据日期和userCode查询满足条件的资金信息
      */
     List<Asset> findByDateUser(@Param("userCode") String userCode, @Param("dates") Set<LocalDate> dates);
+
+    List<Asset> findBetween(@Param("userCode") String userCode, @Param("start") LocalDate start, @Param("end") LocalDate end);
 
 }

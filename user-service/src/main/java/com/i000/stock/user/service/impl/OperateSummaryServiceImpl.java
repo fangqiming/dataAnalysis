@@ -1,19 +1,22 @@
 package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.vo.OperatorVo;
-import com.i000.stock.user.api.service.AssetService;
-import com.i000.stock.user.api.service.HoldNowService;
-import com.i000.stock.user.api.service.OperateSummaryService;
+import com.i000.stock.user.api.service.buiness.AssetService;
+import com.i000.stock.user.api.service.buiness.HoldNowService;
+import com.i000.stock.user.api.service.buiness.OperateSummaryService;
+import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.dao.mapper.OperateSummaryMapper;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.HoldNow;
 import com.i000.stock.user.dao.model.OperateSummary;
+import com.i000.stock.user.dao.model.UserInfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author:qmfang
@@ -32,6 +35,9 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
 
     @Resource
     private OperateSummaryMapper operateSummaryMapper;
+
+    @Resource
+    private UserInfoService userInfoService;
 
     @Override
     public void updateSell(Integer holdDay, Integer profit, Integer loss, String userCode) {
@@ -59,7 +65,17 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
 
     @Override
     public OperatorVo getOperatorSummary(String userCode) {
-        //这个就不对了
+        Asset asset = assetService.getLately(userCode);
+        if (Objects.isNull(asset)) {
+            return OperatorVo.builder().buyNumber(0)
+                    .sellNumber(0)
+                    .profitNumber(0)
+                    .lossNumber(0)
+                    .avgHoldDay(0)
+                    .winRate(BigDecimal.ZERO)
+                    .holdNumber(0)
+                    .avgProfitRate(BigDecimal.ZERO).build();
+        }
         OperateSummary operateSummary = operateSummaryMapper.getByUserCode(userCode);
         List<HoldNow> holdNows = holdNowService.find(userCode);
         for (HoldNow holdNow : holdNows) {
@@ -75,7 +91,6 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
             }
         }
 
-        Asset asset = assetService.getLately(userCode);
 
         BigDecimal winRate = BigDecimal.ZERO;
         Integer avgHoldNumber = 0;
@@ -92,9 +107,9 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
                 .profitNumber(operateSummary.getProfitNumber())
                 .lossNumber(operateSummary.getLossNumber())
                 .avgHoldDay(avgHoldNumber)
-                .winRate(winRate)
+                .winRate(winRate.multiply(new BigDecimal(100)))
                 .holdNumber(holdNows.size())
                 //总收益率除以操作过的所有股票
-                .avgProfitRate(avgProfitRate).build();
+                .avgProfitRate(avgProfitRate.multiply(new BigDecimal(100))).build();
     }
 }

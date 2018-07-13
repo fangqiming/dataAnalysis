@@ -2,7 +2,7 @@ package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.bo.IndexValueBo;
 import com.i000.stock.user.api.entity.bo.PageIndexValueBo;
-import com.i000.stock.user.api.service.IndexGainService;
+import com.i000.stock.user.api.service.buiness.IndexGainService;
 import com.i000.stock.user.dao.mapper.IndexGainMapper;
 import com.i000.stock.user.dao.model.IndexGain;
 import org.springframework.beans.factory.annotation.Autowired;

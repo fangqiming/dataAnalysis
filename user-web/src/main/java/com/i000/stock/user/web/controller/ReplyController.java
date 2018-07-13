@@ -3,8 +3,8 @@ package com.i000.stock.user.web.controller;
 import com.i000.stock.user.api.entity.vo.ReplyFirstVo;
 import com.i000.stock.user.api.entity.vo.ReplyVo;
 import com.i000.stock.user.api.entity.vo.ReplyVos;
-import com.i000.stock.user.api.service.ReplyService;
-import com.i000.stock.user.api.service.TopicService;
+import com.i000.stock.user.api.service.discuss.ReplyService;
+import com.i000.stock.user.api.service.discuss.TopicService;
 import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
@@ -71,16 +71,6 @@ public class ReplyController {
     }
 
 
-    private ResultEntity getReplyVo(Reply reply) {
-        String userCode = RequestContext.getInstance().getAccountCode();
-        ValidationUtils.validateParameter(userCode, "用户码不能为空");
-        reply.setUserCode(userCode);
-        Reply reply1 = replyService.create(reply);
-        ReplyVo replyVo = ConvertUtils.beanConvert(reply1, new ReplyVo());
-        replyVo.setReplyUserCode(replyService.getUserCode(reply1.getId()));
-        return Results.newSingleResultEntity(replyVo);
-    }
-
     /**
      * 127.0.0.1:8082/reply/search
      * <p>
@@ -104,41 +94,33 @@ public class ReplyController {
         return Results.newPageResultEntity(search.getTotal(), format);
     }
 
-    /**
-     * 127.0.0.1:8082/reply/do_good
-     * 对评论点赞
-     *
-     * @param id
-     * @return
-     */
-    @GetMapping("/do_good")
-    public ResultEntity doGood(@RequestParam Long id) {
-        ValidationUtils.validateId(id, "话题主键不合法");
-        return Results.newNormalResultEntity("addNum", replyService.doGood(id));
-    }
-
-    /**
-     * 踩
-     *
-     * @param id
-     * @return
-     */
-    @GetMapping("/do_bad")
-    public ResultEntity doBad(@RequestParam Long id) {
-        ValidationUtils.validateId(id, "话题主键不合法");
-        return Results.newNormalResultEntity("addNum", replyService.doBad(id));
-    }
-
-    public List<ReplyVo> format(List<ReplyVos> replyVos, List<ReplyVo> result, String userCode) {
+    private List<ReplyVo> format(List<ReplyVos> replyVos, List<ReplyVo> result, String userCode) {
         for (ReplyVos node : replyVos) {
             ReplyVo reply = node.getReply();
-            reply.setReplyUserCode(userCode);
+            reply.setUserCode(getUserName(reply.getUserCode()));
+            reply.setReplyUserCode(getUserName(userCode));
             result.add(reply);
             if (!CollectionUtils.isEmpty(node.getSon())) {
                 format(node.getSon(), result, reply.getUserCode());
             }
         }
         return result;
+    }
+
+    private ResultEntity getReplyVo(Reply reply) {
+        String userCode = RequestContext.getInstance().getAccountCode();
+        ValidationUtils.validateParameter(userCode, "用户码不能为空");
+        reply.setUserCode(userCode);
+        Reply reply1 = replyService.create(reply);
+        ReplyVo replyVo = ConvertUtils.beanConvert(reply1, new ReplyVo());
+        String userName = replyService.getUserCode(reply1.getId());
+        replyVo.setUserCode(getUserName(replyVo.getUserCode()));
+        replyVo.setReplyUserCode(getUserName(userName));
+        return Results.newSingleResultEntity(replyVo);
+    }
+
+    private String getUserName(String userName) {
+        return "echo_gou".equals(userName) ? "匿名用户" : userName;
     }
 
 

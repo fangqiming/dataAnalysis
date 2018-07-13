@@ -1,10 +1,10 @@
 package com.i000.stock.user.service.impl;
 
-import com.i000.stock.user.api.service.MailParseService;
-import com.i000.stock.user.service.impl.mail.ParseToHold;
-import com.i000.stock.user.service.impl.mail.ParseToLine;
-import com.i000.stock.user.service.impl.mail.ParseToPlan;
-import com.i000.stock.user.service.impl.mail.ParseToTrade;
+import com.i000.stock.user.api.service.original.ParseService;
+import com.i000.stock.user.service.impl.parse.ParseToHold;
+import com.i000.stock.user.service.impl.parse.ParseToLine;
+import com.i000.stock.user.service.impl.parse.ParseToPlan;
+import com.i000.stock.user.service.impl.parse.ParseToTrade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,19 +35,18 @@ public class RecommendParseImpl {
     @Autowired
     private ParseToTrade parseToTrade;
 
-    private List<MailParseService> parseServiceList;
+    private List<ParseService> parseServiceList;
 
     @PostConstruct
     public void init() {
         parseServiceList = Arrays.asList(parseToHold, parseToLine, parseToPlan, parseToTrade);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public LocalDate parse(String content) {
         log.debug(new Date() + "得到了推送的推荐信息");
         List<LocalDate> result = new ArrayList<>(4);
-        for (MailParseService mailParseService : parseServiceList) {
-            result.add(mailParseService.save(content));
+        for (ParseService parseService : parseServiceList) {
+            result.add(parseService.save(content));
         }
         List<LocalDate> collect = result.stream().filter(Objects::nonNull).collect(Collectors.toList());
         return CollectionUtils.isEmpty(collect) ? null : collect.get(0);
