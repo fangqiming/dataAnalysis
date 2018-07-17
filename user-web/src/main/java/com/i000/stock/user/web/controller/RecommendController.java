@@ -3,6 +3,7 @@ package com.i000.stock.user.web.controller;
 import com.i000.stock.user.api.entity.vo.PlanInfoVo;
 import com.i000.stock.user.api.entity.vo.PlanVo;
 import com.i000.stock.user.api.service.external.CompanyInfoCrawlerService;
+import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.api.service.original.PlanService;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
@@ -40,6 +41,9 @@ public class RecommendController {
     @Resource
     private CompanyInfoCrawlerService companyInfoCrawlerService;
 
+    @Resource
+    private CompanyService companyService;
+
     /**
      * 127.0.0.1:8082/recommend/find
      * 用于获取最新推荐
@@ -51,9 +55,13 @@ public class RecommendController {
     public ResultEntity find() {
         LocalDate date = planService.getMaxDate();
         List<Plan> plans = planService.findByDate(date);
-        return plans.size() == 1 && StringUtils.isBlank(plans.get(0).getName()) ?
-                Results.newListResultEntity(new ArrayList<>(0)) :
-                Results.newListResultEntity(ConvertUtils.listConvert(plans, PlanVo.class));
+        if (plans.size() == 1 && StringUtils.isBlank(plans.get(0).getName())) {
+            return Results.newListResultEntity(new ArrayList<>(0));
+        } else {
+            List<PlanVo> planVos = ConvertUtils.listConvert(plans, PlanVo.class);
+            setName(planVos);
+            return Results.newListResultEntity(planVos);
+        }
     }
 
     @GetMapping(path = "/get_info")
@@ -62,7 +70,7 @@ public class RecommendController {
         List<Plan> plans = planService.findByDate(date);
         List<PlanInfoVo> result = new ArrayList<>(plans.size());
         for (Plan plan : plans) {
-            if(StringUtils.isNoneBlank(plan.getName())){
+            if (StringUtils.isNoneBlank(plan.getName())) {
                 PlanInfoVo tmp = create(plan.getName(), true);
                 tmp.setInfo(companyInfoCrawlerService.getInfo(plan.getName()));
                 result.add(tmp);
@@ -85,6 +93,18 @@ public class RecommendController {
                 .min(String.format("http://image.sinajs.cn/newchart/min/n/%s.gif", stockCode))
                 .daily(String.format("http://image.sinajs.cn/newchart/daily/n/%s.gif", stockCode))
                 .weekly(String.format("http://image.sinajs.cn/newchart/weekly/n/%s.gif", stockCode))
-                .monthly(String.format("http://image.sinajs.cn/newchart/monthly/n/%s.gif", stockCode)).build();
+                .monthly(String.format("http://image.sinajs.cn/newchart/monthly/n/%s.gif", stockCode))
+                .showImg(String.format("http://image.sinajs.cn/newchart/daily/n/%s.gif", stockCode))
+                .select("daily")
+                .build();
+    }
+
+    private void setName(List<PlanVo> planVos) {
+        if (CollectionUtils.isEmpty(planVos)) {
+            for (PlanVo planVo : planVos) {
+                String stockName = companyService.getNameByCode(planVo.getName());
+                planVo.setStockName(stockName);
+            }
+        }
     }
 }

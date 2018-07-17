@@ -9,6 +9,7 @@ import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.api.service.external.IndexPriceService;
 import com.i000.stock.user.api.service.external.IndexService;
 import com.i000.stock.user.api.service.original.IndexValueService;
+import com.i000.stock.user.api.service.util.EmailService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.dao.model.IndexGain;
 import com.i000.stock.user.dao.model.IndexPrice;
@@ -56,6 +57,9 @@ public class IndexPriceSchedule {
     @Autowired
     private IndexValueService indexValueService;
 
+    @Autowired
+    private EmailService emailService;
+
     /**
      * 保存指数价格信息到数据库中
      */
@@ -73,8 +77,6 @@ public class IndexPriceSchedule {
     }
 
     /**
-     * 此接口存在问题。。。
-     * <p>
      * 计算并保存指数的收益信息
      */
     @Scheduled(cron = "0 02 15 * * ?")
@@ -107,6 +109,7 @@ public class IndexPriceSchedule {
     @Scheduled(cron = "0 45 15 * * ?")
     public void updateCompany() {
         try {
+            log.warn("-----------公司信息更新中------------");
             Map<String, String> codeName = companyCrawlerService.getCodeName();
             companyService.batchSave(codeName);
         } catch (Exception e) {
@@ -120,11 +123,13 @@ public class IndexPriceSchedule {
     @Scheduled(cron = "0 35 9 * * ?")
     public void updateAmount() {
         try {
+            log.warn("-----------拆并股逻辑处理中------------");
             StringBuffer stringBuffer = indexPriceService.get();
             if (isStockDay(stringBuffer)) {
                 offsetPriceService.updateAmount(stringBuffer);
             }
         } catch (IOException e) {
+            emailService.sendMail("拆并股处理失败", e.getMessage(), true);
             log.error("处理股票的拆股失败", e);
         }
     }

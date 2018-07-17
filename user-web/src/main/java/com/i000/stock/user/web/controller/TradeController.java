@@ -191,6 +191,7 @@ public class TradeController {
                 holdNowVo.setValue(holdNowVo.getNewPrice().multiply(new BigDecimal(holdNowVo.getAmount())));
                 holdNowVo.setEarning(holdNowVo.getValue().subtract(holdNowVo.getCost()));
                 holdNowVo.setStockName(companyService.getNameByCode(holdNowVo.getName()));
+                holdNowVo.setGain(holdNowVo.getGain().multiply(new BigDecimal(100)));
             }
             return Results.newListResultEntity(holdNowVos);
         }
