@@ -100,7 +100,7 @@ public class RecommendController {
     }
 
     private void setName(List<PlanVo> planVos) {
-        if (CollectionUtils.isEmpty(planVos)) {
+        if (!CollectionUtils.isEmpty(planVos)) {
             for (PlanVo planVo : planVos) {
                 String stockName = companyService.getNameByCode(planVo.getName());
                 planVo.setStockName(stockName);

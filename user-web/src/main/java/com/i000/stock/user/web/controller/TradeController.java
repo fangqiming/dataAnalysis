@@ -1,5 +1,6 @@
 package com.i000.stock.user.web.controller;
 
+import com.i000.stock.user.api.entity.bo.AssetStatisticalBo;
 import com.i000.stock.user.api.entity.bo.EndAssetBo;
 import com.i000.stock.user.api.entity.bo.PageIndexValueBo;
 import com.i000.stock.user.api.entity.bo.StartAssetBo;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -71,7 +73,7 @@ public class TradeController {
     /**
      * 127.0.0.1:8081/trade/find_gain
      * 获取首页的最近获利情况描述
-     * 基本完成
+     * todo  首页的 userCode 还是应该为 echo_gou
      *
      * @return
      */
@@ -81,34 +83,13 @@ public class TradeController {
         Asset asset = assetService.getLately(userCode);
         String date = asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd"));
         List<PageGainVo> result = new ArrayList<>(4);
-
         result.add(gainRateService.getRecentlyGain(userCode, 1, asset.getDate(), date + " 当天"));
-        result.add(gainRateService.getRecentlyGain(userCode, 31, asset.getDate(), "最近一月"));
+        result.add(gainRateService.getRecentlyGain(userCode, 30, LocalDate.now(), "最近一月"));
+        result.add(gainRateService.getRecentlyGain(userCode, 90, LocalDate.now(), "最近三月"));
         PageGainVo fromYear = gainRateService.getFromYearStart(userCode, 370, asset.getDate(), "今年以来");
         result.add(fromYear);
-        result.add(gainRateService.getYearRate(fromYear, asset.getDate()));
         return Results.newListResultEntity(result);
     }
-
-
-    /**
-     * 127.0.0.1:8082/recommend/get_index_contrast
-     * 此处就也需要修改了
-     *
-     * @return
-     */
-    @GetMapping(path = "/get_index_contrast")
-    public ResultEntity getBaseLineTrend() {
-        List<LineGroupQuery> baseLines = lineService.find();
-        BaseLineTrendVO baseLineTrendVO = new BaseLineTrendVO();
-        baseLines.stream().sorted(Comparator.comparing(LineGroupQuery::getTime)).forEach(baseLine -> {
-            baseLineTrendVO.getAiMarket().add(baseLine.getAiMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_UP));
-            baseLineTrendVO.getBaseMarket().add(baseLine.getBaseMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_UP));
-            baseLineTrendVO.getTime().add(baseLine.getTime());
-        });
-        return Results.newSingleResultEntity(baseLineTrendVO);
-    }
-
 
     /**
      * 127.0.0.1:8081/trade/get_gain_contrast
@@ -127,7 +108,30 @@ public class TradeController {
 
 
     /**
+     * 127.0.0.1:8082/recommend/get_index_contrast
+     * 此处就也需要修改了
+     * <p>
+     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
+     *
+     * @return
+     */
+    @GetMapping(path = "/get_index_contrast")
+    public ResultEntity getBaseLineTrend() {
+        List<LineGroupQuery> baseLines = lineService.find();
+        BaseLineTrendVO baseLineTrendVO = new BaseLineTrendVO();
+        baseLines.stream().sorted(Comparator.comparing(LineGroupQuery::getTime)).forEach(baseLine -> {
+            baseLineTrendVO.getAiMarket().add(baseLine.getAiMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_UP));
+            baseLineTrendVO.getBaseMarket().add(baseLine.getBaseMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_UP));
+            baseLineTrendVO.getTime().add(baseLine.getTime().substring(2,10));
+        });
+        return Results.newSingleResultEntity(baseLineTrendVO);
+    }
+
+    /**
      * 127.0.0.1:8081//trade/get_asset_summary
+     * <p>
+     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
+     * <p>
      * 获取首页的账户总览信息
      * 经过测试基本可用
      */
@@ -140,24 +144,25 @@ public class TradeController {
             //此处的账户总览需要获取用户是什么时候创建的账户
             StartAssetBo startAssetBo = StartAssetBo.builder().date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                     .totalAsset(userInfo.getInitAmount())
-                    .balanceAmount(BigDecimal.ZERO)
+                    .balanceAmount(userInfo.getInitAmount())
                     .stockAmount(BigDecimal.ZERO)
                     .todayProfit(BigDecimal.ZERO)
                     .avgPosition((BigDecimal.ZERO)).build();
             EndAssetBo endAssetBo = EndAssetBo.builder().date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                     .totalAsset(userInfo.getInitAmount())
-                    .balanceAmount(BigDecimal.ZERO)
+                    .balanceAmount(userInfo.getInitAmount())
                     .stockAmount(BigDecimal.ZERO)
                     .totalProfit(BigDecimal.ZERO)
                     .todayPosition(BigDecimal.ZERO).build();
-            AssetSummaryVo result = AssetSummaryVo.builder().start(startAssetBo).end(endAssetBo).build();
+            AssetStatisticalBo summary = AssetStatisticalBo.builder()
+                    .todayGain(BigDecimal.ZERO).total(userInfo.getInitAmount()).totalGainRate(BigDecimal.ZERO).totalGain(BigDecimal.ZERO).build();
+            AssetSummaryVo result = AssetSummaryVo.builder().start(startAssetBo).end(endAssetBo).summary(summary).build();
             return Results.newSingleResultEntity(result);
         }
 
-        //todo 此处需要修改
         StartAssetBo startAssetBo = StartAssetBo.builder().date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                 .totalAsset(userInfo.getInitAmount())
-                .balanceAmount(BigDecimal.ZERO)
+                .balanceAmount(userInfo.getInitAmount())
                 .stockAmount(BigDecimal.ZERO)
                 .todayProfit(asset.getGain())
                 .avgPosition((BigDecimal.ONE.subtract(assetService.getAvgIdleRate(userCode))).multiply(new BigDecimal(100))).build();
@@ -167,14 +172,26 @@ public class TradeController {
                 .stockAmount(asset.getStock())
                 .totalProfit(asset.getTotalGain())
                 .todayPosition((BigDecimal.ONE.subtract(assetService.getIdleRate(userCode))).multiply(new BigDecimal(100))).build();
-        AssetSummaryVo result = AssetSummaryVo.builder().start(startAssetBo).end(endAssetBo).build();
+        AssetStatisticalBo summary = AssetStatisticalBo.builder()
+                .todayGain(getDiffAsset(asset, asset.getGain()))
+                .total(asset.getBalance().add(asset.getStock()))
+                .totalGainRate(asset.getTotalGain())
+                .totalGain(getDiffAsset(asset, asset.getTotalGain())).build();
+        AssetSummaryVo result = AssetSummaryVo.builder().start(startAssetBo).end(endAssetBo).summary(summary).build();
         return Results.newSingleResultEntity(result);
+    }
+
+    private BigDecimal getDiffAsset(Asset asset, BigDecimal rate) {
+        BigDecimal befor = (asset.getBalance().add(asset.getStock())).divide(rate.add(new BigDecimal(1)), 2, RoundingMode.HALF_UP);
+        return (asset.getBalance().add(asset.getStock())).subtract(befor);
     }
 
 
     /**
      * 127.0.0.1:8081/trade/find_stock
      * 首页获取当前的持仓信息  基本通过测试
+     * <p>
+     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
      *
      * @return
      */
@@ -201,6 +218,8 @@ public class TradeController {
     /**
      * 获取操作统计的接口
      * 基本通过测试
+     * <p>
+     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
      *
      * @return
      */
@@ -216,6 +235,7 @@ public class TradeController {
     /**
      * 分页获取交易详情的接口
      * 需要获取每天的交易记录
+     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
      */
     @GetMapping(path = "/search_trade")
     public ResultEntity searchTrade(BaseSearchVo baseSearchVo) {

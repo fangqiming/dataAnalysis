@@ -4,10 +4,7 @@ import com.i000.stock.user.api.entity.bo.IndexInfo;
 import com.i000.stock.user.api.entity.bo.IndexValueBo;
 import com.i000.stock.user.api.service.buiness.IndexGainService;
 import com.i000.stock.user.api.service.buiness.OffsetPriceService;
-import com.i000.stock.user.api.service.external.CompanyCrawlerService;
-import com.i000.stock.user.api.service.external.CompanyService;
-import com.i000.stock.user.api.service.external.IndexPriceService;
-import com.i000.stock.user.api.service.external.IndexService;
+import com.i000.stock.user.api.service.external.*;
 import com.i000.stock.user.api.service.original.IndexValueService;
 import com.i000.stock.user.api.service.util.EmailService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
@@ -54,11 +51,12 @@ public class IndexPriceSchedule {
     @Autowired
     private IndexPriceCacheService indexPriceCacheService;
 
-    @Autowired
-    private IndexValueService indexValueService;
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private StockPledgeService stockPledgeService;
 
     /**
      * 保存指数价格信息到数据库中
@@ -77,30 +75,26 @@ public class IndexPriceSchedule {
     }
 
     /**
-     * 计算并保存指数的收益信息
+     * 将股票的指数信息和价格信息缓存起来()
      */
     @Scheduled(cron = "0 02 15 * * ?")
+    public void cacheIndexPrice() {
+        indexPriceCacheService.putIndexToCache(101);
+        indexPriceCacheService.putPriceToCache(101);
+    }
+
+    /**
+     * 计算并保存指数的收益信息
+     * 此处仅仅作为一个补偿，防止林老师没有提交
+     */
+    @Scheduled(cron = "0 30 23 * * ?")
     public void saveIndexValue() {
-        List<IndexInfo> indexInfos = indexService.get();
-        IndexValue indexValue = IndexValue.builder().build();
-        for (IndexInfo indexInfo : indexInfos) {
-            if (!indexInfo.getDate().equals(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
-                //当天不是股市交易日，不保存不计算
-                return;
-            }
-            if (indexInfo.getCode().contains("sh000001")) {
-                indexValue.setDate(LocalDate.now());
-                indexValue.setSh(indexInfo.getClose());
-            }
-            if (indexInfo.getCode().contains("sh000300")) {
-                indexValue.setHs(indexInfo.getClose());
-            }
-            if (indexInfo.getCode().contains("sz399006")) {
-                indexValue.setCyb(indexInfo.getClose());
-            }
+        try {
+            indexPriceCacheService.saveIndexValue();
+        } catch (Exception e) {
+            log.warn("指数信息已经保存", e);
         }
 
-        indexValueService.save(indexValue);
     }
 
     /**
@@ -134,13 +128,19 @@ public class IndexPriceSchedule {
         }
     }
 
+
     /**
-     * 将股票的指数信息和价格信息缓存起来()
+     * 每天凌晨触发更新
      */
-    @Scheduled(cron = "0 02 15 * * ?")
-    public void cacheIndexPrice() {
-        indexPriceCacheService.putIndexToCache(101);
-        indexPriceCacheService.putPriceToCache(101);
+    @Scheduled(cron = "0 00 02 * * ?")
+    public void updateStockPledge() {
+        try {
+            stockPledgeService.save();
+        } catch (Exception e) {
+            log.warn("股权质押信息获取失败", e);
+            emailService.sendMail("千古【股权质押信息获取失败】", "请相关人员立即处理", true);
+            e.printStackTrace();
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package com.i000.stock.user.web.controller;
 
+import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ValidationUtils;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.SQLException;
 
 /**
  * @Author:qmfang
@@ -28,6 +31,9 @@ public class EngineController {
     @Autowired
     private DataHandleTask dataHandleTask;
 
+    @Autowired
+    private IndexPriceCacheService indexPriceCacheService;
+
     /**
      * 用于接收推荐信息 注意没有考虑拆股与分红
      *
@@ -38,6 +44,11 @@ public class EngineController {
     public ResultEntity receiveRecommend(@RequestBody String content, @RequestParam(defaultValue = "1") Integer needSave) {
         ValidationUtils.validateParameter(content, "内容不能为空");
         receiveRecommendThread.execute(() -> dataHandleTask.run(content, needSave));
+        try {
+            indexPriceCacheService.saveIndexValue();
+        } catch (Exception e) {
+            log.warn("指数价格信息已经被保存", e);
+        }
         return Results.newNormalResultEntity("result", "success");
     }
 }

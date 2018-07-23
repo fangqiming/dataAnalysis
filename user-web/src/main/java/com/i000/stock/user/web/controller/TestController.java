@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-
 /**
  * @Author:qmfang
  * @Description:
@@ -26,8 +24,8 @@ public class TestController {
     private IndexPriceSchedule indexPriceSchedule;
 
     @GetMapping("/test")
-    public Object create() throws IOException {
-        indexPriceSchedule.saveIndexValue();
+    public Object create() throws Exception {
+        indexPriceSchedule.updateStockPledge();
         return "haha";
     }
 }
