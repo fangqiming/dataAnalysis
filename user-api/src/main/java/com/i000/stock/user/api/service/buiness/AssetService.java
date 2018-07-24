@@ -44,6 +44,8 @@ public interface AssetService {
      */
     Asset getDiff(LocalDate date, String userCode);
 
+    Asset getDiffByGt(LocalDate date, String userCode);
+
     /**
      * 查询一定范围内的全部资产信息
      *
@@ -103,5 +105,30 @@ public interface AssetService {
      * @return
      */
     List<Asset> findAssetBetween(String userCode, LocalDate start, LocalDate end);
+
+    /**
+     * 查找某一年的第一条数据
+     *
+     * @param year
+     * @param userCode
+     * @return
+     */
+    Asset getYearFirst(String year, String userCode);
+
+    /**
+     * 获取最大单日盈利
+     *
+     * @param userCode
+     * @return
+     */
+    BigDecimal getMaxGain(String userCode);
+
+    /**
+     * 获取最小单日盈利
+     *
+     * @param userCode
+     * @return
+     */
+    BigDecimal getMinGain(String userCode);
 
 }

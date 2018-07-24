@@ -14,6 +14,7 @@ import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.IndexValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -21,10 +22,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -61,6 +59,7 @@ public class GainRateServiceImpl implements GainRateService {
         YieldRateVo result = createYieldRateVo(start);
         //需要开始计算指数信息 此处会有一个千古指数
         if (!CollectionUtils.isEmpty(asset)) {
+            result.getTime().clear();
             result.getTime().add(0, asset.get(0).getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")));
 
             List<IndexValue> indexValueSort = indexValue.stream()
@@ -98,18 +97,33 @@ public class GainRateServiceImpl implements GainRateService {
     @Override
     public PageGainVo getRecentlyGain(String userCode, Integer diff, LocalDate end, String title) {
         LocalDate start = end.minusDays(diff);
-        //此处的base可能需要修改--->需要改成今年以来
+        //此处如果是找大于等于的就不会有问题
+        if (diff == 30 || diff == 90) {
+            IndexValue baseIndex = indexValueService.getRecentlyByGt(start);
+            Asset baseAsset = assetService.getDiffByGt(start, userCode);
+            return getRecentlyGain(baseIndex, baseAsset, userCode, title);
+        }
 
-        IndexValue base = indexValueService.getRecently(start);
-        IndexValue value = indexValueService.getLately();
-        IndexValueBo indexValueBo = calculateIndex(base, value);
-        List<GainVo> gainVoList = new ArrayList<>(4);
+        IndexValue baseIndex = indexValueService.getRecently(start);
+        if (Objects.isNull(baseIndex)) {
+            baseIndex = indexValueService.getRecentlyByGt(start);
+        }
         Asset baseAsset = assetService.getDiff(start, userCode);
+        if (Objects.isNull(baseAsset)) {
+            baseAsset = assetService.getDiffByGt(start, userCode);
+        }
+        return getRecentlyGain(baseIndex, baseAsset, userCode, title);
+    }
+
+    private PageGainVo getRecentlyGain(IndexValue baseIndex, Asset baseAssert, String userCode, String title) {
+        IndexValue value = indexValueService.getLately();
+        IndexValueBo indexValueBo = calculateIndex(baseIndex, value);
+        List<GainVo> gainVoList = new ArrayList<>(4);
         Asset valueAsset = assetService.getLately(userCode);
-        gainVoList.add(GainVo.builder().indexName("千古指数").profit(calculateAsset(baseAsset, valueAsset).setScale(2, BigDecimal.ROUND_UP)).build());
-        gainVoList.add(GainVo.builder().indexName("上证指数").profit(indexValueBo.getSz().setScale(2, BigDecimal.ROUND_UP)).build());
-        gainVoList.add(GainVo.builder().indexName("创业板指").profit(indexValueBo.getCyb().setScale(2, BigDecimal.ROUND_UP)).build());
-        gainVoList.add(GainVo.builder().indexName("沪深300指").profit(indexValueBo.getHs().setScale(2, BigDecimal.ROUND_UP)).build());
+        gainVoList.add(GainVo.builder().indexName("千古指数").profit(calculateAsset(baseAssert, valueAsset).setScale(2, BigDecimal.ROUND_HALF_UP)).build());
+        gainVoList.add(GainVo.builder().indexName("上证指数").profit(indexValueBo.getSz().setScale(2, BigDecimal.ROUND_HALF_UP)).build());
+        gainVoList.add(GainVo.builder().indexName("创业板指").profit(indexValueBo.getCyb().setScale(2, BigDecimal.ROUND_HALF_UP)).build());
+        gainVoList.add(GainVo.builder().indexName("沪深300指").profit(indexValueBo.getHs().setScale(2, BigDecimal.ROUND_HALF_UP)).build());
         return PageGainVo.builder().Title(title).gain(gainVoList).build();
     }
 
@@ -125,9 +139,9 @@ public class GainRateServiceImpl implements GainRateService {
         int days = date.getDayOfYear();
         PageGainVo result = ConvertUtils.beanConvert(pageGainVo, new PageGainVo());
         result.setGain(deepCopy(pageGainVo.getGain()));
-        BigDecimal rate = new BigDecimal(365).divide(new BigDecimal(days), 4, BigDecimal.ROUND_UP);
+        BigDecimal rate = new BigDecimal(365).divide(new BigDecimal(days), 4, BigDecimal.ROUND_HALF_UP);
         for (GainVo gainVo : result.getGain()) {
-            gainVo.setProfit(gainVo.getProfit().multiply(rate).setScale(2, BigDecimal.ROUND_UP));
+            gainVo.setProfit(gainVo.getProfit().multiply(rate).setScale(2, BigDecimal.ROUND_HALF_UP));
         }
         result.setTitle("预期年化");
         return result;
@@ -135,14 +149,15 @@ public class GainRateServiceImpl implements GainRateService {
 
     @Override
     public PageGainVo getFromYearStart(String userCode, Integer diff, LocalDate end, String title) {
-        //动态调整   今年的多少天
-        int days = end.getDayOfYear();
-        int diff_2 = days > diff ? days : days;
-        return getRecentlyGain(userCode, diff_2, end, title);
+        String year = end.getYear() + "-01-01";
+        Asset asset = assetService.getYearFirst(year, userCode);
+        IndexValue index = indexValueService.getYearFirst(year);
+        return getRecentlyGain(index, asset, userCode, title);
     }
 
 
     private YieldRateVo createYieldRateVo(LocalDate time) {
+        //注意点就是这个日期不一定有
         YieldRateVo result = new YieldRateVo();
         result.getHsGain().add(BigDecimal.ZERO);
         result.getSzGain().add(BigDecimal.ZERO);
@@ -167,7 +182,7 @@ public class GainRateServiceImpl implements GainRateService {
     }
 
     private BigDecimal getRate(BigDecimal base, BigDecimal value) {
-        return (value.subtract(base)).divide(base, 6, BigDecimal.ROUND_UP).multiply(new BigDecimal(100));
+        return (value.subtract(base)).divide(base, 6, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
     }
 
     public static <T> List<T> deepCopy(List<T> src) {
@@ -178,7 +193,6 @@ public class GainRateServiceImpl implements GainRateService {
 
             ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
             ObjectInputStream in = new ObjectInputStream(byteIn);
-//        @SuppressWarnings("unchecked")
             List<T> dest = (List<T>) in.readObject();
             return dest;
         } catch (Exception e) {

@@ -28,4 +28,6 @@ public class PlanVo {
     private String action;
     private BigDecimal rank;
     private String note;
+
+    private String stockName;
 }

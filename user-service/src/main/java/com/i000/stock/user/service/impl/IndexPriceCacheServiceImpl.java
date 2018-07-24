@@ -4,10 +4,12 @@ import com.i000.stock.user.api.entity.bo.IndexInfo;
 import com.i000.stock.user.api.entity.bo.Price;
 import com.i000.stock.user.api.service.external.CompanyCrawlerService;
 import com.i000.stock.user.api.service.external.IndexService;
+import com.i000.stock.user.api.service.original.IndexValueService;
 import com.i000.stock.user.api.service.util.EmailService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.ServiceException;
+import com.i000.stock.user.dao.model.IndexValue;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +38,9 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private IndexValueService indexValueService;
+
     /**
      * 用于获取全部的公司码
      */
@@ -44,13 +51,13 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
     private ExternalServiceImpl externalService;
 
 
-    private static List<IndexInfo> INDEX;
+    private static List<IndexInfo> INDEX = new ArrayList<>();
 
-    private static List<Price> PRICE;
+    private static List<Price> PRICE = new ArrayList<>();
 
     @Override
     public List<IndexInfo> putIndexToCache(Integer tryNumber) {
-        INDEX = null;
+        INDEX.clear();
         for (int i = 0; i < tryNumber; i++) {
             try {
                 List<IndexInfo> indexInfo = indexService.get();
@@ -70,7 +77,7 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
 
     @Override
     public List<Price> putPriceToCache(Integer tryNumber) {
-        PRICE = null;
+        PRICE.clear();
         for (int i = 0; i < tryNumber; i++) {
             try {
                 List<Price> result = new ArrayList<>(4000);
@@ -112,6 +119,29 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
             return PRICE;
         }
         return putPriceToCache(tryNumber);
+    }
+
+    @Override
+    public void saveIndexValue() {
+        List<IndexInfo> indexInfos = getIndex(20);
+        IndexValue indexValue = IndexValue.builder().build();
+        for (IndexInfo indexInfo : indexInfos) {
+            if (!indexInfo.getDate().equals(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
+                //当天不是股市交易日，不保存不计算
+                return;
+            }
+            if (indexInfo.getCode().contains("sh000001")) {
+                indexValue.setDate(LocalDate.now());
+                indexValue.setSh(indexInfo.getClose());
+            }
+            if (indexInfo.getCode().contains("sh000300")) {
+                indexValue.setHs(indexInfo.getClose());
+            }
+            if (indexInfo.getCode().contains("sz399006")) {
+                indexValue.setCyb(indexInfo.getClose());
+            }
+        }
+        indexValueService.save(indexValue);
     }
 
     private void sleep(Long second) {

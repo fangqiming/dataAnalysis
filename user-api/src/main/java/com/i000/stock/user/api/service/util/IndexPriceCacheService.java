@@ -36,4 +36,9 @@ public interface IndexPriceCacheService {
      * @return
      */
     List<Price> getPrice(Integer tryNumber);
+
+    /**
+     * 保存索引信息
+     */
+    void saveIndexValue();
 }

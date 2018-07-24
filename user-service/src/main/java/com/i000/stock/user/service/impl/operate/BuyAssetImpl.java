@@ -41,21 +41,21 @@ public class BuyAssetImpl implements AssetUpdateService {
         trade.setAmount(0);
         BigDecimal oneHandMoney = trade.getOldPrice().multiply(new BigDecimal(100));
         UserInfo userInfo = userInfoService.getByName(asset.getUserCode());
-        BigDecimal oneShareMoney = userInfo.getInitAmount().divide(userInfo.getInitNum(), 4, RoundingMode.HALF_UP);
+        BigDecimal oneShareMoney = userInfo.getInitAmount().divide(userInfo.getInitNum(), 4, BigDecimal.ROUND_HALF_UP);
         //用一份的钱除以1手的钱
         BigDecimal canBuyHandNum = oneShareMoney.divide(oneHandMoney, 0, BigDecimal.ROUND_HALF_UP);
         BigDecimal balance = asset.getBalance();
-
+        UserInfo user = userInfoService.getByName(asset.getUserCode());
         //此处计算的是买入的份数
         for (int i = 1; i <= canBuyHandNum.intValue(); i++) {
-            //允许融资
             balance = balance.subtract(oneHandMoney);
-//            if (balance.compareTo(BigDecimal.ZERO) >= 0) {
-            //余额够 股票份数就追加1份
-            trade.setAmount(trade.getAmount() + 100);
-            //余额减少一份的钱数
-            asset.setBalance(asset.getBalance().subtract(oneHandMoney));
-//            }
+            //todo 如果允许融资或者 剩余的钱仍旧购买一手股票
+            if (user.getIsLeverage() > 0 || balance.compareTo(BigDecimal.ZERO) >= 0) {
+                //余额够 股票份数就追加1份
+                trade.setAmount(trade.getAmount() + 100);
+                //余额减少一份的钱数
+                asset.setBalance(asset.getBalance().subtract(oneHandMoney));
+            }
         }
         HoldNow holdNow = ConvertUtils.beanConvert(trade, new HoldNow());
         holdNow.setId(null);

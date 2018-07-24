@@ -41,7 +41,7 @@ public class ShortAssetImpl implements AssetUpdateService {
         trade.setAmount(0);
         BigDecimal oneHandMoney = trade.getOldPrice().multiply(new BigDecimal(100));
         UserInfo userInfo = userInfoService.getByName(asset.getUserCode());
-        BigDecimal oneShareMoney = userInfo.getInitAmount().divide(userInfo.getInitNum(), 4, RoundingMode.HALF_UP);
+        BigDecimal oneShareMoney = userInfo.getInitAmount().divide(userInfo.getInitNum(), 4, BigDecimal.ROUND_HALF_UP);
         BigDecimal canBuyHandNum = oneShareMoney.divide(oneHandMoney, 0, BigDecimal.ROUND_HALF_UP);
         //设置做空账户追加
         asset.setCover(asset.getCover().subtract(oneHandMoney.multiply(canBuyHandNum)));

@@ -21,6 +21,10 @@ public class UserInfo {
     private String accountNo;
     private String password;
     private String mailNo;
+    /**
+     * 是否融资
+     */
+    private Byte isLeverage;
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
     private BigDecimal initAmount;

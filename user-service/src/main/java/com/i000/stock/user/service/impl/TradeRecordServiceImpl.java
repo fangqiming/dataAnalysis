@@ -71,7 +71,7 @@ public class TradeRecordServiceImpl implements TradeRecordService {
             } else {
                 tmp.setTradeDate(tradeRecord.getNewDate());
                 BigDecimal gainRate = (tradeRecord.getNewPrice().subtract(tradeRecord.getOldPrice()))
-                        .divide(tradeRecord.getOldPrice(), 4, BigDecimal.ROUND_UP)
+                        .divide(tradeRecord.getOldPrice(), 4, BigDecimal.ROUND_HALF_UP)
                         .multiply(new BigDecimal(100));
                 tmp.setGainRate(gainRate);
             }

@@ -59,7 +59,7 @@ public class OffsetPriceServiceImpl implements OffsetPriceService {
                 //份数=份数*昨天收盘价/今天的昨天收盘价
                 //价格=价格*今天的昨天收盘价/昨天收盘价
                 //今天的昨天的收盘价  与 昨天的收盘价做比较得到股票的份数是否需要做偏移  此rate=today/yesterday
-                result.put(stockCode, today.get(stockCode).divide(yesterday.get(stockCode), 4, RoundingMode.HALF_UP));
+                result.put(stockCode, today.get(stockCode).divide(yesterday.get(stockCode), 4, BigDecimal.ROUND_HALF_UP));
             }
             //对股票的份额进行更新
             for (Map.Entry<String, BigDecimal> entry : result.entrySet()) {
@@ -68,7 +68,7 @@ public class OffsetPriceServiceImpl implements OffsetPriceService {
                     tradeService.updatePrice(entry.getKey(), entry.getValue());
                     //更新份数   1/rate
                     holdNowService.updateAmount(
-                            new BigDecimal(1).divide(entry.getValue(),4, RoundingMode.HALF_UP),
+                            new BigDecimal(1).divide(entry.getValue(),4, BigDecimal.ROUND_HALF_UP),
                             entry.getKey(), holds.get(0).getNewDate());
                 }
             }

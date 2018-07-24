@@ -37,6 +37,11 @@ public class IndexValueServiceImpl implements IndexValueService {
     }
 
     @Override
+    public IndexValue getRecentlyByGt(LocalDate date) {
+        return indexValueMapper.getLatelyByGt(date);
+    }
+
+    @Override
     public IndexValue getLately() {
         return indexValueMapper.getNewest();
     }
@@ -44,5 +49,10 @@ public class IndexValueServiceImpl implements IndexValueService {
     @Override
     public void save(IndexValue indexValue) {
         indexValueMapper.insert(indexValue);
+    }
+
+    @Override
+    public IndexValue getYearFirst(String year) {
+        return indexValueMapper.getYearFirst(year);
     }
 }

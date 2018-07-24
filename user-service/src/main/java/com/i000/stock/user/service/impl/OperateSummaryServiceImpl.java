@@ -36,9 +36,6 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
     @Resource
     private OperateSummaryMapper operateSummaryMapper;
 
-    @Resource
-    private UserInfoService userInfoService;
-
     @Override
     public void updateSell(Integer holdDay, Integer profit, Integer loss, String userCode) {
         //首先要判断这个userCode是否存在 如果存在 才能够进行更新，否则需要进行插入
@@ -65,8 +62,8 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
 
     @Override
     public OperatorVo getOperatorSummary(String userCode) {
-        Asset asset = assetService.getLately(userCode);
-        if (Objects.isNull(asset)) {
+        OperateSummary operateSummary = operateSummaryMapper.getByUserCode(userCode);
+        if (Objects.isNull(operateSummary)) {
             return OperatorVo.builder().buyNumber(0)
                     .sellNumber(0)
                     .profitNumber(0)
@@ -74,9 +71,11 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
                     .avgHoldDay(0)
                     .winRate(BigDecimal.ZERO)
                     .holdNumber(0)
+                    .minGain(BigDecimal.ZERO)
+                    .maxGain(BigDecimal.ZERO)
                     .avgProfitRate(BigDecimal.ZERO).build();
         }
-        OperateSummary operateSummary = operateSummaryMapper.getByUserCode(userCode);
+        Asset asset = assetService.getLately(userCode);
         List<HoldNow> holdNows = holdNowService.find(userCode);
         for (HoldNow holdNow : holdNows) {
             //持有的总天数
@@ -99,11 +98,14 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
         BigDecimal avgProfitRate = BigDecimal.ZERO;
         if (holdNumber != 0) {
             avgHoldNumber = Math.toIntExact(Math.round(operateSummary.getHoldTotalDay() / 1.0 / holdNumber));
-            winRate = new BigDecimal(operateSummary.getProfitNumber()).divide(new BigDecimal(holdNumber), 4, RoundingMode.HALF_UP);
-            avgProfitRate = asset.getTotalGain().divide(new BigDecimal(holdNumber), 4, RoundingMode.HALF_UP);
+            winRate = new BigDecimal(operateSummary.getProfitNumber()).divide(new BigDecimal(holdNumber), 4, BigDecimal.ROUND_HALF_UP);
+            avgProfitRate = asset.getTotalGain().divide(new BigDecimal(holdNumber), 4, BigDecimal.ROUND_HALF_UP);
         }
+
         return OperatorVo.builder().buyNumber(operateSummary.getBuyNumber())
                 .sellNumber(operateSummary.getSellNumber())
+                .maxGain(assetService.getMaxGain(userCode))
+                .minGain(assetService.getMinGain(userCode))
                 .profitNumber(operateSummary.getProfitNumber())
                 .lossNumber(operateSummary.getLossNumber())
                 .avgHoldDay(avgHoldNumber)

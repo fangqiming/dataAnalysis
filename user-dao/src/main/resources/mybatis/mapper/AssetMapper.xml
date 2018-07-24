@@ -24,6 +24,10 @@
     </select>
 
     <select id="getDiff_2" resultMap="Asset">
+        select * from asset where user_code=#{userCode} and date&lt;=#{date} ORDER BY id DESC limit 1
+    </select>
+
+    <select id="getDiffByGt" resultMap="Asset">
         select * from asset where user_code=#{userCode} and date>=#{date} ORDER BY id limit 1
     </select>
 
@@ -49,6 +53,10 @@
 
     <select id="findBetween" resultMap="Asset">
         select * from asset  where user_code=#{userCode} and date between #{start} and #{end} ORDER BY date
+    </select>
+
+    <select id="getYearFirst" resultMap="Asset">
+        select * from asset where date>= #{year} and user_code=#{userCode} ORDER BY id  limit 1
     </select>
 
 </mapper>

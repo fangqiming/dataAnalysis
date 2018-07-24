@@ -1,16 +1,13 @@
 package com.i000.stock.user.web.schedule;
 
-import com.i000.stock.user.api.entity.bo.IndexInfo;
-import com.i000.stock.user.api.entity.bo.IndexValueBo;
-import com.i000.stock.user.api.service.buiness.IndexGainService;
 import com.i000.stock.user.api.service.buiness.OffsetPriceService;
-import com.i000.stock.user.api.service.external.*;
-import com.i000.stock.user.api.service.original.IndexValueService;
+import com.i000.stock.user.api.service.external.CompanyCrawlerService;
+import com.i000.stock.user.api.service.external.CompanyService;
+import com.i000.stock.user.api.service.external.IndexPriceService;
+import com.i000.stock.user.api.service.external.StockPledgeService;
 import com.i000.stock.user.api.service.util.EmailService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
-import com.i000.stock.user.dao.model.IndexGain;
 import com.i000.stock.user.dao.model.IndexPrice;
-import com.i000.stock.user.dao.model.IndexValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,7 +17,6 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,9 +31,6 @@ public class IndexPriceSchedule {
 
     @Resource
     private IndexPriceService indexPriceService;
-
-    @Resource
-    private IndexService indexService;
 
     @Autowired
     private CompanyService companyService;
@@ -142,7 +135,6 @@ public class IndexPriceSchedule {
             e.printStackTrace();
         }
     }
-
 
     /**
      * 判断当天是否是股市交易日

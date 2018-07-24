@@ -83,6 +83,6 @@ public class IndexGainServiceImpl implements IndexGainService {
 
     private BigDecimal getRate(BigDecimal current, BigDecimal old) {
         BigDecimal diff = current.subtract(old);
-        return diff.divide(old, 5, BigDecimal.ROUND_UP);
+        return diff.divide(old, 5, BigDecimal.ROUND_HALF_UP);
     }
 }

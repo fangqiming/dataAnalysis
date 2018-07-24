@@ -41,7 +41,7 @@ public class ParseToHold implements ParseService {
                 parse = LocalDate.parse(split[5], DateTimeFormatter.ofPattern("yyyyMMdd"));
                 if (Objects.isNull(maxDate) || parse.compareTo(maxDate) > 0) {
                     hasData = true;
-                    holdMapper.insert(Hold.builder().gain(new BigDecimal(split[8]).divide(new BigDecimal(100), 5, RoundingMode.HALF_UP))
+                    holdMapper.insert(Hold.builder().gain(new BigDecimal(split[8]).divide(new BigDecimal(100), 5, BigDecimal.ROUND_HALF_UP))
                             .holdDay(Integer.valueOf(split[7]))
                             .name(split[0])
                             .newDate(parse)

@@ -25,4 +25,6 @@ public class PlanInfoVo {
     private String daily;
     private String weekly;
     private String monthly;
+    private String select;
+    private String showImg;
 }

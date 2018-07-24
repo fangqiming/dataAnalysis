@@ -34,4 +34,8 @@ public class OperatorVo {
     private BigDecimal avgProfitRate;
 
     private Integer holdNumber;
+
+    private BigDecimal maxGain;
+
+    private BigDecimal minGain;
 }

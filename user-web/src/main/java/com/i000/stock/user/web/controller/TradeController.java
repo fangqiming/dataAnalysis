@@ -79,7 +79,7 @@ public class TradeController {
      */
     @GetMapping(path = "/find_gain")
     public ResultEntity findProfit() {
-        String userCode = RequestContext.getInstance().getAccountCode();
+        String userCode = "echo_gou";
         Asset asset = assetService.getLately(userCode);
         String date = asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd"));
         List<PageGainVo> result = new ArrayList<>(4);
@@ -110,8 +110,6 @@ public class TradeController {
     /**
      * 127.0.0.1:8082/recommend/get_index_contrast
      * 此处就也需要修改了
-     * <p>
-     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
      *
      * @return
      */
@@ -120,18 +118,15 @@ public class TradeController {
         List<LineGroupQuery> baseLines = lineService.find();
         BaseLineTrendVO baseLineTrendVO = new BaseLineTrendVO();
         baseLines.stream().sorted(Comparator.comparing(LineGroupQuery::getTime)).forEach(baseLine -> {
-            baseLineTrendVO.getAiMarket().add(baseLine.getAiMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_UP));
-            baseLineTrendVO.getBaseMarket().add(baseLine.getBaseMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_UP));
-            baseLineTrendVO.getTime().add(baseLine.getTime().substring(2,10));
+            baseLineTrendVO.getAiMarket().add(baseLine.getAiMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_HALF_UP));
+            baseLineTrendVO.getBaseMarket().add(baseLine.getBaseMarket().divide(new BigDecimal(10), 0, BigDecimal.ROUND_HALF_UP));
+            baseLineTrendVO.getTime().add(baseLine.getTime().substring(2, 10));
         });
         return Results.newSingleResultEntity(baseLineTrendVO);
     }
 
     /**
      * 127.0.0.1:8081//trade/get_asset_summary
-     * <p>
-     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
-     * <p>
      * 获取首页的账户总览信息
      * 经过测试基本可用
      */
@@ -182,7 +177,7 @@ public class TradeController {
     }
 
     private BigDecimal getDiffAsset(Asset asset, BigDecimal rate) {
-        BigDecimal befor = (asset.getBalance().add(asset.getStock())).divide(rate.add(new BigDecimal(1)), 2, RoundingMode.HALF_UP);
+        BigDecimal befor = (asset.getBalance().add(asset.getStock())).divide(rate.add(new BigDecimal(1)), 2, BigDecimal.ROUND_HALF_UP);
         return (asset.getBalance().add(asset.getStock())).subtract(befor);
     }
 
@@ -190,8 +185,7 @@ public class TradeController {
     /**
      * 127.0.0.1:8081/trade/find_stock
      * 首页获取当前的持仓信息  基本通过测试
-     * <p>
-     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
+
      *
      * @return
      */
@@ -217,9 +211,6 @@ public class TradeController {
 
     /**
      * 获取操作统计的接口
-     * 基本通过测试
-     * <p>
-     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
      *
      * @return
      */
@@ -235,7 +226,6 @@ public class TradeController {
     /**
      * 分页获取交易详情的接口
      * 需要获取每天的交易记录
-     * todo 此处的userCode需要根据用户码来变化新用户似乎没有什么问题
      */
     @GetMapping(path = "/search_trade")
     public ResultEntity searchTrade(BaseSearchVo baseSearchVo) {

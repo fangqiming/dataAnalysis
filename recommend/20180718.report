@@ -1,0 +1,39 @@
+
+------ Daily Snapshot ------
+   date   	LONG1	#cash	maxsect	maxindu	market	total	gain%
+>>> 20180102 : 5000000 : 33483.3
+2018/01/02	0	4	0	0	33483	33483	0.0%
+2018/01/03	0	4	0	0	33691	33483	-0.6%
+2018/01/04	0	4	0	0	33857	33483	-1.1%
+2018/01/05	0	4	0	0	33918	33483	-1.3%
+2018/01/08	0	4	0	0	34095	33483	-1.8%
+2018/01/09	0	4	0	0	34139	33483	-1.9%
+2018/01/10	0	4	0	0	34218	33483	-2.1%
+2018/01/11	0	4	0	0	34253	33483	-2.2%
+2018/01/12	0	4	0	0	34289	33483	-2.4%
+2018/01/15	0	4	0	0	34105	33483	-1.8%
+2018/01/16	1	3	0	0	34366	33475	-2.6%
+2018/01/17	2	2	0	0	34447	33527	-2.7%
+beta = -0.02
+benchmark_volatility = 4	portfolio_volatility = 0
+avg_cash_pct = -1
+
+------ Portfolio for 20180117 , LONG1 ------
+type	L
+cash	-2502199.47978
+value	6533.74022000004
+num_positions	2
+600703	22.324	20180117	0.13	22.324	20180117	0.91	0	0.0%
+601699	11.07	20180116	0.43	11.15	20180117	1.14	1	0.7%
+total gain = 0.4 %
+
+------ Details for closed positions on 20180117 , LONG1 ------
+
+------ Todays Trades ------
+cat /home/longji/MMdata/chprod/daily/china/201801/20180117/trade_desc_20180117.txt
+date	category	symbol	action	price	shares	capital	note
+2018/01/17	LONG1	600703	BUY	22.324	55980	1249698	三安光电 | 电子与电气设备
+
+------ Tomorrows Plan ------
+cat /home/longji/MMdata/chprod/daily/china/201801/20180117/plan_desc_20180117.txt
+date	category	symbol	action	price	shares	capital	score	note

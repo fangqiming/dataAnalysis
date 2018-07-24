@@ -1,5 +1,6 @@
 package com.i000.stock.user.api.entity.vo;
 
+import com.i000.stock.user.api.entity.bo.AssetStatisticalBo;
 import com.i000.stock.user.api.entity.bo.EndAssetBo;
 import com.i000.stock.user.api.entity.bo.StartAssetBo;
 import lombok.AllArgsConstructor;
@@ -20,4 +21,5 @@ import lombok.NoArgsConstructor;
 public class AssetSummaryVo {
     private StartAssetBo start;
     private EndAssetBo end;
+    private AssetStatisticalBo summary;
 }

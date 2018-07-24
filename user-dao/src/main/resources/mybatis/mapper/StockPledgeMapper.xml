@@ -2,61 +2,29 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.i000.stock.user.dao.mapper.AssetMapper">
+<mapper namespace="com.i000.stock.user.dao.mapper.StockPledgeMapper">
 
-    <resultMap id="Asset" type="com.i000.stock.user.dao.model.Asset">
+    <resultMap id="StockPledge" type="com.i000.stock.user.dao.model.StockPledge">
         <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
         <result column="date" property="date"/>
-        <result column="stock" property="stock"/>
-        <result column="balance" property="balance"/>
-        <result column="cover" property="cover"/>
-        <result column="gain" property="gain"/>
-        <result column="user_code" property="userCode"/>
-        <result column="total_gain" property="totalGain"/>
+        <result column="pledge_number" property="pledgeNumber"/>
+        <result column="limited_pledge" property="limitedPledge"/>
+        <result column="unlimited_pledge" property="unlimitedPledge"/>
+        <result column="total" property="total"/>
+        <result column="rate" property="rate"/>
     </resultMap>
 
-    <select id="getLately" resultMap="Asset">
-        select * from asset where user_code=#{userCode} ORDER BY id DESC  limit 1
-    </select>
-
-    <select id="getDiff" resultMap="Asset">
-        select * from asset where user_code=#{userCode} and date >= DATE_SUB(#{date}, INTERVAL ${diff} DAY) limit 1
-    </select>
-
-    <select id="getDiff_2" resultMap="Asset">
-        select * from asset where user_code=#{userCode} and date&lt;=#{date} ORDER BY id DESC limit 1
-    </select>
-
-    <select id="getDiffByGt" resultMap="Asset">
-        select * from asset where user_code=#{userCode} and date>=#{date} ORDER BY id limit 1
-    </select>
-
-    <select id="findDiff" resultMap="Asset">
-        select * from asset where user_code=#{userCode} and date >= DATE_SUB(#{date}, INTERVAL ${diff} DAY)
-    </select>
-
-    <select id="getByDate" resultMap="Asset">
-        select * from asset where user_code=#{userCode} and date =#{date}
-    </select>
-
-    <select id="search" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo" resultMap="Asset">
-        select sql_calc_found_rows  * from asset where user_code=#{userCode}   ORDER BY date DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
-    </select>
-
-    <select id="findByDateUser" resultMap="Asset">
-        select * from asset where user_code=#{userCode}
-        <foreach collection="dates" item="item" open="and date IN(" close=")" separator=",">
-            #{item}
-        </foreach>
-    </select>
-
-
-    <select id="findBetween" resultMap="Asset">
-        select * from asset  where user_code=#{userCode} and date between #{start} and #{end} ORDER BY date
-    </select>
-
-    <select id="getYearFirst" resultMap="Asset">
-        select * from asset where date>= #{year} and user_code=#{userCode} ORDER BY id  limit 1
+    <select id="search" resultMap="StockPledge">
+          select sql_calc_found_rows * from stock_pledge where 1=1
+            <if test="code != ''">
+                and `code` like '%${code}%'
+            </if>
+            <if test="name != ''">
+                and `name` like '%${name}%'
+            </if>
+           limit ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
 </mapper>

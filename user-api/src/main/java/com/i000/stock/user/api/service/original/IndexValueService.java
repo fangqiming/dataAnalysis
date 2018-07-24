@@ -40,6 +40,14 @@ public interface IndexValueService {
     IndexValue getRecently(LocalDate date);
 
     /**
+     * 获取距离指定日期最近的一条指数信息
+     *
+     * @param date
+     * @return
+     */
+    IndexValue getRecentlyByGt(LocalDate date);
+
+    /**
      * 获取表中最新的数据条目
      *
      * @return
@@ -52,4 +60,12 @@ public interface IndexValueService {
      * @param indexValue
      */
     void save(IndexValue indexValue);
+
+    /**
+     * 查询指定年的第一条记录
+     *
+     * @param year
+     * @return
+     */
+    IndexValue getYearFirst(String year);
 }

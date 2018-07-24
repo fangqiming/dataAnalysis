@@ -29,6 +29,8 @@ public class IndexPriceServiceImpl implements IndexPriceService {
     private PriceService priceService;
 
 
+
+
     @Override
     public String getContent(String date) {
         if (StringUtils.isNoneBlank(date)) {

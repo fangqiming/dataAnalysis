@@ -54,7 +54,7 @@ public class ParseToLine implements ParseService {
                 if (Objects.isNull(maxDate) || parse.compareTo(maxDate) > 0) {
                     lineMapper.insert(Line.builder()
                             .date(parse)
-                            .gain(new BigDecimal(split[7]).divide(new BigDecimal(100), 4, RoundingMode.HALF_UP))
+                            .gain(new BigDecimal(split[7]).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP))
                             .aiMarket(new BigDecimal(split[6]))
                             .baseMarket(new BigDecimal(split[5])).build());
                 }

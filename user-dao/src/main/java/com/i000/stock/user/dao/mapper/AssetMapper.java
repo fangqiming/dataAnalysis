@@ -5,7 +5,6 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.Asset;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.tomcat.jni.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,6 +34,8 @@ public interface AssetMapper extends BaseMapper<Asset> {
      * @return
      */
     Asset getDiff_2(@Param("userCode") String userCode, @Param("date") LocalDate date);
+
+    Asset getDiffByGt(@Param("userCode") String userCode, @Param("date") LocalDate date);
 
     /**
      * 获取距离最后一次交易间隔diff个时间的资产情况
@@ -105,4 +106,11 @@ public interface AssetMapper extends BaseMapper<Asset> {
 
     List<Asset> findBetween(@Param("userCode") String userCode, @Param("start") LocalDate start, @Param("end") LocalDate end);
 
+    Asset getYearFirst(@Param("year") String year, @Param("userCode") String userCode);
+
+    @Select("select gain from  asset where user_code=#{userCode} ORDER BY gain DESC limit 1")
+    BigDecimal getMaxGain(@Param("userCode") String userCode);
+
+    @Select("select gain from  asset where user_code=#{userCode} ORDER BY gain limit 1")
+    BigDecimal getMinGain(@Param("userCode") String userCode);
 }

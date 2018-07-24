@@ -1,5 +1,6 @@
 package com.i000.stock.user.web.controller;
 
+import com.i000.stock.user.api.service.buiness.ChooseStockService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.transform.Result;
 import java.sql.SQLException;
 
 /**
@@ -34,6 +36,9 @@ public class EngineController {
     @Autowired
     private IndexPriceCacheService indexPriceCacheService;
 
+    @Autowired
+    private ChooseStockService chooseStockService;
+
     /**
      * 用于接收推荐信息 注意没有考虑拆股与分红
      *
@@ -50,5 +55,10 @@ public class EngineController {
             log.warn("指数价格信息已经被保存", e);
         }
         return Results.newNormalResultEntity("result", "success");
+    }
+
+    @GetMapping(value = "/find_stock_by_choose")
+    public StringBuffer findCode() {
+        return chooseStockService.findCode();
     }
 }

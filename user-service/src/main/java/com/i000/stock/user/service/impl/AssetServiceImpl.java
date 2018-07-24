@@ -11,6 +11,7 @@ import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.mapper.AssetMapper;
 import com.i000.stock.user.dao.model.*;
 import com.i000.stock.user.service.impl.operate.UpdateAssetImpl;
+import com.sun.tools.javac.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +64,11 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Asset getDiff(LocalDate date, String userCode) {
         return assetMapper.getDiff_2(userCode, date);
+    }
+
+    @Override
+    public Asset getDiffByGt(LocalDate date, String userCode) {
+        return assetMapper.getDiffByGt(userCode,date);
     }
 
     @Override
@@ -152,7 +158,7 @@ public class AssetServiceImpl implements AssetService {
     private BigDecimal getGain(Asset now, Asset befor) {
         BigDecimal nowAmount = now.getBalance().add(now.getStock()).add(now.getCover());
         BigDecimal beforAmount = befor.getBalance().add(befor.getStock()).add(befor.getCover());
-        return (nowAmount.subtract(beforAmount)).divide(beforAmount, 4, RoundingMode.HALF_UP);
+        return (nowAmount.subtract(beforAmount)).divide(beforAmount, 4, BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
@@ -198,5 +204,18 @@ public class AssetServiceImpl implements AssetService {
         return assetMapper.findBetween(userCode, start, end);
     }
 
+    @Override
+    public Asset getYearFirst(String year, String userCode) {
+        return assetMapper.getYearFirst(year, userCode);
+    }
 
+    @Override
+    public BigDecimal getMaxGain(String userCode) {
+        return assetMapper.getMaxGain(userCode);
+    }
+
+    @Override
+    public BigDecimal getMinGain(String userCode) {
+        return assetMapper.getMinGain(userCode);
+    }
 }

@@ -29,4 +29,7 @@ public class UserInfoRegisterVo {
 
     @NotNull(message = "初始份数不能为空")
     private BigDecimal initNum;
+
+    @NotNull(message = "是否允许融资不能为空")
+    private Byte isLeverage;
 }
