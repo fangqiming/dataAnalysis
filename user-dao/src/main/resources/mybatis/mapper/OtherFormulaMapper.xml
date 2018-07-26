@@ -1,0 +1,19 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i000.stock.user.dao.mapper.OtherFormulaMapper">
+
+    <resultMap id="FinancialCompositeBo" type="com.i000.stock.user.dao.bo.FinancialCompositeBo">
+        <result column="code" property="code"/>
+        <result column="value" property="value"/>
+    </resultMap>
+
+    <select id="find" resultMap="FinancialCompositeBo">
+        select  ${expression} as `value`,`code`  from ${tableName} where 1=1
+        <foreach collection="codes" item="item" open="and `code` IN(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

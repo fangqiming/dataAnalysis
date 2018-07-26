@@ -33,4 +33,9 @@ public class ChooseStockServiceImpl implements ChooseStockService {
         }
         return result;
     }
+
+    @Override
+    public List<ChooseStock> findAll() {
+        return chooseStockMapper.selectList(null);
+    }
 }

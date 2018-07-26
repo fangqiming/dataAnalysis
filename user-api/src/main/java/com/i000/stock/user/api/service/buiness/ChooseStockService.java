@@ -1,5 +1,9 @@
 package com.i000.stock.user.api.service.buiness;
 
+import com.i000.stock.user.dao.model.ChooseStock;
+
+import java.util.List;
+
 /**
  * @Author:qmfang
  * @Description:
@@ -9,4 +13,6 @@ package com.i000.stock.user.api.service.buiness;
 public interface ChooseStockService {
 
     StringBuffer findCode();
+
+    List<ChooseStock> findAll();
 }

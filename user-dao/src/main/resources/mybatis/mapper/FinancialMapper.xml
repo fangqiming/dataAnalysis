@@ -1,0 +1,63 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i000.stock.user.dao.mapper.FinancialMapper">
+
+    <resultMap id="Financial" type="com.i000.stock.user.dao.model.Financial">
+        <result column="bill_receivable_rate" property="billReceivableRate"/>
+        <result column="code" property="code"/>
+        <result column="inc_net_profit_annual" property="incNetProfitAnnual"/>
+        <result column="debt_ratio" property="debtRatio"/>
+        <result column="net_profit_margin" property="netProfitMargin"/>
+        <result column="static_pe" property="staticPe"/>
+        <result column="net_financing" property="netFinancing"/>
+        <result column="account_receivable_rate" property="accountReceivableRate"/>
+        <result column="notes_payable_rate" property="notesPayableRate"/>
+        <result column="core_profit_margin" property="coreProfitMargin"/>
+        <result column="roa" property="roa"/>
+        <result column="roe" property="roe"/>
+        <result column="net_investment" property="netInvestment"/>
+        <result column="operating_revenue" property="operatingRevenue"/>
+        <result column="market_cap" property="marketCap"/>
+        <result column="total_assets_turnover_rate" property="totalAssetsTurnoverRate"/>
+        <result column="flow_ratio" property="flowRatio"/>
+        <result column="inventories_turnover_rate" property="inventoriesTurnoverRate"/>
+        <result column="gross_profit_margin" property="grossProfitMargin"/>
+        <result column="net_business" property="netBusiness"/>
+        <result column="total_current_assets_turnover_rate" property="totalCurrentAssetsTurnoverRate"/>
+        <result column="industry" property="industry"/>
+        <result column="inc_revenue_annual" property="incRevenueAnnual"/>
+        <result column="dynamic_pe" property="dynamicPe"/>
+        <result column="quick_ratio" property="quickRatio"/>
+        <result column="fixed_assets_turnover_rate" property="fixedAssetsTurnoverRate"/>
+        <result column="accounts_payable_rate" property="accountsPayableRate"/>
+        <result column="account_receivable_turnover_rate" property="accountReceivableTurnoverRate"/>
+        <result column="total" property="total"/>
+    </resultMap>
+
+    <resultMap id="FinancialCompositeBo" type="com.i000.stock.user.dao.bo.FinancialCompositeBo">
+        <result column="code" property="code"/>
+        <result column="value" property="value"/>
+        <result column="day" property="day"/>
+    </resultMap>
+
+    <select id="findBySingleSql" resultMap="Financial">
+      select *, ${expression} as total
+      from financial where `day`=#{day}
+        <foreach collection="code" item="item" open="and `code` IN(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="findByComposite" resultMap="FinancialCompositeBo">
+        SELECT `code`, ${index} as `value` ,`day` from financial where 1=1
+        <foreach collection="code" item="item" open="and `code` IN(" close=")" separator=",">
+            #{item}
+        </foreach>
+        <foreach collection="days" item="item" open="and `day` IN(" close=")" separator=",">
+            #{item}
+        </foreach>
+</select>
+
+</mapper>
