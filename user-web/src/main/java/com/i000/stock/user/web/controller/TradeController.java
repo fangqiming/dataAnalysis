@@ -142,12 +142,14 @@ public class TradeController {
                     .balanceAmount(userInfo.getInitAmount())
                     .stockAmount(BigDecimal.ZERO)
                     .todayProfit(BigDecimal.ZERO)
+                    .amountNumber(userInfo.getInitNum())
                     .avgPosition((BigDecimal.ZERO)).build();
             EndAssetBo endAssetBo = EndAssetBo.builder().date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                     .totalAsset(userInfo.getInitAmount())
                     .balanceAmount(userInfo.getInitAmount())
                     .stockAmount(BigDecimal.ZERO)
                     .totalProfit(BigDecimal.ZERO)
+                    .shareAmount(userInfo.getInitAmount().divide(userInfo.getInitNum(), 2, BigDecimal.ROUND_HALF_UP))
                     .todayPosition(BigDecimal.ZERO).build();
             AssetStatisticalBo summary = AssetStatisticalBo.builder()
                     .todayGain(BigDecimal.ZERO).total(userInfo.getInitAmount()).totalGainRate(BigDecimal.ZERO).totalGain(BigDecimal.ZERO).build();
@@ -160,12 +162,15 @@ public class TradeController {
                 .balanceAmount(userInfo.getInitAmount())
                 .stockAmount(BigDecimal.ZERO)
                 .todayProfit(asset.getGain())
-                .avgPosition((BigDecimal.ONE.subtract(assetService.getAvgIdleRate(userCode))).multiply(new BigDecimal(100))).build();
+                .avgPosition((BigDecimal.ONE.subtract(assetService.getAvgIdleRate(userCode))).multiply(new BigDecimal(100)))
+                .amountNumber(userInfo.getInitNum())
+                .build();
         EndAssetBo endAssetBo = EndAssetBo.builder().date(asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                 .totalAsset(asset.getBalance().add(asset.getStock()))
                 .balanceAmount(asset.getBalance())
                 .stockAmount(asset.getStock())
                 .totalProfit(asset.getTotalGain())
+                .shareAmount(userInfo.getInitAmount().divide(userInfo.getInitNum(), 2, BigDecimal.ROUND_HALF_UP))
                 .todayPosition((BigDecimal.ONE.subtract(assetService.getIdleRate(userCode))).multiply(new BigDecimal(100))).build();
         AssetStatisticalBo summary = AssetStatisticalBo.builder()
                 .todayGain(getDiffAsset(asset, asset.getGain()))
@@ -185,7 +190,6 @@ public class TradeController {
     /**
      * 127.0.0.1:8081/trade/find_stock
      * 首页获取当前的持仓信息  基本通过测试
-
      *
      * @return
      */

@@ -49,4 +49,9 @@ public class StartAssetBo {
      * 平均仓位
      */
     private BigDecimal avgPosition;
+
+    /**
+     * 金额份数
+     */
+    private BigDecimal amountNumber;
 }

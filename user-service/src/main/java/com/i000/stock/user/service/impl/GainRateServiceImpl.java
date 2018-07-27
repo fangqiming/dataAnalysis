@@ -168,8 +168,9 @@ public class GainRateServiceImpl implements GainRateService {
     }
 
     private BigDecimal calculateAsset(Asset base, Asset value) {
-        return getRate(base.getBalance().add(base.getStock()).add(base.getCover()),
-                value.getBalance().add(value.getStock()).add(value.getCover()));
+        return Objects.isNull(base)
+                ? BigDecimal.ZERO
+                : getRate(base.getBalance().add(base.getStock()).add(base.getCover()), value.getBalance().add(value.getStock()).add(value.getCover()));
     }
 
     private IndexValueBo calculateIndex(IndexValue base, IndexValue value) {

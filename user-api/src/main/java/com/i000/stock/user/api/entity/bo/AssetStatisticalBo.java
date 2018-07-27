@@ -1,5 +1,7 @@
 package com.i000.stock.user.api.entity.bo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.i000.stock.user.core.jackson.serialize.BigDecimalRoundSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +20,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssetStatisticalBo {
+
+//    @JsonSerialize(using = BigDecimalRoundSerializer.class)
     private BigDecimal total;
     private BigDecimal todayGain;
     private BigDecimal totalGain;
