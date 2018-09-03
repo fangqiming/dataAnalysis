@@ -26,19 +26,15 @@ public class StartAssetBo {
     private String date;
 
     /**
-     * 总资产
+     * 投资金额
      */
     private BigDecimal totalAsset;
 
     /**
-     * 股票金额
+     * 累计盈利
      */
-    private BigDecimal stockAmount;
+    private BigDecimal totalProfit;
 
-    /**
-     * 账户余额
-     */
-    private BigDecimal balanceAmount;
 
     /**
      * 今日盈亏率

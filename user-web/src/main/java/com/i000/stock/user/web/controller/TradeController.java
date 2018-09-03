@@ -137,19 +137,18 @@ public class TradeController {
         UserInfo userInfo = userInfoService.getByName(userCode);
         if (Objects.isNull(asset)) {
             //此处的账户总览需要获取用户是什么时候创建的账户
-            StartAssetBo startAssetBo = StartAssetBo.builder().date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
+            StartAssetBo startAssetBo = StartAssetBo.builder()
+                    .date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                     .totalAsset(userInfo.getInitAmount())
-                    .balanceAmount(userInfo.getInitAmount())
-                    .stockAmount(BigDecimal.ZERO)
+                    .totalProfit(BigDecimal.ZERO)
                     .todayProfit(BigDecimal.ZERO)
-                    .amountNumber(userInfo.getInitNum())
+                    .amountNumber(userInfo.getInitAmount().divide(userInfo.getInitNum(), 0, BigDecimal.ROUND_UP))
                     .avgPosition((BigDecimal.ZERO)).build();
             EndAssetBo endAssetBo = EndAssetBo.builder().date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                     .totalAsset(userInfo.getInitAmount())
                     .balanceAmount(userInfo.getInitAmount())
                     .stockAmount(BigDecimal.ZERO)
                     .totalProfit(BigDecimal.ZERO)
-                    .shareAmount(userInfo.getInitAmount().divide(userInfo.getInitNum(), 2, BigDecimal.ROUND_HALF_UP))
                     .todayPosition(BigDecimal.ZERO).build();
             AssetStatisticalBo summary = AssetStatisticalBo.builder()
                     .todayGain(BigDecimal.ZERO).total(userInfo.getInitAmount()).totalGainRate(BigDecimal.ZERO).totalGain(BigDecimal.ZERO).build();
@@ -157,26 +156,32 @@ public class TradeController {
             return Results.newSingleResultEntity(result);
         }
 
-        StartAssetBo startAssetBo = StartAssetBo.builder().date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
+        StartAssetBo startAssetBo = StartAssetBo.builder()
+                .date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                 .totalAsset(userInfo.getInitAmount())
-                .balanceAmount(userInfo.getInitAmount())
-                .stockAmount(BigDecimal.ZERO)
+                .totalProfit(asset.getBalance().add(asset.getStock()).subtract(userInfo.getInitAmount()))
                 .todayProfit(asset.getGain())
                 .avgPosition((BigDecimal.ONE.subtract(assetService.getAvgIdleRate(userCode))).multiply(new BigDecimal(100)))
-                .amountNumber(userInfo.getInitNum())
+                .amountNumber(userInfo.getInitAmount().divide(userInfo.getInitNum(), 0, BigDecimal.ROUND_UP))
                 .build();
         EndAssetBo endAssetBo = EndAssetBo.builder().date(asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                 .totalAsset(asset.getBalance().add(asset.getStock()))
                 .balanceAmount(asset.getBalance())
                 .stockAmount(asset.getStock())
                 .totalProfit(asset.getTotalGain())
-                .shareAmount(userInfo.getInitAmount().divide(userInfo.getInitNum(), 2, BigDecimal.ROUND_HALF_UP))
                 .todayPosition((BigDecimal.ONE.subtract(assetService.getIdleRate(userCode))).multiply(new BigDecimal(100))).build();
+
+
         AssetStatisticalBo summary = AssetStatisticalBo.builder()
+                //今日收益
                 .todayGain(getDiffAsset(asset, asset.getGain()))
+                //总金额
                 .total(asset.getBalance().add(asset.getStock()))
+                //总收益率
                 .totalGainRate(asset.getTotalGain())
-                .totalGain(getDiffAsset(asset, asset.getTotalGain())).build();
+                //总收益
+                .totalGain(asset.getBalance().add(asset.getStock()).subtract(userInfo.getInitAmount())).build();
+
         AssetSummaryVo result = AssetSummaryVo.builder().start(startAssetBo).end(endAssetBo).summary(summary).build();
         return Results.newSingleResultEntity(result);
     }
@@ -228,8 +233,7 @@ public class TradeController {
 
 
     /**
-     * 分页获取交易详情的接口
-     * 需要获取每天的交易记录
+     * 需要获取每天的交易记录分页获取交易详情的接口
      */
     @GetMapping(path = "/search_trade")
     public ResultEntity searchTrade(BaseSearchVo baseSearchVo) {

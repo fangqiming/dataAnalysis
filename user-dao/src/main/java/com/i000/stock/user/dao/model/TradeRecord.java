@@ -29,6 +29,7 @@ public class TradeRecord {
     private LocalDate newDate;
     private BigDecimal newPrice;
 
+
     private BigDecimal amount;
     private String userCode;
 }

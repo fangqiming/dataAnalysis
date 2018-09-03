@@ -74,6 +74,7 @@ public class TradeRecordServiceImpl implements TradeRecordService {
                         .divide(tradeRecord.getOldPrice(), 4, BigDecimal.ROUND_HALF_UP)
                         .multiply(new BigDecimal(100));
                 tmp.setGainRate(gainRate);
+                tmp.setGain((tmp.getNewPrice().subtract(tmp.getOldPrice())).multiply(tmp.getAmount()));
             }
             tmp.setCompanyName(companyService.getNameByCode(tradeRecord.getName()));
             result.add(tmp);

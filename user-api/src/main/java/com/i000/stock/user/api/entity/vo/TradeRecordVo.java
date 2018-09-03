@@ -66,4 +66,10 @@ public class TradeRecordVo {
      * 盈亏率
      */
     private BigDecimal gainRate;
+
+
+    /**
+     * 盈亏绝对值
+     */
+    private BigDecimal gain;
 }

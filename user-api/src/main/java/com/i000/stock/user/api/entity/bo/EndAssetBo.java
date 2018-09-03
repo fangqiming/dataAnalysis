@@ -49,8 +49,4 @@ public class EndAssetBo {
      */
     private BigDecimal todayPosition;
 
-    /**
-     * 每手金额数量
-     */
-    private BigDecimal shareAmount;
 }

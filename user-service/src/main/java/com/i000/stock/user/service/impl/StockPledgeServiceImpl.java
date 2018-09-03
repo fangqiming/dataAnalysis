@@ -41,6 +41,7 @@ public class StockPledgeServiceImpl implements StockPledgeService {
     public List<StockPledge> save() throws Exception {
         List<StockPledge> stockPledges = new ArrayList<>(4000);
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+//        String date = "2018.08.17";
         for (int page = 1; page < 400; page++) {
             String query = String.format("&queryDate=%s&page=%d", date, page);
             Document doc = Jsoup.connect(shUrl + query).get();

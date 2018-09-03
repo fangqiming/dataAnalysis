@@ -209,11 +209,21 @@ public class AssetServiceImpl implements AssetService {
         return assetMapper.getYearFirst(year, userCode);
     }
 
+    /**
+     * 修改成当月最大
+     * @param userCode
+     * @return
+     */
     @Override
     public BigDecimal getMaxGain(String userCode) {
         return assetMapper.getMaxGain(userCode);
     }
 
+    /**
+     * 修改成当月最小
+     * @param userCode
+     * @return
+     */
     @Override
     public BigDecimal getMinGain(String userCode) {
         return assetMapper.getMinGain(userCode);
