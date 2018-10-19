@@ -46,7 +46,7 @@ public class StockPledgeServiceImpl implements StockPledgeService {
             String query = String.format("&queryDate=%s&page=%d", date, page);
             Document doc = Jsoup.connect(shUrl + query).get();
             Elements div = doc.getElementsByClass("Stock");
-            if (page == 1 && div.get(0).child(0).child(0).children().size() < 2) {
+            if (isNotNewData(page, div)) {
                 return null;
             } else if (page == 1) {
                 stockPledgeMapper.truncate();
@@ -85,6 +85,15 @@ public class StockPledgeServiceImpl implements StockPledgeService {
         result.setList(tradeRecordVos);
         result.setTotal(total);
         return result;
+    }
+
+    private boolean isNotNewData(int page, Elements div) {
+        try {
+            return page == 1 && div.get(0).child(0).child(0).children().size() < 2;
+        } catch (NullPointerException e) {
+            log.warn("获取股权质押数据出现空指针异常，请注意是否上证交易所修改了数据结构");
+        }
+        return true;
     }
 
 

@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 
 /**
@@ -16,20 +17,21 @@ import java.math.BigDecimal;
 @Data
 public class UserInfoRegisterVo {
 
-    @Length(min = 1, max = 20, message = "用户名长度应该1-20个字符之间")
-    @NotBlank(message = "用户名不能为空")
+    @NotNull(message = "用户名不能为空")
     private String name;
+
+    @NotNull(message = "手机号不能为空")
+    @Pattern(regexp = "^1[0-9]{10}$", message = "手机号不符合规则")
+    private String phone;
 
     @Length(min = 3, max = 20, message = "密码长度需要在3-20个字符之间")
     @NotBlank(message = "密码不能为空")
     private String password;
 
-    @NotNull(message = "初始金额不能为空")
-    private BigDecimal initAmount;
+    @Length(min = 1, max = 5, message = "性别长度错误")
+    @NotBlank(message = "性别不能为空")
+    private String gender;
 
-    @NotNull(message = "初始份数不能为空")
-    private BigDecimal initNum;
+    private String familyName;
 
-    @NotNull(message = "是否允许融资不能为空")
-    private Byte isLeverage;
 }

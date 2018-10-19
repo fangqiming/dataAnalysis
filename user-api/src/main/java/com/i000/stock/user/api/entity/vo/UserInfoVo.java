@@ -18,13 +18,4 @@ public class UserInfoVo {
 
     private Long id;
     private String name;
-    private String accountNo;
-    private String password;
-    private String mailNo;
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime createdTime;
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime updatedTime;
-    private BigDecimal initAmount;
-    private BigDecimal initNum;
 }

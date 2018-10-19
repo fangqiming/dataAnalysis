@@ -2,14 +2,18 @@ package com.i000.stock.user.web.controller;
 
 import com.i000.stock.user.api.entity.vo.PlanInfoVo;
 import com.i000.stock.user.api.entity.vo.PlanVo;
+import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.api.service.external.CompanyInfoCrawlerService;
 import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.api.service.original.PlanService;
+import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.model.Plan;
+import com.i000.stock.user.dao.model.UserInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +49,9 @@ public class RecommendController {
     @Resource
     private CompanyService companyService;
 
+    @Resource
+    private UserInfoService userInfoService;
+
     /**
      * 127.0.0.1:8082/recommend/find
      * 用于获取最新推荐
@@ -53,13 +61,17 @@ public class RecommendController {
     @CrossOrigin(origins = "*", maxAge = 3600)
     @GetMapping(path = "/find")
     public ResultEntity find() {
+        String userCode = RequestContext.getInstance().getAmountShare();
+        userCode = StringUtils.isBlank(userCode) ? "10000000" : userCode;
         LocalDate date = planService.getMaxDate();
         List<Plan> plans = planService.findByDate(date);
+        UserInfo user = userInfoService.getByName(userCode);
+        //此处就需要根据请求头信息获取推荐投资资金比
         if (plans.size() == 1 && StringUtils.isBlank(plans.get(0).getName())) {
             return Results.newListResultEntity(new ArrayList<>(0));
         } else {
             List<PlanVo> planVos = ConvertUtils.listConvert(plans, PlanVo.class);
-            setName(planVos);
+            setNameAndRate(planVos, user);
             return Results.newListResultEntity(planVos);
         }
     }
@@ -99,11 +111,14 @@ public class RecommendController {
                 .build();
     }
 
-    private void setName(List<PlanVo> planVos) {
+    private void setNameAndRate(List<PlanVo> planVos, UserInfo user) {
+
         if (!CollectionUtils.isEmpty(planVos)) {
             for (PlanVo planVo : planVos) {
                 String stockName = companyService.getNameByCode(planVo.getName());
                 planVo.setStockName(stockName);
+                planVo.setInvestmentRatio(new BigDecimal(1).divide(user.getInitNum(), 4, BigDecimal.ROUND_UP));
+                planVo.setAmount(user.getInitAmount().divide(user.getInitNum(), 4, BigDecimal.ROUND_UP));
             }
         }
     }

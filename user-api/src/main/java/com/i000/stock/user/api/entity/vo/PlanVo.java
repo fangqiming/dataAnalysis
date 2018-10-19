@@ -29,5 +29,14 @@ public class PlanVo {
     private BigDecimal rank;
     private String note;
 
+    /**
+     * 建议投资比
+     */
+    private BigDecimal investmentRatio;
+    /**
+     * 建议投资额
+     */
+    private BigDecimal amount;
+
     private String stockName;
 }

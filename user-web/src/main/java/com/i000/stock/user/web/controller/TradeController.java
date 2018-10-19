@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -79,7 +80,7 @@ public class TradeController {
      */
     @GetMapping(path = "/find_gain")
     public ResultEntity findProfit() {
-        String userCode = "echo_gou";
+        String userCode = getUserCode();
         Asset asset = assetService.getLately(userCode);
         String date = asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd"));
         List<PageGainVo> result = new ArrayList<>(4);
@@ -100,7 +101,8 @@ public class TradeController {
      */
     @GetMapping(path = "/get_gain_contrast")
     public ResultEntity getContrast(@RequestParam(defaultValue = "365") Integer diff) {
-        String userCode = RequestContext.getInstance().getAccountCode();
+        String userCode = getUserCode();
+
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         YieldRateVo result = gainRateService.getIndexTrend(userCode, diff, LocalDate.now());
         return Results.newSingleResultEntity(result);
@@ -132,7 +134,7 @@ public class TradeController {
      */
     @GetMapping(path = "/get_asset_summary")
     public ResultEntity getAssetSummary() {
-        String userCode = RequestContext.getInstance().getAccountCode();
+        String userCode = getUserCode();
         Asset asset = assetService.getLately(userCode);
         UserInfo userInfo = userInfoService.getByName(userCode);
         if (Objects.isNull(asset)) {
@@ -200,7 +202,7 @@ public class TradeController {
      */
     @GetMapping(path = "/find_stock")
     public ResultEntity findHoldStock() {
-        String userCode = RequestContext.getInstance().getAccountCode();
+        String userCode = getUserCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         List<HoldNow> hold = holdNowService.find(userCode);
         if (!CollectionUtils.isEmpty(hold)) {
@@ -225,7 +227,7 @@ public class TradeController {
      */
     @GetMapping(path = "/get_operator_summary")
     public ResultEntity getOperator() {
-        String userCode = RequestContext.getInstance().getAccountCode();
+        String userCode = getUserCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         OperatorVo operatorSummary = operateSummaryService.getOperatorSummary(userCode);
         return Results.newSingleResultEntity(operatorSummary);
@@ -238,7 +240,7 @@ public class TradeController {
     @GetMapping(path = "/search_trade")
     public ResultEntity searchTrade(BaseSearchVo baseSearchVo) {
         ValidationUtils.validate(baseSearchVo);
-        String userCode = RequestContext.getInstance().getAccountCode();
+        String userCode = getUserCode();
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         Page<TradeRecordVo> result = tradeRecordService.search(userCode, baseSearchVo);
         return CollectionUtils.isEmpty(result.getList())
@@ -247,4 +249,9 @@ public class TradeController {
     }
 
 
+    private String getUserCode() {
+        String userCode = RequestContext.getInstance().getAmountShare();
+        userCode = StringUtils.isEmpty(userCode) ? "10000000" : userCode;
+        return userCode;
+    }
 }

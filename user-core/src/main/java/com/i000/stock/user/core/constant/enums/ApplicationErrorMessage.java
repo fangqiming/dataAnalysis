@@ -14,7 +14,9 @@ public enum ApplicationErrorMessage implements BaseEnum {
     NO_PERMISSION(11090001L, "无权限"),
     SERVER_ERROR(11090002L, "系统内部异常"),
     INVALID_PARAMETER(11090003L, "缺少参数或参数错误"),
-    NOT_EXISTS(11090004L, "请求的数据不存在");
+    NOT_EXISTS(11090004L, "请求的数据不存在"),
+    PASSWORD_ERROR(11090005L, "密码错误"),
+    USER_HAS_EXIST(11090006L, "手机号码已经存在");
 
     @Getter
     private Long code;

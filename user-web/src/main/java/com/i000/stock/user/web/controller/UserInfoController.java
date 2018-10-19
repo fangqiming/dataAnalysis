@@ -4,6 +4,7 @@ import com.i000.stock.user.api.entity.vo.UserInfoLoginVo;
 import com.i000.stock.user.api.entity.vo.UserInfoRegisterVo;
 import com.i000.stock.user.api.entity.vo.UserInfoVo;
 import com.i000.stock.user.api.service.buiness.UserInfoService;
+import com.i000.stock.user.api.service.buiness.UserLoginService;
 import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.core.result.Results;
@@ -11,6 +12,7 @@ import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.model.UserInfo;
+import com.i000.stock.user.dao.model.UserLogin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +33,7 @@ import java.util.Objects;
 public class UserInfoController {
 
     @Resource
-    private UserInfoService userInfoService;
+    private UserLoginService userLoginService;
 
     /**
      * 127.0.0.1:8082/userInfo/checkName
@@ -43,7 +45,7 @@ public class UserInfoController {
     @GetMapping(value = "checkName")
     public ResultEntity checkUserName(@RequestParam String name) {
         ValidationUtils.validateParameter(name, "用户名不能为空");
-        UserInfo byName = userInfoService.getByName(name);
+        UserLogin byName = userLoginService.getByPhone(name);
         return Results.newNormalResultEntity("result", Objects.isNull(byName) ? 1: 0);
     }
 
@@ -57,13 +59,8 @@ public class UserInfoController {
     @PostMapping(value = "register")
     public ResultEntity register(@RequestBody UserInfoRegisterVo userInfoRegisterVo) {
         ValidationUtils.validate(userInfoRegisterVo);
-        UserInfo byName = userInfoService.getByName(userInfoRegisterVo.getName());
-        if (Objects.nonNull(byName)) {
-            throw new ServiceException(ApplicationErrorMessage.NOT_EXISTS.getCode(), "用户名已经存在请换一个再试");
-        }
-        UserInfo userInfo = ConvertUtils.beanConvert(userInfoRegisterVo, new UserInfo());
-        userInfo.setCreatedTime(LocalDateTime.now());
-        UserInfo register = userInfoService.register(userInfo);
+        UserLogin userInfo = ConvertUtils.beanConvert(userInfoRegisterVo, new UserLogin());
+        UserLogin register = userLoginService.register(userInfo);
         return Results.newSingleResultEntity(ConvertUtils.beanConvert(register, new UserInfoVo()));
     }
 
@@ -76,8 +73,8 @@ public class UserInfoController {
     @PostMapping(value = "login")
     public ResultEntity login(@RequestBody UserInfoLoginVo userInfoLoginVo) {
         ValidationUtils.validate(userInfoLoginVo);
-        UserInfo userInfo = ConvertUtils.beanConvert(userInfoLoginVo, new UserInfo());
-        UserInfo login = userInfoService.login(userInfo);
+        UserLogin userInfo = ConvertUtils.beanConvert(userInfoLoginVo, new UserLogin());
+        UserLogin login = userLoginService.login(userInfo);
         return Results.newSingleResultEntity(ConvertUtils.beanConvert(login, new UserInfoVo()));
     }
 

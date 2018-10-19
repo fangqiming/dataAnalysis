@@ -6,6 +6,7 @@ import com.i000.stock.user.api.entity.vo.StockPledgeVo;
 import com.i000.stock.user.api.service.external.StockPledgeService;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.service.impl.StockPledgeServiceImpl;
 import com.i000.stock.user.web.schedule.IndexPriceSchedule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,21 +33,27 @@ import java.util.Map;
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class TestController {
 
+//    @Autowired
+//    private StockPledgeService stockPledgeService;
+
     @Autowired
-    private StockPledgeService stockPledgeService;
+    private StockPledgeServiceImpl stockPledgeService;
 
     @GetMapping("/test")
-    public Object create(Integer page,Integer size) throws Exception {
-        BaseSearchVo build = BaseSearchVo.builder().pageNo(page).pageSize(size).build();
-        Page<StockPledgeVo> search = stockPledgeService.search(build, null, null);
-        List<StockPledgeBo> result = new ArrayList<>();
-        for (StockPledgeVo stockPledgeVo : search.getList()) {
-            if (stockPledgeVo.getCode().startsWith("6")) {
-                result.add(StockPledgeBo.builder().code(stockPledgeVo.getCode()+".XSHG").pledge(stockPledgeVo.getRate()).build());
-            } else {
-                result.add(StockPledgeBo.builder().code(stockPledgeVo.getCode()+".XSHE").pledge(stockPledgeVo.getRate()).build());
-            }
-        }
-        return result;
+    public Object create(Integer page, Integer size) throws Exception {
+//        stockPledgeService.test();
+//        BaseSearchVo build = BaseSearchVo.builder().pageNo(page).pageSize(size).build();
+//        Page<StockPledgeVo> search = stockPledgeService.search(build, null, null);
+//        List<StockPledgeBo> result = new ArrayList<>();
+//        for (StockPledgeVo stockPledgeVo : search.getList()) {
+//            if (stockPledgeVo.getCode().startsWith("6")) {
+//                result.add(StockPledgeBo.builder().code(stockPledgeVo.getCode()+".XSHG").pledge(stockPledgeVo.getRate()).build());
+//            } else {
+//                result.add(StockPledgeBo.builder().code(stockPledgeVo.getCode()+".XSHE").pledge(stockPledgeVo.getRate()).build());
+//            }
+//        }
+//        return result;
+
+        return null;
     }
 }

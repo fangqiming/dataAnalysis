@@ -10,13 +10,13 @@ public class RequestContext {
     private static final ThreadLocal<RequestContext> REQUEST_CONTEXT_THREAD_LOCAL = new ThreadLocal<>();
 
     private String sign;
-    private String deviceId;
+    private String amountShare;
     private String accountCode;
 
     private RequestContext(RequestContextBuild requestContextBuild) {
         this.sign = requestContextBuild.sign;
         this.accountCode = requestContextBuild.accountCode;
-        this.deviceId = requestContextBuild.deviceId;
+        this.amountShare = requestContextBuild.amountShare;
         setContext(this);
     }
 
@@ -24,8 +24,8 @@ public class RequestContext {
         return sign;
     }
 
-    public String getDeviceId() {
-        return deviceId;
+    public String getAmountShare() {
+        return amountShare;
     }
 
     public String getAccountCode() {
@@ -47,7 +47,7 @@ public class RequestContext {
     public static class RequestContextBuild {
 
         public String sign;
-        public String deviceId;
+        public String amountShare;
         public String accountCode;
 
         public RequestContextBuild sign(String sign) {
@@ -55,8 +55,8 @@ public class RequestContext {
             return this;
         }
 
-        public RequestContextBuild deviceId(String deviceId) {
-            this.deviceId = deviceId;
+        public RequestContextBuild amountShare(String amountShare) {
+            this.amountShare = amountShare;
             return this;
         }
 
