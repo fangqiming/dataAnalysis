@@ -52,7 +52,6 @@ public class TradeController {
     @Resource
     private HoldNowService holdNowService;
 
-
     @Resource
     private LineService lineService;
 
@@ -176,7 +175,7 @@ public class TradeController {
 
         AssetStatisticalBo summary = AssetStatisticalBo.builder()
                 //今日收益
-                .todayGain(getDiffAsset(asset, asset.getGain()))
+                .todayGain(getDiffAsset(asset.getUserCode()))
                 //总金额
                 .total(asset.getBalance().add(asset.getStock()))
                 //总收益率
@@ -188,9 +187,13 @@ public class TradeController {
         return Results.newSingleResultEntity(result);
     }
 
-    private BigDecimal getDiffAsset(Asset asset, BigDecimal rate) {
-        BigDecimal befor = (asset.getBalance().add(asset.getStock())).divide(rate.add(new BigDecimal(1)), 2, BigDecimal.ROUND_HALF_UP);
-        return (asset.getBalance().add(asset.getStock())).subtract(befor);
+    private BigDecimal getDiffAsset(String userCode) {
+
+        List<Asset> twoAsset = assetService.getLatelyTwoByUserCode(userCode);
+        Asset asset = twoAsset.get(0);
+        Asset diff = twoAsset.get(1);
+        return asset.getStock().add(asset.getBalance()).add(asset.getCover())
+                .subtract(diff.getCover()).subtract(diff.getBalance()).subtract(diff.getStock());
     }
 
 

@@ -49,4 +49,10 @@ public interface HoldMapper extends BaseMapper<Hold> {
      */
     List<Hold> findTwoHold(@Param("dates") List<LocalDate> dates);
 
+    @Select("select count(*) from hold where new_date = #{date} and `name` is NOT NULL;")
+    Integer getCountHold(@Param("date") LocalDate date);
+
+    @Select("select new_date from hold ORDER BY id DESC limit 1")
+    LocalDate getMaxHold();
+
 }

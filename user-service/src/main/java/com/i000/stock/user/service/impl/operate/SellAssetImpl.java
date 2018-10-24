@@ -47,6 +47,7 @@ public class SellAssetImpl implements AssetUpdateService {
         HoldNow holdNow = holdNowService.getByNameDateType(asset.getUserCode(), trade.getName(),
                 trade.getOldDate(), trade.getType());
         asset.setBalance(asset.getBalance().add(price.multiply(new BigDecimal(holdNow.getAmount()))));
+        holdNow.setNewPrice(price);
         record(asset, holdNow);
         holdNowService.deleteById(holdNow.getId());
         return asset;

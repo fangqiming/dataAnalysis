@@ -43,4 +43,14 @@ public class TradeServiceImpl extends AbstractService<Trade, TradeMapper> implem
     public void updatePrice(String name, BigDecimal rate) {
         baseMapper.updatePrice(name, rate);
     }
+
+    @Override
+    public Integer getSellNum(LocalDate date) {
+        return baseMapper.getSellNum(date);
+    }
+
+    @Override
+    public Integer getBuyNum(LocalDate date) {
+        return baseMapper.getBuyNum(date);
+    }
 }

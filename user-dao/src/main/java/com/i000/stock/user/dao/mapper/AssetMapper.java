@@ -113,4 +113,6 @@ public interface AssetMapper extends BaseMapper<Asset> {
 
     @Select("select gain from asset where user_code=#{userCode} and date >=  date_sub(curdate() , interval 30 day)  ORDER BY gain limit 1")
     BigDecimal getMinGain(@Param("userCode") String userCode);
+
+    List<Asset> getLatelyTwoByUserCode(@Param("userCode") String userCode);
 }

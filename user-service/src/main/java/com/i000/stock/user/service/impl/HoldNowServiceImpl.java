@@ -50,6 +50,7 @@ public class HoldNowServiceImpl implements HoldNowService {
         return holdNowMapper.find(userCode);
     }
 
+
     @Override
     public Integer updatePrice(LocalDate date) {
         int result = 0;
@@ -64,5 +65,10 @@ public class HoldNowServiceImpl implements HoldNowService {
     @Override
     public Integer updateAmount(BigDecimal rate, String code, LocalDate date) {
         return holdNowMapper.updateAmount(rate, code, date);
+    }
+
+    @Override
+    public Integer getHoldNumByName(String name) {
+        return holdNowMapper.getCount(name);
     }
 }

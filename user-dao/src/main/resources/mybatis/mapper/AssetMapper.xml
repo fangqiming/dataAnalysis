@@ -59,4 +59,8 @@
         select * from asset where date>= #{year} and user_code=#{userCode} ORDER BY id  limit 1
     </select>
 
+    <select id="getLatelyTwoByUserCode" resultMap="Asset">
+        select * from asset where user_code=#{userCode} ORDER BY id DESC limit 2
+    </select>
+
 </mapper>

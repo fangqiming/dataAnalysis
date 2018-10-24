@@ -50,7 +50,7 @@ public class EngineController {
         ValidationUtils.validateParameter(content, "内容不能为空");
         receiveRecommendThread.execute(() -> dataHandleTask.run(content, needSave));
         try {
-            indexPriceCacheService.saveIndexValue();
+//            indexPriceCacheService.saveIndexValue();
         } catch (Exception e) {
             log.warn("指数价格信息已经被保存", e);
         }

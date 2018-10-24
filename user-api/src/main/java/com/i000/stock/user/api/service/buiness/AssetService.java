@@ -131,4 +131,12 @@ public interface AssetService {
      */
     BigDecimal getMinGain(String userCode);
 
+    /**
+     * 获取最新的两个资产对象
+     *
+     * @param userCode
+     * @return
+     */
+    List<Asset> getLatelyTwoByUserCode(String userCode);
+
 }

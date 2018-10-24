@@ -2,6 +2,7 @@ package com.i000.stock.user.api.service.original;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @Author:qmfang
@@ -40,5 +41,19 @@ public interface TradeService {
      * @param name
      */
     void updatePrice(String name, BigDecimal rate);
+
+    /**
+     * 获取指定日期的卖出数量
+     * @param date
+     * @return
+     */
+    Integer getSellNum(LocalDate date);
+
+    /**
+     * 获取指定日期的买入数量
+     * @param date
+     * @return
+     */
+    Integer getBuyNum(LocalDate date);
 
 }

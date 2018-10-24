@@ -4,6 +4,7 @@ import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.context.RequestValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -36,16 +37,11 @@ public class RequestContextInterceptor extends HandlerInterceptorAdapter {
     }
 
     private void initRequestContext(HttpServletRequest request) throws UnsupportedEncodingException {
-        try {
-            String sign = request.getHeader(RequestValue.HEADER_SIGN);
-            String accessCode = URLDecoder.decode(request.getHeader(RequestValue.HEAD_Account_Code), "utf-8");
-            System.out.println(URLDecoder.decode(request.getHeader(RequestValue.HEAD_Account_Code), "utf-8"));
-            String amountShare = request.getHeader(RequestValue.HEAD_Amount_Share);
-            new RequestContext.RequestContextBuild().accountCode(accessCode).amountShare(amountShare).sign(sign).build();
-        } catch (Exception e) {
-            log.warn("请求头消息设置失败");
-        }
+        String sign = request.getHeader(RequestValue.HEADER_SIGN);
+        String accessCode = request.getHeader(RequestValue.HEAD_Account_Code);
+        accessCode = StringUtils.isEmpty(accessCode) ? null : URLDecoder.decode(accessCode, "utf-8");
+        String amountShare = request.getHeader(RequestValue.HEAD_Amount_Share);
+        new RequestContext.RequestContextBuild().accountCode(accessCode).amountShare(amountShare).sign(sign).build();
     }
-
 
 }

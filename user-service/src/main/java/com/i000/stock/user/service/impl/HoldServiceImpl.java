@@ -1,5 +1,6 @@
 package com.i000.stock.user.service.impl;
 
+import com.i000.stock.user.api.service.buiness.AssetService;
 import com.i000.stock.user.api.service.original.HoldService;
 import com.i000.stock.user.dao.mapper.HoldMapper;
 import com.i000.stock.user.dao.model.Hold;
@@ -26,6 +27,7 @@ import static java.util.stream.Collectors.toList;
 @Component
 @Transactional
 public class HoldServiceImpl implements HoldService {
+
 
     @Resource
     private HoldMapper holdMapper;
@@ -102,5 +104,21 @@ public class HoldServiceImpl implements HoldService {
         }
 
         return result;
+    }
+
+    @Override
+    public LocalDate getMaxHold() {
+        return holdMapper.getMaxHold();
+    }
+
+    @Override
+    public Integer getHoldCount(LocalDate date) {
+        if (Objects.isNull(date)) {
+            return 0;
+        }
+        //存在问题
+
+
+        return holdMapper.getCountHold(date);
     }
 }

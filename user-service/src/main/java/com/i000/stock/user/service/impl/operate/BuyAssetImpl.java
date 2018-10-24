@@ -1,6 +1,8 @@
 package com.i000.stock.user.service.impl.operate;
 
 import com.i000.stock.user.api.service.buiness.*;
+import com.i000.stock.user.api.service.original.HoldService;
+import com.i000.stock.user.api.service.original.TradeService;
 import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.core.util.ConvertUtils;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -20,6 +23,9 @@ import java.util.Objects;
  */
 @Component
 public class BuyAssetImpl implements AssetUpdateService {
+
+    @Resource
+    private AssetService assetService;
 
     @Resource
     private OperateSummaryService operateSummaryService;
@@ -33,39 +39,60 @@ public class BuyAssetImpl implements AssetUpdateService {
     @Resource
     private TradeRecordService tradeRecordService;
 
+    //应该是从hold中查询
+    @Resource
+    private HoldService holdService;
+
+    @Resource
+    private TradeService tradeService;
+
+
     @Override
     public Asset update(Asset asset, Hold trade) {
+
+        //最大的问题在于卖出后，股票的价值已经发生了变化，因而不能这样处理。
+        //办法 1.根据当前的持股数量 与 账户余额 初始资金来修正每支股票买入的数量
+
         if (Objects.isNull(asset)) {
             throw new ServiceException(ApplicationErrorMessage.NOT_EXISTS.getCode(), "用户账户没有初始化");
         }
         trade.setAmount(0);
         BigDecimal oneHandMoney = trade.getOldPrice().multiply(new BigDecimal(100));
         UserInfo userInfo = userInfoService.getByName(asset.getUserCode());
-        BigDecimal oneShareMoney = userInfo.getInitAmount().divide(userInfo.getInitNum(), 4, BigDecimal.ROUND_HALF_UP);
-        //用一份的钱除以1手的钱
-        BigDecimal canBuyHandNum = oneShareMoney.divide(oneHandMoney, 0, BigDecimal.ROUND_HALF_UP);
-        BigDecimal balance = asset.getBalance();
-        UserInfo user = userInfoService.getByName(asset.getUserCode());
-        //此处计算的是买入的份数
-        for (int i = 1; i <= canBuyHandNum.intValue(); i++) {
-            balance = balance.subtract(oneHandMoney);
-            //todo 如果允许融资或者 剩余的钱仍旧购买一手股票
-            if (user.getIsLeverage() > 0 || balance.compareTo(BigDecimal.ZERO) >= 0) {
-                //余额够 股票份数就追加1份
-                trade.setAmount(trade.getAmount() + 100);
-                //余额减少一份的钱数
-                asset.setBalance(asset.getBalance().subtract(oneHandMoney));
-            }
+
+        Integer holdNum = getHoldNum();
+        BigDecimal oneShareMoney;
+
+
+        Asset lately = assetService.getLately(userInfo.getName());
+        //余额为正 并且 允许的份数也大于持股份数
+        if (lately.getBalance().compareTo(BigDecimal.ZERO) > 0 && userInfo.getInitNum().compareTo(new BigDecimal(holdNum)) > 0) {
+            oneShareMoney = (lately.getBalance())
+                    .divide(userInfo.getInitNum().subtract(new BigDecimal(holdNum)), 0, BigDecimal.ROUND_HALF_UP);
+        } else {
+            //关键在于此处的融资金额究竟应该是多少。。。
+            BigDecimal all = lately.getStock().add(lately.getBalance()).add(lately.getCover());
+            oneShareMoney = all.divide(userInfo.getInitNum(), 0, BigDecimal.ROUND_HALF_UP);
         }
+
+
+        BigDecimal canBuyHandNum = oneShareMoney.divide(oneHandMoney, 0, BigDecimal.ROUND_HALF_UP);
+        //设置交易数量
+        trade.setAmount(canBuyHandNum.multiply(new BigDecimal(100)).intValue());
+        //设置余额
+        asset.setBalance(asset.getBalance().subtract(canBuyHandNum.multiply(oneHandMoney)));
+
         HoldNow holdNow = ConvertUtils.beanConvert(trade, new HoldNow());
         holdNow.setId(null);
         //将新买的股票记录到数据库中
         holdNow.setUserCode(asset.getUserCode());
 
+        //保存了交易记录
         record(asset, holdNow);
+        //保存当前持股信息
         holdNowService.save(holdNow);
 
-        //更新买操作
+        //更新购买操作
         operateSummaryService.updateBuy(holdNow.getUserCode());
         return asset;
     }
@@ -80,4 +107,14 @@ public class BuyAssetImpl implements AssetUpdateService {
             tradeRecordService.save(build);
         }
     }
+
+    private Integer getHoldNum() {
+        LocalDate date = holdService.getMaxHold();
+        //当前持股数量
+        Integer holdCount = holdService.getHoldCount(date);
+        Integer sellNum = tradeService.getSellNum(date);
+        Integer buyNum = tradeService.getBuyNum(date);
+        return holdCount - buyNum + sellNum;
+    }
+
 }

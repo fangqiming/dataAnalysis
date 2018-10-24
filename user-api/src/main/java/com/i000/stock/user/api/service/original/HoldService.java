@@ -36,5 +36,9 @@ public interface HoldService {
      */
     List<Hold> findHoldInit(LocalDate date);
 
+    LocalDate getMaxHold();
+
+    Integer getHoldCount(LocalDate date);
+
 
 }

@@ -68,7 +68,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset getDiffByGt(LocalDate date, String userCode) {
-        return assetMapper.getDiffByGt(userCode,date);
+        return assetMapper.getDiffByGt(userCode, date);
     }
 
     @Override
@@ -211,6 +211,7 @@ public class AssetServiceImpl implements AssetService {
 
     /**
      * 修改成当月最大
+     *
      * @param userCode
      * @return
      */
@@ -221,11 +222,17 @@ public class AssetServiceImpl implements AssetService {
 
     /**
      * 修改成当月最小
+     *
      * @param userCode
      * @return
      */
     @Override
     public BigDecimal getMinGain(String userCode) {
         return assetMapper.getMinGain(userCode);
+    }
+
+    @Override
+    public List<Asset> getLatelyTwoByUserCode(String userCode) {
+        return assetMapper.getLatelyTwoByUserCode(userCode);
     }
 }

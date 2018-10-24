@@ -3,6 +3,7 @@ package com.i000.stock.user.dao.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.i000.stock.user.dao.model.HoldNow;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
@@ -57,4 +58,7 @@ public interface HoldNowMapper extends BaseMapper<HoldNow> {
      */
     @Update("update hold_now set amount=amount*#{rate} where `name`=#{code} and new_date=#{date}")
     Integer updateAmount(@Param("rate") BigDecimal rate, @Param("code") String code, @Param("date") LocalDate date);
+
+    @Select("select count(*) from hold_now where user_code = #{name};")
+    Integer getCount(String name);
 }

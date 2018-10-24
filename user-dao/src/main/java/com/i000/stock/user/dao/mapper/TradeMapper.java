@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -34,7 +35,8 @@ public interface TradeMapper extends BaseMapper<Trade> {
      * @param name
      * @return
      */
-    @Select("select price from trade where `name`=#{name} and action='SELL' order by id limit 1")
+
+    @Select("select price from trade where `name`=#{name} and action='SELL' order by id DESC limit 1")
     BigDecimal getPriceByName(@Param("name") String name);
 
     /**
@@ -54,5 +56,11 @@ public interface TradeMapper extends BaseMapper<Trade> {
      */
     @Update("update trade set price=price*#{rate} where `name`=#{name} ORDER BY id DESC limit 1")
     void updatePrice(@Param("name") String name, @Param("rate") BigDecimal rate);
+
+    @Select("select count(*) from trade where action='SELL' and date = #{date}")
+    Integer getSellNum(@Param("date") LocalDate date);
+
+    @Select("select count(*) from trade where action='BUY' and date = #{date}")
+    Integer getBuyNum(@Param("date") LocalDate date);
 
 }
