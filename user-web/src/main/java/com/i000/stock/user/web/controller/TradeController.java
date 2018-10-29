@@ -1,9 +1,6 @@
 package com.i000.stock.user.web.controller;
 
-import com.i000.stock.user.api.entity.bo.AssetStatisticalBo;
-import com.i000.stock.user.api.entity.bo.EndAssetBo;
-import com.i000.stock.user.api.entity.bo.PageIndexValueBo;
-import com.i000.stock.user.api.entity.bo.StartAssetBo;
+import com.i000.stock.user.api.entity.bo.*;
 import com.i000.stock.user.api.entity.vo.*;
 import com.i000.stock.user.api.service.buiness.*;
 import com.i000.stock.user.api.service.external.CompanyService;
@@ -17,6 +14,7 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.LineGroupQuery;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.model.*;
+import com.i000.stock.user.service.impl.ReverseRepoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +68,9 @@ public class TradeController {
     @Autowired
     private GainRateService gainRateService;
 
+    @Autowired
+    private ReverseRepoService reverseRepoService;
+
     /**
      * 127.0.0.1:8081/trade/find_gain
      * 获取首页的最近获利情况描述
@@ -81,11 +82,10 @@ public class TradeController {
     public ResultEntity findProfit() {
         String userCode = getUserCode();
         Asset asset = assetService.getLately(userCode);
-        String date = asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd"));
         List<PageGainVo> result = new ArrayList<>(4);
-        result.add(gainRateService.getRecentlyGain(userCode, 1, asset.getDate(), date + " 当天"));
-        result.add(gainRateService.getRecentlyGain(userCode, 30, LocalDate.now(), "最近一月"));
-        result.add(gainRateService.getRecentlyGain(userCode, 90, LocalDate.now(), "最近三月"));
+        result.add(gainRateService.getRecentlyGain(userCode, 30, LocalDate.now(), "近一月"));
+        result.add(gainRateService.getRecentlyGain(userCode, 60, LocalDate.now(), "近二月"));
+        result.add(gainRateService.getRecentlyGain(userCode, 90, LocalDate.now(), "近三月"));
         PageGainVo fromYear = gainRateService.getFromYearStart(userCode, 370, asset.getDate(), "今年以来");
         result.add(fromYear);
         return Results.newListResultEntity(result);
@@ -129,71 +129,50 @@ public class TradeController {
     /**
      * 127.0.0.1:8081//trade/get_asset_summary
      * 获取首页的账户总览信息
-     * 经过测试基本可用
+     * 经过测试基本可用  数据的正确性需要验证
      */
     @GetMapping(path = "/get_asset_summary")
     public ResultEntity getAssetSummary() {
         String userCode = getUserCode();
-        Asset asset = assetService.getLately(userCode);
         UserInfo userInfo = userInfoService.getByName(userCode);
-        if (Objects.isNull(asset)) {
-            //此处的账户总览需要获取用户是什么时候创建的账户
-            StartAssetBo startAssetBo = StartAssetBo.builder()
-                    .date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
-                    .totalAsset(userInfo.getInitAmount())
-                    .totalProfit(BigDecimal.ZERO)
-                    .todayProfit(BigDecimal.ZERO)
-                    .amountNumber(userInfo.getInitAmount().divide(userInfo.getInitNum(), 0, BigDecimal.ROUND_UP))
-                    .avgPosition((BigDecimal.ZERO)).build();
-            EndAssetBo endAssetBo = EndAssetBo.builder().date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
-                    .totalAsset(userInfo.getInitAmount())
-                    .balanceAmount(userInfo.getInitAmount())
-                    .stockAmount(BigDecimal.ZERO)
-                    .totalProfit(BigDecimal.ZERO)
-                    .todayPosition(BigDecimal.ZERO).build();
-            AssetStatisticalBo summary = AssetStatisticalBo.builder()
-                    .todayGain(BigDecimal.ZERO).total(userInfo.getInitAmount()).totalGainRate(BigDecimal.ZERO).totalGain(BigDecimal.ZERO).build();
-            AssetSummaryVo result = AssetSummaryVo.builder().start(startAssetBo).end(endAssetBo).summary(summary).build();
-            return Results.newSingleResultEntity(result);
-        }
+        Asset now = assetService.getLately(userCode);
+        RelativeProfitBO todayBeatSzByUserCode = gainRateService.getTodayBeatSzByUserCode(userCode);
+        TodayAccountBo todayAccountBo = TodayAccountBo.builder().date(now.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
+                .totalAsset(now.getBalance().add(now.getStock()).add(now.getCover()))
+                .relativeProfit(todayBeatSzByUserCode.getRelativeProfit())
+                .relativeProfitRate(todayBeatSzByUserCode.getRelativeProfitRate())
+                .beatStandardRate(todayBeatSzByUserCode.getBeatStandardRate())
+                .position(getPosition(now))
+                .stockMarket(now.getStock())
+                .balance(now.getBalance()).build();
 
-        StartAssetBo startAssetBo = StartAssetBo.builder()
-                .date(userInfo.getCreatedTime().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
-                .totalAsset(userInfo.getInitAmount())
-                .totalProfit(asset.getBalance().add(asset.getStock()).subtract(userInfo.getInitAmount()))
-                .todayProfit(asset.getGain())
+        RelativeProfitBO totalBeatByUserCode = gainRateService.getTotalBeatByUserCode(userCode);
+        TotalAccountBo totalAccountBo = TotalAccountBo.builder().date(userInfo.getCreatedTime().toLocalDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
+                .initAmount(userInfo.getInitAmount())
+                .relativeProfit(totalBeatByUserCode.getRelativeProfit())
+                .relativeProfitRate(totalBeatByUserCode.getRelativeProfitRate())
+                .beatStandardRate(totalBeatByUserCode.getBeatStandardRate())
+                //平均仓位的计算方式
                 .avgPosition((BigDecimal.ONE.subtract(assetService.getAvgIdleRate(userCode))).multiply(new BigDecimal(100)))
-                .amountNumber(userInfo.getInitAmount().divide(userInfo.getInitNum(), 0, BigDecimal.ROUND_UP))
+                .repoProfit(now.getTotalRepoProfit())
+                .repoProfitRate(BigDecimal.ZERO)
                 .build();
-        EndAssetBo endAssetBo = EndAssetBo.builder().date(asset.getDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
-                .totalAsset(asset.getBalance().add(asset.getStock()))
-                .balanceAmount(asset.getBalance())
-                .stockAmount(asset.getStock())
-                .totalProfit(asset.getTotalGain())
-                .todayPosition((BigDecimal.ONE.subtract(assetService.getIdleRate(userCode))).multiply(new BigDecimal(100))).build();
-
-
-        AssetStatisticalBo summary = AssetStatisticalBo.builder()
-                //今日收益
-                .todayGain(getDiffAsset(asset.getUserCode()))
-                //总金额
-                .total(asset.getBalance().add(asset.getStock()))
-                //总收益率
-                .totalGainRate(asset.getTotalGain())
-                //总收益
-                .totalGain(asset.getBalance().add(asset.getStock()).subtract(userInfo.getInitAmount())).build();
-
-        AssetSummaryVo result = AssetSummaryVo.builder().start(startAssetBo).end(endAssetBo).summary(summary).build();
+        if (now.getTotalRepoAmount().compareTo(BigDecimal.ZERO) > 0) {
+            //
+            BigDecimal profitRate = now.getTotalRepoProfit().divide(now.getTotalRepoAmount(), 4, BigDecimal.ROUND_UP).multiply(new BigDecimal(100));
+            totalAccountBo.setRepoProfitRate(profitRate);
+        }
+        AccountSummaryVo result = new AccountSummaryVo();
+        result.setTodayAccountBo(todayAccountBo);
+        result.setTotalAccountBo(totalAccountBo);
         return Results.newSingleResultEntity(result);
     }
 
-    private BigDecimal getDiffAsset(String userCode) {
 
-        List<Asset> twoAsset = assetService.getLatelyTwoByUserCode(userCode);
-        Asset asset = twoAsset.get(0);
-        Asset diff = twoAsset.get(1);
-        return asset.getStock().add(asset.getBalance()).add(asset.getCover())
-                .subtract(diff.getCover()).subtract(diff.getBalance()).subtract(diff.getStock());
+    private BigDecimal getPosition(Asset asset) {
+        return asset.getStock()
+                .divide((asset.getStock().add(asset.getCover()).add(asset.getBalance())), 4, BigDecimal.ROUND_UP)
+                .multiply(new BigDecimal(100));
     }
 
 
@@ -244,11 +223,23 @@ public class TradeController {
     public ResultEntity searchTrade(BaseSearchVo baseSearchVo) {
         ValidationUtils.validate(baseSearchVo);
         String userCode = getUserCode();
-        ValidationUtils.validateParameter(userCode, "用户码不能为空");
         Page<TradeRecordVo> result = tradeRecordService.search(userCode, baseSearchVo);
         return CollectionUtils.isEmpty(result.getList())
                 ? Results.newPageResultEntity(0L, new ArrayList<>(0))
                 : Results.newPageResultEntity(result.getTotal(), result.getList());
+    }
+
+    @GetMapping(path = "/search_reverse_repo")
+    public ResultEntity searchRepo(BaseSearchVo baseSearchVo) {
+        ValidationUtils.validate(baseSearchVo);
+        String userCode = getUserCode();
+        Page<ReverseRepo> search = reverseRepoService.search(userCode, baseSearchVo);
+
+        if (search.getTotal() == 0) {
+            return Results.newPageResultEntity(0L, new ArrayList<>(0));
+        }
+        List<ReverseRepoVO> data = ConvertUtils.listConvert(search.getList(), ReverseRepoVO.class);
+        return Results.newPageResultEntity(search.getTotal(), data);
     }
 
 
@@ -257,4 +248,6 @@ public class TradeController {
         userCode = StringUtils.isEmpty(userCode) ? "10000000" : userCode;
         return userCode;
     }
+
+
 }

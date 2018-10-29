@@ -60,6 +60,16 @@ public class TradeRecordServiceImpl implements TradeRecordService {
         return result;
     }
 
+    @Override
+    public void updateAmountAndPriceById(Long id, BigDecimal newAmount, BigDecimal newPrice) {
+        tradeRecordMapper.updateAmount(id, newPrice, newAmount);
+    }
+
+    @Override
+    public TradeRecord getByNameAndDate(LocalDate date, String name, String userCode) {
+        return tradeRecordMapper.getByNameAndDate(name, date, userCode);
+    }
+
     private List<TradeRecordVo> setRecode(List<TradeRecord> recode) {
         List<TradeRecordVo> result = new ArrayList<>();
         for (TradeRecord tradeRecord : recode) {

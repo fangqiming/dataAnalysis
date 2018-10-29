@@ -1,0 +1,17 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i000.stock.user.dao.mapper.HolidayMapper">
+
+    <resultMap id="Holiday" type="com.i000.stock.user.dao.model.Holiday">
+        <id column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="is_working" property="isWorking"/>
+    </resultMap>
+
+    <select id="getTwentyDaysByDate" resultMap="Holiday">
+        select * from holiday where date >= #{date} ORDER BY id  limit 20
+    </select>
+
+</mapper>

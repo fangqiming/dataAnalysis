@@ -68,4 +68,18 @@ public interface IndexValueService {
      * @return
      */
     IndexValue getYearFirst(String year);
+
+    /**
+     * 获取最近的两条记录
+     *
+     * @return
+     */
+    List<IndexValue> getLatelyTwo();
+
+    /**
+     * 获取最早的记录
+     *
+     * @return
+     */
+    IndexValue getLastOne();
 }

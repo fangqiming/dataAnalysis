@@ -1,0 +1,24 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i000.stock.user.dao.mapper.ReverseRepoMapper">
+
+    <resultMap id="ReverseRepo" type="com.i000.stock.user.dao.model.ReverseRepo">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="date" property="date"/>
+        <result column="amount" property="amount"/>
+        <result column="share" property="share"/>
+        <result column="gain" property="gain"/>
+        <result column="profit" property="profit"/>
+        <result column="user_code" property="userCode"/>
+    </resultMap>
+
+    <select id="search" resultMap="ReverseRepo" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo">
+        select sql_calc_found_rows * from reverse_repo
+        where user_code = #{userCode} ORDER BY date DESC limit
+        ${baseSearchVo.start},${baseSearchVo.pageSize}
+    </select>
+
+</mapper>

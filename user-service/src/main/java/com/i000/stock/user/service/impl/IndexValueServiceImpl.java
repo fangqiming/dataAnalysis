@@ -55,4 +55,14 @@ public class IndexValueServiceImpl implements IndexValueService {
     public IndexValue getYearFirst(String year) {
         return indexValueMapper.getYearFirst(year);
     }
+
+    @Override
+    public List<IndexValue> getLatelyTwo() {
+        return indexValueMapper.getLatelyTwo();
+    }
+
+    @Override
+    public IndexValue getLastOne() {
+        return indexValueMapper.getLastOne();
+    }
 }

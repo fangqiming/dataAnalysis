@@ -35,5 +35,9 @@
         </foreach>
     </select>
 
+    <select id="findByNameAndDate" resultMap="Hold">
+        select * from hold where `name`=#{name} and old_date = #{date} ORDER BY new_date
+    </select>
+
 
 </mapper>

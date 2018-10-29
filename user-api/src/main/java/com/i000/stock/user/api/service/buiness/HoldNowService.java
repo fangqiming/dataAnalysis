@@ -65,10 +65,7 @@ public interface HoldNowService {
 
     Integer updateAmount(BigDecimal rate, String code, LocalDate date);
 
-    /**
-     * 根据用户码获取用户的持股数量
-     *
-     * @return
-     */
-    Integer getHoldNumByName(String name);
+    void updateAmountPriceByName(BigDecimal price, BigDecimal amount, String name,String userCode);
+
+
 }

@@ -55,4 +55,6 @@ public interface HoldMapper extends BaseMapper<Hold> {
     @Select("select new_date from hold ORDER BY id DESC limit 1")
     LocalDate getMaxHold();
 
+    List<Hold> findByNameAndDate(@Param("date") LocalDate date, @Param("name") String name);
+
 }

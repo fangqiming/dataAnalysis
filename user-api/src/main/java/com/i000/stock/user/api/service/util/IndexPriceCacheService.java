@@ -3,6 +3,7 @@ package com.i000.stock.user.api.service.util;
 import com.i000.stock.user.api.entity.bo.IndexInfo;
 import com.i000.stock.user.api.entity.bo.Price;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -41,4 +42,13 @@ public interface IndexPriceCacheService {
      * 保存索引信息
      */
     void saveIndexValue();
+
+    /**
+     * 获取一只股票的价格
+     *
+     * @param param
+     * @param tryNumber
+     * @return
+     */
+    BigDecimal getOnePrice(String param, Integer tryNumber);
 }

@@ -68,7 +68,9 @@ public class HoldNowServiceImpl implements HoldNowService {
     }
 
     @Override
-    public Integer getHoldNumByName(String name) {
-        return holdNowMapper.getCount(name);
+    public void updateAmountPriceByName(BigDecimal price, BigDecimal amount, String name, String userCode) {
+        holdNowMapper.updateAmountPriceByName(amount, price, name, userCode);
     }
+
+
 }

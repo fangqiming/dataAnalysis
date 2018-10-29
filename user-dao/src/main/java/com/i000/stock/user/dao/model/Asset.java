@@ -54,7 +54,19 @@ public class Asset {
     private String userCode;
 
     /**
-     * 总收益率
+     * 总收益率 == 当逆回购完成后，总的收益率会变大 也就是在股票更新后，
      */
     private BigDecimal totalGain;
+
+    private BigDecimal totalRepoProfit;
+    private BigDecimal totalRepoAmount;
+    private BigDecimal todayRepoProfit;
+    private BigDecimal todayRepoAmount;
+
+    /**
+     * 是否已经逆回购的标记
+     */
+    private Byte isRepo;
+
+
 }

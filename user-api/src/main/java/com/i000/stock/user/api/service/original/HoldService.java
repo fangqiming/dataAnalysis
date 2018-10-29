@@ -40,5 +40,9 @@ public interface HoldService {
 
     Integer getHoldCount(LocalDate date);
 
+    List<Hold> findByNameAndDate(LocalDate date, String name);
+
+
+
 
 }

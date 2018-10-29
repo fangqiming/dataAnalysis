@@ -2,16 +2,23 @@ package com.i000.stock.user.web.controller;
 
 import com.i000.stock.user.api.entity.vo.PlanInfoVo;
 import com.i000.stock.user.api.entity.vo.PlanVo;
+import com.i000.stock.user.api.service.buiness.AssetService;
+import com.i000.stock.user.api.service.buiness.HoldNowService;
 import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.api.service.external.CompanyInfoCrawlerService;
 import com.i000.stock.user.api.service.external.CompanyService;
+import com.i000.stock.user.api.service.original.HoldService;
 import com.i000.stock.user.api.service.original.PlanService;
 import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
+import com.i000.stock.user.dao.model.Asset;
+import com.i000.stock.user.dao.model.HoldNow;
 import com.i000.stock.user.dao.model.Plan;
 import com.i000.stock.user.dao.model.UserInfo;
+import com.i000.stock.user.service.impl.ReverseRepoService;
+import com.i000.stock.user.service.impl.operate.BuyAssetImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +34,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author:qmfang
@@ -52,6 +60,15 @@ public class RecommendController {
     @Resource
     private UserInfoService userInfoService;
 
+    @Resource
+    private BuyAssetImpl buyAsset;
+
+    @Resource
+    private ReverseRepoService reverseRepoService;
+
+    @Resource
+    private AssetService assetService;
+
     /**
      * 127.0.0.1:8082/recommend/find
      * 用于获取最新推荐
@@ -66,12 +83,30 @@ public class RecommendController {
         LocalDate date = planService.getMaxDate();
         List<Plan> plans = planService.findByDate(date);
         UserInfo user = userInfoService.getByName(userCode);
-        //此处就需要根据请求头信息获取推荐投资资金比
+        Asset asset = assetService.getLately(userCode);
+
+        BigDecimal oneShareMoney = buyAsset.getOneShareMoney(userCode, true);
+        BigDecimal shareRate = new BigDecimal(1).divide(user.getInitNum(), 4, BigDecimal.ROUND_UP);
+
+        //代码后续在优化
         if (plans.size() == 1 && StringUtils.isBlank(plans.get(0).getName())) {
-            return Results.newListResultEntity(new ArrayList<>(0));
+            //需要在此处追加对于逆回购的推荐
+            ArrayList<PlanVo> result = new ArrayList<>(1);
+            PlanVo repo = getRepo(user.getInitNum(), BigDecimal.ZERO, asset.getBalance(), oneShareMoney);
+            result.add(repo);
+            return Results.newListResultEntity(result);
         } else {
             List<PlanVo> planVos = ConvertUtils.listConvert(plans, PlanVo.class);
-            setNameAndRate(planVos, user);
+            setNameAndRate(planVos, oneShareMoney, shareRate);
+
+            //计划买入的数量
+            long buy = planVos.stream().filter(a -> a.getAction().equals("BUY")).count();
+
+            PlanVo repo = getRepo(user.getInitNum(), new BigDecimal(buy), asset.getBalance(), oneShareMoney);
+            if (Objects.nonNull(repo)) {
+                planVos.add(repo);
+            }
+            //需要追加逆回购的推荐
             return Results.newListResultEntity(planVos);
         }
     }
@@ -111,15 +146,34 @@ public class RecommendController {
                 .build();
     }
 
-    private void setNameAndRate(List<PlanVo> planVos, UserInfo user) {
+    private void setNameAndRate(List<PlanVo> planVos, BigDecimal oneMoney, BigDecimal noeRate) {
 
         if (!CollectionUtils.isEmpty(planVos)) {
             for (PlanVo planVo : planVos) {
                 String stockName = companyService.getNameByCode(planVo.getName());
                 planVo.setStockName(stockName);
-                planVo.setInvestmentRatio(new BigDecimal(1).divide(user.getInitNum(), 4, BigDecimal.ROUND_UP));
-                planVo.setAmount(user.getInitAmount().divide(user.getInitNum(), 4, BigDecimal.ROUND_UP));
+                if("SELL".equals(planVo.getAction())){
+                    planVo.setInvestmentRatio(new BigDecimal("1"));
+                }else{
+                    planVo.setInvestmentRatio(noeRate);
+                    planVo.setAmount(oneMoney);
+                }
             }
         }
+    }
+
+    private PlanVo getRepo(BigDecimal totalShare, BigDecimal share, BigDecimal amount, BigDecimal oneMoney) {
+
+        BigDecimal balance = amount.subtract(share.multiply(oneMoney));
+        BigDecimal buyAmount = reverseRepoService.getAmount(balance);
+        if (!(buyAmount.compareTo(BigDecimal.ZERO) > 0)) {
+            return null;
+        }
+        Integer holdNum = buyAsset.getHoldNum(true);
+        BigDecimal repoShare = totalShare.subtract(share).subtract(new BigDecimal(holdNum));
+        return PlanVo.builder().action("SELL").amount(buyAmount).id(100L)
+                .investmentRatio(repoShare.divide(totalShare, 4, BigDecimal.ROUND_UP))
+                .name("204001").stockName("GC001").type("LONG1").note("国债 | 1天国债回购").build();
+
     }
 }

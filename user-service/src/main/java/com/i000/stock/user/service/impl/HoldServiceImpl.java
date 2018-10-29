@@ -121,4 +121,10 @@ public class HoldServiceImpl implements HoldService {
 
         return holdMapper.getCountHold(date);
     }
+
+    @Override
+    public List<Hold> findByNameAndDate(LocalDate date, String name) {
+        return holdMapper.findByNameAndDate(date, name);
+    }
+
 }

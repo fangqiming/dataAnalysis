@@ -13,6 +13,12 @@
         <result column="gain" property="gain"/>
         <result column="user_code" property="userCode"/>
         <result column="total_gain" property="totalGain"/>
+
+        <result column="total_repo_profit" property="totalRepoProfit"/>
+        <result column="total_repo_amount" property="totalRepoAmount"/>
+        <result column="today_repo_profit" property="todayRepoProfit"/>
+        <result column="today_repo_amount" property="todayRepoAmount"/>
+        <result column="is_repo" property="isRepo"/>
     </resultMap>
 
     <select id="getLately" resultMap="Asset">
@@ -61,6 +67,10 @@
 
     <select id="getLatelyTwoByUserCode" resultMap="Asset">
         select * from asset where user_code=#{userCode} ORDER BY id DESC limit 2
+    </select>
+
+    <select id="getByUserCodeAndDate" resultMap="Asset">
+        select * from asset where date= #{date} and user_code=#{userCode}
     </select>
 
 </mapper>

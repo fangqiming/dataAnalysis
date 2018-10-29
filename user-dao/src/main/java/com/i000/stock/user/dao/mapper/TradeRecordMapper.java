@@ -5,8 +5,10 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.model.TradeRecord;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.apache.tomcat.jni.Local;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -41,5 +43,10 @@ public interface TradeRecordMapper extends BaseMapper<TradeRecord> {
 
     @Select("select found_rows()")
     Long pageTotal();
+
+    @Update("update trade_record set old_Price = #{buyPrice},amount=#{amount} where id=#{id}")
+    void updateAmount(@Param("id") Long id, @Param("buyPrice") BigDecimal buyPrice, @Param("amount") BigDecimal amount);
+
+    TradeRecord getByNameAndDate(@Param("name") String name, @Param("date") LocalDate date, @Param("userCode") String userCode);
 
 }

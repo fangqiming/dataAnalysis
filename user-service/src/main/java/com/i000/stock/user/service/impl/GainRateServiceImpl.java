@@ -1,6 +1,7 @@
 package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.entity.bo.IndexValueBo;
+import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
 import com.i000.stock.user.api.entity.vo.GainVo;
 import com.i000.stock.user.api.entity.vo.PageGainVo;
 import com.i000.stock.user.api.entity.vo.YieldRateVo;
@@ -160,6 +161,36 @@ public class GainRateServiceImpl implements GainRateService {
         return getRecentlyGain(index, asset, userCode, title);
     }
 
+    @Override
+    public RelativeProfitBO getTodayBeatSzByUserCode(String userCode) {
+        List<Asset> assets = assetService.getLatelyTwoByUserCode(userCode);
+        List<IndexValue> indexValues = indexValueService.getLatelyTwo();
+        BigDecimal bd = getRelativeProfitRate(assets.get(0), assets.get(1));
+        BigDecimal sz = getRelativeProfitRate(indexValues.get(0).getSh(), indexValues.get(1).getSh());
+
+        RelativeProfitBO relativeProfitBO = RelativeProfitBO.builder()
+                .relativeProfit(getRelativeProfit(assets.get(0), assets.get(1)))
+                .relativeProfitRate(getRelativeProfitRate(assets.get(0), assets.get(1)))
+                .beatStandardRate(getBeatStandardRate(bd, sz)).build();
+        return relativeProfitBO;
+    }
+
+    @Override
+    public RelativeProfitBO getTotalBeatByUserCode(String userCode) {
+        IndexValue after = indexValueService.getLastOne();
+        IndexValue now = indexValueService.getLately();
+        BigDecimal sz = getRelativeProfitRate(now.getSh(), after.getSh());
+        Asset nowAsset = assetService.getLately(userCode);
+        Asset  afterAsset= assetService.getByUserCodeAndDate(userCode, after.getDate());
+        BigDecimal bd = getRelativeProfitRate(nowAsset, afterAsset);
+
+        RelativeProfitBO relativeProfitBO = RelativeProfitBO.builder()
+                .relativeProfit(getRelativeProfit(nowAsset, afterAsset))
+                .relativeProfitRate(getRelativeProfitRate(nowAsset, afterAsset))
+                .beatStandardRate(getBeatStandardRate(bd, sz)).build();
+        return relativeProfitBO;
+    }
+
 
     private YieldRateVo createYieldRateVo(LocalDate time) {
         //注意点就是这个日期不一定有
@@ -206,4 +237,26 @@ public class GainRateServiceImpl implements GainRateService {
         }
         throw new WebApiException(ApplicationErrorMessage.SERVER_ERROR.getCode(), "数据拷贝错误");
     }
+
+    private BigDecimal getBeatStandardRate(BigDecimal bd, BigDecimal sz) {
+        return (bd.subtract(sz)).divide(new BigDecimal(1).add(sz),
+                4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+    }
+
+    private BigDecimal getRelativeProfitRate(Asset now, Asset before) {
+        BigDecimal nowAccount = now.getStock().add(now.getCover()).add(now.getBalance());
+        BigDecimal beforeAccount = before.getStock().add(before.getCover()).add(before.getBalance());
+        return (nowAccount.subtract(beforeAccount)).divide(beforeAccount, 4, BigDecimal.ROUND_HALF_UP);
+    }
+
+    private BigDecimal getRelativeProfitRate(BigDecimal now, BigDecimal before) {
+        return (now.subtract(before)).divide(before, 4, BigDecimal.ROUND_HALF_UP);
+    }
+
+    private BigDecimal getRelativeProfit(Asset now, Asset before) {
+        BigDecimal nowAccount = now.getStock().add(now.getCover()).add(now.getBalance());
+        BigDecimal beforeAccount = before.getStock().add(before.getCover()).add(before.getBalance());
+        return nowAccount.subtract(beforeAccount);
+    }
+
 }

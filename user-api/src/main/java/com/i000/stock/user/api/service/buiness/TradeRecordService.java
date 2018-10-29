@@ -5,6 +5,7 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.model.TradeRecord;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -47,5 +48,9 @@ public interface TradeRecordService {
      * @return
      */
     Page<TradeRecordVo> search(String userCode, BaseSearchVo baseSearchVo);
+
+    void updateAmountAndPriceById(Long id, BigDecimal newAmount, BigDecimal newPrice);
+
+    TradeRecord getByNameAndDate(LocalDate date, String name, String userCode);
 
 }

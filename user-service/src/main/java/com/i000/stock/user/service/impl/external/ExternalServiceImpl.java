@@ -42,6 +42,12 @@ public class ExternalServiceImpl {
         service = retrofit.create(ExternalService.class);
     }
 
+    public Price getOnePrice(String param) {
+        param += "list=" + param;
+        String priceStr = execute(service.getPrice(param));
+        return parsePriceStr(priceStr).get(0);
+    }
+
     /**
      * 批量获取价格
      *
@@ -79,39 +85,6 @@ public class ExternalServiceImpl {
         return null;
     }
 
-
-    /**
-     * 获取一个价格
-     *
-     * @param index
-     * @return
-     */
-//    public Price getPrice(String index) {
-//        List list = Arrays.asList(index);
-//        List<Price> prices = getPrice(list);
-//        if (!CollectionUtils.isEmpty(prices)) {
-//            return prices.get(0);
-//        }
-//        return new Price();
-//
-//    }
-
-    /**
-     * 获取ip地址的信息
-     *
-     * @param ipAddress
-     * @return
-     */
-    public IpInfoBo getIpInfo(String ipAddress) {
-        try {
-            Call<JSONObject> info = service.getIpInfo("json", ipAddress);
-            JSONObject result = execute(info);
-            return JSONObject.parseObject(result.toString(), IpInfoBo.class);
-        } catch (Exception e) {
-
-        }
-        return IpInfoBo.builder().country("中国").city("内网").build();
-    }
 
     /**
      * 获取指数

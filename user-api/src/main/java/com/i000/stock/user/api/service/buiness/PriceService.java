@@ -17,4 +17,7 @@ public interface PriceService {
      * @throws IOException
      */
     StringBuffer get() throws IOException;
+
+
+
 }

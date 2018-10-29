@@ -1,10 +1,13 @@
 package com.i000.stock.user.service.impl;
 
 
+import com.i000.stock.user.api.entity.bo.RepoProfitBO;
 import com.i000.stock.user.api.entity.vo.GainBo;
 import com.i000.stock.user.api.service.buiness.AssetService;
 import com.i000.stock.user.api.service.buiness.HoldNowService;
+import com.i000.stock.user.api.service.buiness.TradeRecordService;
 import com.i000.stock.user.api.service.buiness.UserInfoService;
+import com.i000.stock.user.api.service.original.HoldService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
@@ -50,6 +53,14 @@ public class AssetServiceImpl implements AssetService {
     @Resource
     private UserInfoService userInfoService;
 
+    @Autowired
+    private ReverseRepoService reverseRepoService;
+
+    @Autowired
+    private HoldService holdService;
+
+    @Autowired
+    private TradeRecordService tradeRecordService;
 
     @Override
     public Asset getLately(String userCode) {
@@ -103,24 +114,69 @@ public class AssetServiceImpl implements AssetService {
             return;
         }
 
+        //处理可能出现的拆并股问题  ，注意正常情况是只应该执行一次，需要优化
+        handleShareCapitalChange(now.getUserCode());
+
         // todo 根据当天的交易记录，更新用户的资产信息,,此处如果判断交易记录为空保存空即可满足要求
         updateAsset(isNewUser ? initTrade : trade, now);
+
 
         //根据推送过来的股票价格，更新持股的价格数据
         holdNowService.updatePrice(date);
 
         //设置股票金额
         now.setStock(getStockAmount(userCode));
+
+
+        //处理回购
+        handleRepo(now);
+
         //设置相对上一次的收益率
         Asset lately = getLately(userCode);
         lately = Objects.isNull(lately) ? init : lately;
         now.setGain(getGain(now, lately));
+
         //设置相对最开的的总的收益率
         Asset diff = assetMapper.getDiff(date, 36500, userCode);
+
         diff = Objects.isNull(diff) ? init : diff;
         now.setTotalGain(getGain(now, diff));
         //保存到数据
         assetMapper.insert(now);
+    }
+
+    /**
+     * 处理逆回购的逻辑
+     *
+     * @param asset
+     */
+    private void handleRepo(Asset asset) {
+        RepoProfitBO profit = reverseRepoService.getProfitDaysByDate(asset.getDate(), asset.getBalance());
+
+        //修改余额信息
+        asset.setBalance(asset.getBalance().add(profit.getProfit()));
+        asset.setTodayRepoAmount(profit.getAmount());
+        asset.setTodayRepoProfit(profit.getProfit());
+        asset.setTotalRepoAmount(add(asset.getTotalRepoAmount(), asset.getTodayRepoAmount()));
+        asset.setTotalRepoProfit(add(asset.getTotalRepoProfit(), asset.getTodayRepoProfit()));
+        asset.setIsRepo((byte) 1);
+
+        if (profit.getAmount().compareTo(BigDecimal.ZERO) > 0) {
+            ReverseRepo reverseRepo = ReverseRepo.builder()
+                    .amount(profit.getAmount())
+                    .code(profit.getCode())
+                    .date(asset.getDate())
+                    .gain(profit.getGian())
+                    .profit(profit.getProfit())
+                    .userCode(asset.getUserCode()).build();
+            reverseRepoService.save(reverseRepo);
+        }
+    }
+
+    private BigDecimal add(BigDecimal a, BigDecimal b) {
+        a = Objects.isNull(a) ? BigDecimal.ZERO : a;
+        b = Objects.isNull(b) ? BigDecimal.ZERO : b;
+        return a.add(b);
     }
 
     private Asset getAssetByUserCode(String userCode) {
@@ -153,6 +209,25 @@ public class AssetServiceImpl implements AssetService {
         List<HoldNow> holdNows = holdNowService.find(userCode);
         List<BigDecimal> collect = holdNows.stream().map(a -> a.getNewPrice().multiply(new BigDecimal(a.getAmount()))).collect(toList());
         return collect.stream().collect(reducing(new BigDecimal(0), (a, b) -> a.add(b)));
+    }
+
+    private void handleShareCapitalChange(String userCode) {
+        List<Hold> hold = holdService.findHold();
+        for (Hold stock : hold) {
+            List<Hold> stocks = holdService.findByNameAndDate(stock.getOldDate(), stock.getName());
+            BigDecimal buyPrice = stocks.get(0).getOldPrice();
+            for (int i = 1; i < stocks.size(); i++) {
+                Hold temp = stocks.get(i);
+                if (!buyPrice.equals(temp.getOldPrice())) {
+                    BigDecimal newPrice = temp.getOldPrice();
+                    TradeRecord trade = tradeRecordService.getByNameAndDate(temp.getOldDate(), temp.getName(), userCode);
+                    BigDecimal newAmount = trade.getOldPrice().multiply(trade.getAmount()).divide(newPrice, 0, BigDecimal.ROUND_HALF_UP);
+                    tradeRecordService.updateAmountAndPriceById(trade.getId(), newAmount, newPrice);
+                    holdNowService.updateAmountPriceByName(newPrice,newAmount,temp.getName(),userCode);
+                }
+            }
+        }
+
     }
 
     private BigDecimal getGain(Asset now, Asset befor) {
@@ -234,5 +309,11 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public List<Asset> getLatelyTwoByUserCode(String userCode) {
         return assetMapper.getLatelyTwoByUserCode(userCode);
+    }
+
+    @Override
+    public Asset getByUserCodeAndDate(String userCode, LocalDate date) {
+
+        return assetMapper.getByUserCodeAndDate(userCode, date);
     }
 }

@@ -1,6 +1,9 @@
 package com.i000.stock.user.api.entity.bo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,12 +15,15 @@ import java.time.LocalDate;
  * @Modified By:
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TodayAccountBo {
 
     /**
      * 当天日期
      */
-    private LocalDate date;
+    private String date;
 
     /**
      * 当天总资产

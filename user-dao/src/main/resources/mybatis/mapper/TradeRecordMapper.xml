@@ -23,8 +23,13 @@
 
     <select id="search" resultMap="TradeRecord" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo">
         select sql_calc_found_rows * from trade_record
-        where user_code=#{userCode} ORDER BY new_date DESC limit
-          ${baseSearchVo.start},${baseSearchVo.pageSize}
+        where action = 'SELL'
+        and user_code=#{userCode} ORDER BY new_date DESC limit
+        ${baseSearchVo.start},${baseSearchVo.pageSize}
+    </select>
+
+    <select id="getByNameAndDate" resultMap="TradeRecord">
+        select * from trade_record where `name`=#{name} and old_date=#{date} and action='BUY' and user_code=#{userCode}
     </select>
 
 </mapper>

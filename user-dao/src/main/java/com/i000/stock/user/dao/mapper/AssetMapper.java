@@ -115,4 +115,6 @@ public interface AssetMapper extends BaseMapper<Asset> {
     BigDecimal getMinGain(@Param("userCode") String userCode);
 
     List<Asset> getLatelyTwoByUserCode(@Param("userCode") String userCode);
+
+    Asset getByUserCodeAndDate(@Param("userCode") String userCode, @Param("date") LocalDate date);
 }

@@ -105,24 +105,6 @@ public class IndexPriceSchedule {
     }
 
     /**
-     * 处理拆并股的价格股数问题此处重试了5次
-     */
-    @Scheduled(cron = "0 35 9 * * ?")
-    public void updateAmount() {
-        try {
-            log.warn("-----------拆并股逻辑处理中------------");
-            StringBuffer stringBuffer = indexPriceService.get();
-            if (isStockDay(stringBuffer)) {
-                offsetPriceService.updateAmount(stringBuffer);
-            }
-        } catch (IOException e) {
-            emailService.sendMail("拆并股处理失败", e.getMessage(), true);
-            log.error("处理股票的拆股失败", e);
-        }
-    }
-
-
-    /**
      * 每天凌晨触发更新
      */
     @Scheduled(cron = "0 00 02 * * ?")

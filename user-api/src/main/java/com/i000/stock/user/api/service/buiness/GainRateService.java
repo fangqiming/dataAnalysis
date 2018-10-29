@@ -1,8 +1,10 @@
 package com.i000.stock.user.api.service.buiness;
 
+import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
 import com.i000.stock.user.api.entity.vo.PageGainVo;
 import com.i000.stock.user.api.entity.vo.YieldRateVo;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -54,4 +56,20 @@ public interface GainRateService {
      */
     PageGainVo getFromYearStart(String userCode, Integer diff, LocalDate end, String title);
 
+
+    /**
+     * 获取指定用户当天跑赢上证的比率
+     *
+     * @param userCode
+     * @return
+     */
+    RelativeProfitBO getTodayBeatSzByUserCode(String userCode);
+
+    /**
+     * 获取指定用户累计跑赢上证多少
+     *
+     * @param userCode
+     * @return
+     */
+    RelativeProfitBO getTotalBeatByUserCode(String userCode);
 }

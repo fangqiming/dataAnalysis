@@ -43,4 +43,10 @@ public interface IndexValueMapper extends BaseMapper<IndexValue> {
 
     @Select("select * from index_value where date>= #{year} ORDER BY id  limit 1")
     IndexValue getYearFirst(@Param("year") String year);
+
+    @Select("select * from index_value ORDER BY id DESC limit 2")
+    List<IndexValue> getLatelyTwo();
+
+    @Select("select * from index_value ORDER BY id  limit 1")
+    IndexValue getLastOne();
 }

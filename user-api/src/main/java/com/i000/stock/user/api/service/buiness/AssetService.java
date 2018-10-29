@@ -5,6 +5,7 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.Hold;
+import org.apache.tomcat.jni.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -138,5 +139,14 @@ public interface AssetService {
      * @return
      */
     List<Asset> getLatelyTwoByUserCode(String userCode);
+
+    /**
+     * 根据日期和用户码查询指定的账户信息
+     *
+     * @param userCode
+     * @param date
+     * @return
+     */
+    Asset getByUserCodeAndDate(String userCode, LocalDate date);
 
 }

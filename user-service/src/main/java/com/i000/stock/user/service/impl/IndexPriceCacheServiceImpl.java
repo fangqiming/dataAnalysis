@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -142,6 +143,20 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
             }
         }
         indexValueService.save(indexValue);
+    }
+
+    @Override
+    public BigDecimal getOnePrice(String param, Integer tryNumber) {
+        for (int i = 0; i < tryNumber; i++) {
+            try {
+                Price onePrice = externalService.getOnePrice(param);
+                return onePrice.getPrice();
+            } catch (Exception e) {
+                System.out.println("重试中");
+                sleep(2000L);
+            }
+        }
+        return new BigDecimal("2.65");
     }
 
     private void sleep(Long second) {

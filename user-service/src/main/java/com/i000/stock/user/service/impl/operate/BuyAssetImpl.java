@@ -58,24 +58,8 @@ public class BuyAssetImpl implements AssetUpdateService {
         }
         trade.setAmount(0);
         BigDecimal oneHandMoney = trade.getOldPrice().multiply(new BigDecimal(100));
-        UserInfo userInfo = userInfoService.getByName(asset.getUserCode());
 
-        Integer holdNum = getHoldNum();
-        BigDecimal oneShareMoney;
-
-
-        Asset lately = assetService.getLately(userInfo.getName());
-        //余额为正 并且 允许的份数也大于持股份数
-        if (lately.getBalance().compareTo(BigDecimal.ZERO) > 0 && userInfo.getInitNum().compareTo(new BigDecimal(holdNum)) > 0) {
-            oneShareMoney = (lately.getBalance())
-                    .divide(userInfo.getInitNum().subtract(new BigDecimal(holdNum)), 0, BigDecimal.ROUND_HALF_UP);
-        } else {
-            //关键在于此处的融资金额究竟应该是多少。。。
-            BigDecimal all = lately.getStock().add(lately.getBalance()).add(lately.getCover());
-            oneShareMoney = all.divide(userInfo.getInitNum(), 0, BigDecimal.ROUND_HALF_UP);
-        }
-
-
+        BigDecimal oneShareMoney = getOneShareMoney(asset.getUserCode(), false);
         BigDecimal canBuyHandNum = oneShareMoney.divide(oneHandMoney, 0, BigDecimal.ROUND_HALF_UP);
         //设置交易数量
         trade.setAmount(canBuyHandNum.multiply(new BigDecimal(100)).intValue());
@@ -108,13 +92,42 @@ public class BuyAssetImpl implements AssetUpdateService {
         }
     }
 
-    private Integer getHoldNum() {
+    public Integer getHoldNum(boolean isRecommend) {
         LocalDate date = holdService.getMaxHold();
         //当前持股数量
         Integer holdCount = holdService.getHoldCount(date);
+        if (isRecommend) {
+            return holdCount;
+        }
         Integer sellNum = tradeService.getSellNum(date);
         Integer buyNum = tradeService.getBuyNum(date);
         return holdCount - buyNum + sellNum;
+    }
+
+
+    public BigDecimal getOneShareMoney(String userCode, boolean isRecommend) {
+        Integer holdNum = getHoldNum(isRecommend);
+        BigDecimal oneShareMoney;
+        UserInfo userInfo = userInfoService.getByName(userCode);
+        Asset lately = assetService.getLately(userInfo.getName());
+        //余额为正 并且 允许的份数也大于持股份数
+        if (lately.getBalance().compareTo(BigDecimal.ZERO) > 0 && userInfo.getInitNum().compareTo(new BigDecimal(holdNum)) > 0) {
+            oneShareMoney = (lately.getBalance())
+                    .divide(userInfo.getInitNum().subtract(new BigDecimal(holdNum)), 0, BigDecimal.ROUND_HALF_UP);
+        } else if (lately.getBalance().compareTo(BigDecimal.ZERO) > 0) {
+            //关键在于此处的融资金额究竟应该是多少。。。
+            BigDecimal all = lately.getStock().add(lately.getBalance()).add(lately.getCover());
+
+            //总的资金除以总的持股数量
+            oneShareMoney = all.divide(new BigDecimal(holdNum), 0, BigDecimal.ROUND_HALF_UP);
+        } else {
+            BigDecimal all = lately.getStock().add(lately.getCover());
+
+            //总的资金除以总的持股数量
+            oneShareMoney = all.divide(new BigDecimal(holdNum), 0, BigDecimal.ROUND_HALF_UP);
+
+        }
+        return oneShareMoney;
     }
 
 }
