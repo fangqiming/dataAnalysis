@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -213,21 +214,22 @@ public class AssetServiceImpl implements AssetService {
 
     private void handleShareCapitalChange(String userCode) {
         List<Hold> hold = holdService.findHold();
-        for (Hold stock : hold) {
-            List<Hold> stocks = holdService.findByNameAndDate(stock.getOldDate(), stock.getName());
-            BigDecimal buyPrice = stocks.get(0).getOldPrice();
-            for (int i = 1; i < stocks.size(); i++) {
-                Hold temp = stocks.get(i);
-                if (!buyPrice.equals(temp.getOldPrice())) {
-                    BigDecimal newPrice = temp.getOldPrice();
-                    TradeRecord trade = tradeRecordService.getByNameAndDate(temp.getOldDate(), temp.getName(), userCode);
-                    BigDecimal newAmount = trade.getOldPrice().multiply(trade.getAmount()).divide(newPrice, 0, BigDecimal.ROUND_HALF_UP);
-                    tradeRecordService.updateAmountAndPriceById(trade.getId(), newAmount, newPrice);
-                    holdNowService.updateAmountPriceByName(newPrice,newAmount,temp.getName(),userCode);
+        if(!(hold.size()==1 && StringUtils.isEmpty(hold.get(0).getName()))){
+            for (Hold stock : hold) {
+                List<Hold> stocks = holdService.findByNameAndDate(stock.getOldDate(), stock.getName());
+                BigDecimal buyPrice = stocks.get(0).getOldPrice();
+                for (int i = 1; i < stocks.size(); i++) {
+                    Hold temp = stocks.get(i);
+                    if (!buyPrice.equals(temp.getOldPrice())) {
+                        BigDecimal newPrice = temp.getOldPrice();
+                        TradeRecord trade = tradeRecordService.getByNameAndDate(temp.getOldDate(), temp.getName(), userCode);
+                        BigDecimal newAmount = trade.getOldPrice().multiply(trade.getAmount()).divide(newPrice, 0, BigDecimal.ROUND_HALF_UP);
+                        tradeRecordService.updateAmountAndPriceById(trade.getId(), newAmount, newPrice);
+                        holdNowService.updateAmountPriceByName(newPrice,newAmount,temp.getName(),userCode);
+                    }
                 }
             }
         }
-
     }
 
     private BigDecimal getGain(Asset now, Asset befor) {
