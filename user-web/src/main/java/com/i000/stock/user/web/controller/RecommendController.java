@@ -152,9 +152,9 @@ public class RecommendController {
             for (PlanVo planVo : planVos) {
                 String stockName = companyService.getNameByCode(planVo.getName());
                 planVo.setStockName(stockName);
-                if("SELL".equals(planVo.getAction())){
+                if ("SELL".equals(planVo.getAction())) {
                     planVo.setInvestmentRatio(new BigDecimal("1"));
-                }else{
+                } else {
                     planVo.setInvestmentRatio(noeRate);
                     planVo.setAmount(oneMoney);
                 }
@@ -171,6 +171,9 @@ public class RecommendController {
         }
         Integer holdNum = buyAsset.getHoldNum(true);
         BigDecimal repoShare = totalShare.subtract(share).subtract(new BigDecimal(holdNum));
+        if (repoShare.compareTo(BigDecimal.ZERO) <= 0) {
+            return null;
+        }
         return PlanVo.builder().action("SELL").amount(buyAmount).id(100L)
                 .investmentRatio(repoShare.divide(totalShare, 4, BigDecimal.ROUND_UP))
                 .name("204001").stockName("GC001").type("LONG1").note("国债 | 1天国债回购").build();
