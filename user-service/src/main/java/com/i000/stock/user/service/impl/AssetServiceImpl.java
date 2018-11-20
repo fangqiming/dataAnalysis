@@ -84,6 +84,11 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
+    public Asset getDiffByLt(LocalDate date, String userCode) {
+        return assetMapper.getDiffByLt(userCode, date);
+    }
+
+    @Override
     public List<Asset> findDiff(LocalDate date, Integer day, String userCode) {
         return assetMapper.findDiff(date, day, userCode);
     }
@@ -214,7 +219,7 @@ public class AssetServiceImpl implements AssetService {
 
     private void handleShareCapitalChange(String userCode) {
         List<Hold> hold = holdService.findHold();
-        if(!(hold.size()==1 && StringUtils.isEmpty(hold.get(0).getName()))){
+        if (!(hold.size() == 1 && StringUtils.isEmpty(hold.get(0).getName()))) {
             for (Hold stock : hold) {
                 List<Hold> stocks = holdService.findByNameAndDate(stock.getOldDate(), stock.getName());
                 BigDecimal buyPrice = stocks.get(0).getOldPrice();
@@ -225,7 +230,7 @@ public class AssetServiceImpl implements AssetService {
                         TradeRecord trade = tradeRecordService.getByNameAndDate(temp.getOldDate(), temp.getName(), userCode);
                         BigDecimal newAmount = trade.getOldPrice().multiply(trade.getAmount()).divide(newPrice, 0, BigDecimal.ROUND_HALF_UP);
                         tradeRecordService.updateAmountAndPriceById(trade.getId(), newAmount, newPrice);
-                        holdNowService.updateAmountPriceByName(newPrice,newAmount,temp.getName(),userCode);
+                        holdNowService.updateAmountPriceByName(newPrice, newAmount, temp.getName(), userCode);
                     }
                 }
             }

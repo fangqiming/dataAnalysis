@@ -54,7 +54,13 @@ public class GainRateServiceImpl implements GainRateService {
      */
     @Override
     public YieldRateVo getIndexTrend(String userCode, Integer diff, LocalDate end) {
-        LocalDate start = end.minusDays(diff);
+        LocalDate startTime = end.minusDays(diff);
+        IndexValue baseIndex = indexValueService.getRecentlyByLt(startTime);
+        if (Objects.isNull(baseIndex)) {
+            baseIndex = diff > 360 ? indexValueService.getLastOne() : indexValueService.getLately();
+        }
+        LocalDate start = baseIndex.getDate();
+
         List<IndexValue> indexValue = indexValueService.findBetween(start, end);
         List<Asset> asset = assetService.findAssetBetween(userCode, start, end);
         YieldRateVo result = createYieldRateVo(start);
@@ -98,20 +104,13 @@ public class GainRateServiceImpl implements GainRateService {
     @Override
     public PageGainVo getRecentlyGain(String userCode, Integer diff, LocalDate end, String title) {
         LocalDate start = end.minusDays(diff);
-        //此处如果是找大于等于的就不会有问题
-        if (diff == 30 || diff == 90) {
-            IndexValue baseIndex = indexValueService.getRecentlyByGt(start);
-            Asset baseAsset = assetService.getDiffByGt(start, userCode);
-            return getRecentlyGain(baseIndex, baseAsset, userCode, title);
-        }
-
-        IndexValue baseIndex = indexValueService.getRecently(start);
+        IndexValue baseIndex = indexValueService.getRecentlyByLt(start);
         if (Objects.isNull(baseIndex)) {
-            baseIndex = indexValueService.getRecentlyByGt(start);
+            baseIndex = diff > 360 ? indexValueService.getLastOne() : indexValueService.getLately();
         }
-        Asset baseAsset = assetService.getDiff(start, userCode);
+        Asset baseAsset = assetService.getDiffByLt(start, userCode);
         if (Objects.isNull(baseAsset)) {
-            baseAsset = assetService.getDiffByGt(start, userCode);
+            baseAsset = diff > 360 ? assetService.getYearFirst("2018", userCode) : assetService.getLately(userCode);
         }
         return getRecentlyGain(baseIndex, baseAsset, userCode, title);
     }
@@ -181,7 +180,7 @@ public class GainRateServiceImpl implements GainRateService {
         IndexValue now = indexValueService.getLately();
         BigDecimal sz = getRelativeProfitRate(now.getSh(), after.getSh());
         Asset nowAsset = assetService.getLately(userCode);
-        Asset  afterAsset= assetService.getByUserCodeAndDate(userCode, after.getDate());
+        Asset afterAsset = assetService.getByUserCodeAndDate(userCode, after.getDate());
         BigDecimal bd = getRelativeProfitRate(nowAsset, afterAsset);
 
         RelativeProfitBO relativeProfitBO = RelativeProfitBO.builder()

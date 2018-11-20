@@ -79,15 +79,14 @@ public class TradeController {
      * @return
      */
     @GetMapping(path = "/find_gain")
-    public ResultEntity findProfit() {
+    public ResultEntity findProfit(@RequestParam(defaultValue = "")  String data) {
+        LocalDate temp = StringUtils.isEmpty(data) ? LocalDate.now() : LocalDate.parse(data, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String userCode = getUserCode();
-        Asset asset = assetService.getLately(userCode);
         List<PageGainVo> result = new ArrayList<>(4);
-        result.add(gainRateService.getRecentlyGain(userCode, 30, LocalDate.now(), "近一月"));
-        result.add(gainRateService.getRecentlyGain(userCode, 60, LocalDate.now(), "近二月"));
-        result.add(gainRateService.getRecentlyGain(userCode, 90, LocalDate.now(), "近三月"));
-        PageGainVo fromYear = gainRateService.getFromYearStart(userCode, 370, asset.getDate(), "今年以来");
-        result.add(fromYear);
+        result.add(gainRateService.getRecentlyGain(userCode, 7, temp, "近一周"));
+        result.add(gainRateService.getRecentlyGain(userCode, 30, temp, "近一月"));
+        result.add(gainRateService.getRecentlyGain(userCode, 90, temp, "近一季"));
+        result.add(gainRateService.getRecentlyGain(userCode, 365, temp, "近一年"));
         return Results.newListResultEntity(result);
     }
 

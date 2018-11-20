@@ -47,6 +47,8 @@ public interface IndexValueService {
      */
     IndexValue getRecentlyByGt(LocalDate date);
 
+    IndexValue getRecentlyByLt(LocalDate date);
+
     /**
      * 获取表中最新的数据条目
      *

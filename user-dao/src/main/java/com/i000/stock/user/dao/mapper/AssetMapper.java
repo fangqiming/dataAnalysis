@@ -37,6 +37,8 @@ public interface AssetMapper extends BaseMapper<Asset> {
 
     Asset getDiffByGt(@Param("userCode") String userCode, @Param("date") LocalDate date);
 
+    Asset getDiffByLt(@Param("userCode") String userCode, @Param("date") LocalDate date);
+
     /**
      * 获取距离最后一次交易间隔diff个时间的资产情况
      *

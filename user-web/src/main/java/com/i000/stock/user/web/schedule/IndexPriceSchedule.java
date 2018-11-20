@@ -113,7 +113,7 @@ public class IndexPriceSchedule {
             stockPledgeService.save();
         } catch (Exception e) {
             log.warn("股权质押信息获取失败", e);
-            emailService.sendMail("千古【股权质押信息获取失败】", "请相关人员立即处理", true);
+//            emailService.sendMail("千古【股权质押信息获取失败】", "请相关人员立即处理", true);
             e.printStackTrace();
         }
     }

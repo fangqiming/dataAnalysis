@@ -48,6 +48,13 @@ public interface AssetService {
     Asset getDiffByGt(LocalDate date, String userCode);
 
     /**
+     * @param date
+     * @param userCode
+     * @return
+     */
+    Asset getDiffByLt(LocalDate date, String userCode);
+
+    /**
      * 查询一定范围内的全部资产信息
      *
      * @param date

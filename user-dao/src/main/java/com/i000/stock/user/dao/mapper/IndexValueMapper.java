@@ -38,6 +38,9 @@ public interface IndexValueMapper extends BaseMapper<IndexValue> {
     @Select("select * from index_value where date>=#{date} ORDER BY id limit 1")
     IndexValue getLatelyByGt(@Param("date") LocalDate date);
 
+    @Select("select * from index_value where date<=#{date} ORDER BY id DESC limit 1")
+    IndexValue getLatelyByLt(@Param("date") LocalDate date);
+
     @Select("select * from index_value ORDER BY id DESC limit 1")
     IndexValue getNewest();
 

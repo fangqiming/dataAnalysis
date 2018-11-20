@@ -92,7 +92,7 @@ public class RecommendController {
         if (plans.size() == 1 && StringUtils.isBlank(plans.get(0).getName())) {
             //需要在此处追加对于逆回购的推荐
             ArrayList<PlanVo> result = new ArrayList<>(1);
-            PlanVo repo = getRepo(user.getInitNum(), BigDecimal.ZERO, asset.getBalance(), oneShareMoney);
+            PlanVo repo = getRepo(user.getInitNum(), BigDecimal.ZERO, asset, oneShareMoney);
             result.add(repo);
             return Results.newListResultEntity(result);
         } else {
@@ -102,7 +102,7 @@ public class RecommendController {
             //计划买入的数量
             long buy = planVos.stream().filter(a -> a.getAction().equals("BUY")).count();
 
-            PlanVo repo = getRepo(user.getInitNum(), new BigDecimal(buy), asset.getBalance(), oneShareMoney);
+            PlanVo repo = getRepo(user.getInitNum(), new BigDecimal(buy), asset, oneShareMoney);
             if (Objects.nonNull(repo)) {
                 planVos.add(repo);
             }
@@ -162,9 +162,9 @@ public class RecommendController {
         }
     }
 
-    private PlanVo getRepo(BigDecimal totalShare, BigDecimal share, BigDecimal amount, BigDecimal oneMoney) {
+    private PlanVo getRepo(BigDecimal totalShare, BigDecimal share, Asset asset, BigDecimal oneMoney) {
 
-        BigDecimal balance = amount.subtract(share.multiply(oneMoney));
+        BigDecimal balance = asset.getBalance().subtract(share.multiply(oneMoney));
         BigDecimal buyAmount = reverseRepoService.getAmount(balance);
         if (!(buyAmount.compareTo(BigDecimal.ZERO) > 0)) {
             return null;
@@ -175,8 +175,8 @@ public class RecommendController {
             return null;
         }
         return PlanVo.builder().action("SELL").amount(buyAmount).id(100L)
-                .investmentRatio(repoShare.divide(totalShare, 4, BigDecimal.ROUND_UP))
-                .name("204001").stockName("GC001").type("LONG1").note("国债 | 1天国债回购").build();
+                .investmentRatio(buyAmount.divide((asset.getBalance().add(asset.getStock())), 4, BigDecimal.ROUND_HALF_DOWN))
+                .name("204001").stockName("GC001").type("LONG1").note("国债 | 1天期国债").build();
 
     }
 }

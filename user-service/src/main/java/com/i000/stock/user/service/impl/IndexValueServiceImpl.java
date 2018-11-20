@@ -42,6 +42,11 @@ public class IndexValueServiceImpl implements IndexValueService {
     }
 
     @Override
+    public IndexValue getRecentlyByLt(LocalDate date) {
+        return indexValueMapper.getLatelyByLt(date);
+    }
+
+    @Override
     public IndexValue getLately() {
         return indexValueMapper.getNewest();
     }
