@@ -52,4 +52,7 @@ public interface IndexValueMapper extends BaseMapper<IndexValue> {
 
     @Select("select * from index_value ORDER BY id  limit 1")
     IndexValue getLastOne();
+
+    @Select("select * from index_value where date <#{date}  ORDER BY date DESC limit 1")
+    IndexValue getBefore(@Param("date") LocalDate date);
 }

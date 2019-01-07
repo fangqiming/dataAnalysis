@@ -1,11 +1,6 @@
 package com.i000.stock.user.api.entity.vo;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.i000.stock.user.core.jackson.serialize.LocalDateTimeSerializer;
 import lombok.Data;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * @Author:qmfang
@@ -18,4 +13,5 @@ public class UserInfoVo {
 
     private Long id;
     private String name;
+    private Integer canSee;
 }

@@ -323,4 +323,16 @@ public class AssetServiceImpl implements AssetService {
 
         return assetMapper.getByUserCodeAndDate(userCode, date);
     }
+
+    @Override
+    public Asset getBeforeDate(LocalDate date, String userCode) {
+        return assetMapper.getBeforeDate(date, userCode);
+    }
+
+    @Override
+    public Asset getInit(String userCode) {
+        return assetMapper.getInit(userCode);
+    }
+
+
 }

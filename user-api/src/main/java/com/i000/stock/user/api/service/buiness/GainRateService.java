@@ -4,7 +4,6 @@ import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
 import com.i000.stock.user.api.entity.vo.PageGainVo;
 import com.i000.stock.user.api.entity.vo.YieldRateVo;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -19,22 +18,22 @@ public interface GainRateService {
      * 获取自定用户的价格指数走势  即首页的各种指数的走势对比折线图
      *
      * @param userCode 用户码
-     * @param diff     间隔
+     * @param date     间隔
      * @param end      结束日期   开始日期=end-diff
      * @return
      */
-    YieldRateVo getIndexTrend(String userCode, Integer diff, LocalDate end);
+    YieldRateVo getIndexTrend(String userCode, LocalDate date, LocalDate end);
 
     /**
      * 获取最近一段时间内的收益信息
      *
      * @param userCode 用户码
-     * @param diff     间隔
+     * @param start    间隔
      * @param end      结束日期   开始日期=end-diff
      * @param title    首页显示的名称
      * @return
      */
-    PageGainVo getRecentlyGain(String userCode, Integer diff, LocalDate end, String title);
+    PageGainVo getRecentlyGain(String userCode, LocalDate start, String title);
 
     /**
      * 获取预期年化收益

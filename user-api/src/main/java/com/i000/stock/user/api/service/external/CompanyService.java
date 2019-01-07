@@ -1,5 +1,8 @@
 package com.i000.stock.user.api.service.external;
 
+import com.i000.stock.user.dao.model.Company;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,4 +27,6 @@ public interface CompanyService {
      * @return
      */
     String getNameByCode(String code);
+
+    List<Company> findAll();
 }

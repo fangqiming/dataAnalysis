@@ -3,24 +3,20 @@ package com.i000.stock.user.web.controller;
 import com.i000.stock.user.api.entity.vo.PlanInfoVo;
 import com.i000.stock.user.api.entity.vo.PlanVo;
 import com.i000.stock.user.api.service.buiness.AssetService;
-import com.i000.stock.user.api.service.buiness.HoldNowService;
 import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.api.service.external.CompanyInfoCrawlerService;
 import com.i000.stock.user.api.service.external.CompanyService;
-import com.i000.stock.user.api.service.original.HoldService;
 import com.i000.stock.user.api.service.original.PlanService;
 import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.model.Asset;
-import com.i000.stock.user.dao.model.HoldNow;
 import com.i000.stock.user.dao.model.Plan;
 import com.i000.stock.user.dao.model.UserInfo;
 import com.i000.stock.user.service.impl.ReverseRepoService;
 import com.i000.stock.user.service.impl.operate.BuyAssetImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -78,8 +74,9 @@ public class RecommendController {
     @CrossOrigin(origins = "*", maxAge = 3600)
     @GetMapping(path = "/find")
     public ResultEntity find() {
-        String userCode = RequestContext.getInstance().getAmountShare();
-        userCode = StringUtils.isBlank(userCode) ? "10000000" : userCode;
+        RequestContext instance = RequestContext.getInstance();
+        String userCode = Objects.isNull(instance) ? "10000000" :
+                (StringUtils.isBlank(instance.getAmountShare()) ? "10000000"  : instance.getAmountShare());
         LocalDate date = planService.getMaxDate();
         List<Plan> plans = planService.findByDate(date);
         UserInfo user = userInfoService.getByName(userCode);

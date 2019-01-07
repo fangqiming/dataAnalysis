@@ -18,7 +18,7 @@ public interface StockPledgeService {
     /**
      * 保存上证的股票质押信息
      */
-    List<StockPledge> save() throws Exception;
+    List<StockPledge> save(String... date) throws Exception;
 
     /**
      * 分页查询股权质押接口

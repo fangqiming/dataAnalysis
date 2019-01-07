@@ -119,4 +119,8 @@ public interface AssetMapper extends BaseMapper<Asset> {
     List<Asset> getLatelyTwoByUserCode(@Param("userCode") String userCode);
 
     Asset getByUserCodeAndDate(@Param("userCode") String userCode, @Param("date") LocalDate date);
+
+    Asset getBeforeDate(@Param("date") LocalDate date, @Param("userCode") String userCode);
+
+    Asset getInit(@Param("userCode") String userCode);
 }

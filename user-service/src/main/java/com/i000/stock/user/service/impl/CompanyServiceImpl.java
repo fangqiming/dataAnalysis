@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,4 +43,10 @@ public class CompanyServiceImpl implements CompanyService {
     public String getNameByCode(String code) {
         return companyMapper.getNameByCode(code);
     }
+
+    @Override
+    public List<Company> findAll() {
+        return companyMapper.selectList(null);
+    }
+
 }

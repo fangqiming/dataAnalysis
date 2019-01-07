@@ -12,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.transform.Result;
-import java.sql.SQLException;
-
 /**
  * @Author:qmfang
  * @Description:
@@ -52,7 +49,7 @@ public class EngineController {
         try {
             indexPriceCacheService.saveIndexValue();
         } catch (Exception e) {
-            log.warn("指数价格信息已经被保存", e);
+            log.warn("指数价格信息已经被保存");
         }
         return Results.newNormalResultEntity("result", "success");
     }
@@ -61,4 +58,5 @@ public class EngineController {
     public StringBuffer findCode() {
         return chooseStockService.findCode();
     }
+
 }

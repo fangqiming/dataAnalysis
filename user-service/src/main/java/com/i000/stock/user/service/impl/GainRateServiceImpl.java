@@ -15,11 +15,13 @@ import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.IndexValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -53,11 +55,10 @@ public class GainRateServiceImpl implements GainRateService {
      * @return
      */
     @Override
-    public YieldRateVo getIndexTrend(String userCode, Integer diff, LocalDate end) {
-        LocalDate startTime = end.minusDays(diff);
-        IndexValue baseIndex = indexValueService.getRecentlyByLt(startTime);
+    public YieldRateVo getIndexTrend(String userCode, LocalDate date, LocalDate end) {
+        IndexValue baseIndex = indexValueService.getBefore(date);
         if (Objects.isNull(baseIndex)) {
-            baseIndex = diff > 360 ? indexValueService.getLastOne() : indexValueService.getLately();
+            baseIndex = indexValueService.getLastOne();
         }
         LocalDate start = baseIndex.getDate();
 
@@ -96,22 +97,24 @@ public class GainRateServiceImpl implements GainRateService {
 
     /**
      * @param userCode 用户码
-     * @param diff     间隔
-     * @param end      结束日期   开始日期=end-diff
+     * @param start    间隔
      * @param title    首页显示的名称
      * @return
      */
     @Override
-    public PageGainVo getRecentlyGain(String userCode, Integer diff, LocalDate end, String title) {
-        LocalDate start = end.minusDays(diff);
-        IndexValue baseIndex = indexValueService.getRecentlyByLt(start);
+    public PageGainVo getRecentlyGain(String userCode, LocalDate start, String title) {
+        System.out.println(start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+        IndexValue baseIndex = indexValueService.getBefore(start);
         if (Objects.isNull(baseIndex)) {
-            baseIndex = diff > 360 ? indexValueService.getLastOne() : indexValueService.getLately();
+            baseIndex = indexValueService.getLastOne();
         }
-        Asset baseAsset = assetService.getDiffByLt(start, userCode);
+
+        Asset baseAsset = assetService.getBeforeDate(start, userCode);
         if (Objects.isNull(baseAsset)) {
-            baseAsset = diff > 360 ? assetService.getYearFirst("2018", userCode) : assetService.getLately(userCode);
+            baseAsset = assetService.getInit(userCode);
         }
+
         return getRecentlyGain(baseIndex, baseAsset, userCode, title);
     }
 

@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author:qmfang
@@ -38,10 +39,10 @@ public class StockPledgeServiceImpl implements StockPledgeService {
     private String shUrl = "http://www.chinaclear.cn/cms-rank/queryPledgeProportion?action=query";
 
     @Override
-    public List<StockPledge> save() throws Exception {
+    public List<StockPledge> save(String... dateInfo) throws Exception {
         List<StockPledge> stockPledges = new ArrayList<>(4000);
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-//        String date = "2018.08.17";
+        String date = Objects.isNull(dateInfo) ?
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) : dateInfo[0];
         for (int page = 1; page < 400; page++) {
             String query = String.format("&queryDate=%s&page=%d", date, page);
             Document doc = Jsoup.connect(shUrl + query).get();

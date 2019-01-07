@@ -1,19 +1,14 @@
 package com.i000.stock.user.web.controller;
 
-import com.i000.stock.user.api.entity.test.PledgeVo;
-import com.i000.stock.user.api.entity.vo.StockPledgeVo;
+import cn.zhouyafeng.itchat4j.api.WechatTools;
 import com.i000.stock.user.api.service.external.StockPledgeService;
-import com.i000.stock.user.core.util.ConvertUtils;
-import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
-import com.i000.stock.user.service.impl.ReverseRepoService;
+import com.i000.stock.user.core.result.Results;
+import com.i000.stock.user.core.result.base.ResultEntity;
+import com.i000.stock.user.dao.model.StockPledge;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -31,15 +26,24 @@ public class TestController {
     @Autowired
     private StockPledgeService stockPledgeService;
 
-    @GetMapping("/test")
-    public Object create() throws Exception {
-//        BaseSearchVo baseSearchVo = BaseSearchVo.builder().pageSize(40000).pageNo(1).build();
-//        Page<StockPledgeVo> search = stockPledgeService.search(baseSearchVo, null, null);
-//        List<StockPledgeVo> list = search.getList();
-//        List<PledgeVo> pledgeVos = ConvertUtils.listConvert(list, PledgeVo.class, (a, b) -> a.setPledge(b.getRate()));
-//        return pledgeVos;
-
-//        stockPledgeService.save();
-        return "Ok";
+    @GetMapping(path = "/save_pledge")
+    private ResultEntity savePledge(@RequestParam("date") String date) throws Exception {
+        List<StockPledge> stockPledges = stockPledgeService.save(date);
+        //0,000001.XSHE,0.07
+        StringBuffer result = new StringBuffer();
+        for (StockPledge stockPledge : stockPledges) {
+            String temp = stockPledge.getId() + "," + stockPledge.getCode() + "," + stockPledge.getTotal() + "\r\n";
+            result.append(temp);
+        }
+        System.out.println(result);
+        return Results.newSingleResultEntity(result);
     }
+
+    @GetMapping(path = "/logout")
+    public ResultEntity searchTrade() {
+        WechatTools.logout();
+        return Results.newNormalResultEntity("status", 200);
+    }
+
+
 }

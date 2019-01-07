@@ -70,6 +70,11 @@ public class TradeRecordServiceImpl implements TradeRecordService {
         return tradeRecordMapper.getByNameAndDate(name, date, userCode);
     }
 
+    @Override
+    public Integer getAvgHoldDay(String userCode) {
+        return tradeRecordMapper.getAvgHoldDay(userCode);
+    }
+
     private List<TradeRecordVo> setRecode(List<TradeRecord> recode) {
         List<TradeRecordVo> result = new ArrayList<>();
         for (TradeRecord tradeRecord : recode) {

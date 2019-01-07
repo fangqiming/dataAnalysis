@@ -6,7 +6,6 @@ import com.i000.stock.user.dao.model.TradeRecord;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.apache.tomcat.jni.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -49,4 +48,6 @@ public interface TradeRecordMapper extends BaseMapper<TradeRecord> {
 
     TradeRecord getByNameAndDate(@Param("name") String name, @Param("date") LocalDate date, @Param("userCode") String userCode);
 
+    @Select("select round(avg(datediff(new_date,old_date))) from trade_record where user_code =#{userCode} and action = 'SELL'")
+    Integer getAvgHoldDay(@Param("userCode") String userCode);
 }

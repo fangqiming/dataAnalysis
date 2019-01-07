@@ -53,4 +53,5 @@ public interface TradeRecordService {
 
     TradeRecord getByNameAndDate(LocalDate date, String name, String userCode);
 
+    Integer getAvgHoldDay(String userCode);
 }

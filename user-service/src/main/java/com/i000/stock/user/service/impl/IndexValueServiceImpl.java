@@ -70,4 +70,11 @@ public class IndexValueServiceImpl implements IndexValueService {
     public IndexValue getLastOne() {
         return indexValueMapper.getLastOne();
     }
+
+    @Override
+    public IndexValue getBefore(LocalDate date) {
+        return indexValueMapper.getBefore(date);
+    }
+
+
 }

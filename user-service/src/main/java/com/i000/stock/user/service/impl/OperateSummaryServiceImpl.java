@@ -4,17 +4,16 @@ import com.i000.stock.user.api.entity.vo.OperatorVo;
 import com.i000.stock.user.api.service.buiness.AssetService;
 import com.i000.stock.user.api.service.buiness.HoldNowService;
 import com.i000.stock.user.api.service.buiness.OperateSummaryService;
-import com.i000.stock.user.api.service.buiness.UserInfoService;
+import com.i000.stock.user.api.service.buiness.TradeRecordService;
 import com.i000.stock.user.dao.mapper.OperateSummaryMapper;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.HoldNow;
 import com.i000.stock.user.dao.model.OperateSummary;
-import com.i000.stock.user.dao.model.UserInfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,6 +34,9 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
 
     @Resource
     private OperateSummaryMapper operateSummaryMapper;
+
+    @Resource
+    private TradeRecordService tradeRecordService;
 
     @Override
     public void updateSell(Integer holdDay, Integer profit, Integer loss, String userCode) {
@@ -79,8 +81,6 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
         List<HoldNow> holdNows = holdNowService.find(userCode);
         for (HoldNow holdNow : holdNows) {
             //持有的总天数
-            int holdDay = holdNow.getNewDate().getDayOfYear() - holdNow.getOldDate().getDayOfYear();
-            operateSummary.setHoldTotalDay(operateSummary.getHoldTotalDay() + holdDay);
 
             //赚钱股和亏钱股数
             if (holdNow.getNewPrice().compareTo(holdNow.getOldPrice()) >= 0) {
@@ -90,9 +90,8 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
             }
         }
 
-
+        Integer avgHoldNumber = tradeRecordService.getAvgHoldDay(userCode);
         BigDecimal winRate = BigDecimal.ZERO;
-        Integer avgHoldNumber = 0;
         //赚钱的股票+亏钱的股票就是一共持有过的股票
         Integer holdNumber = operateSummary.getProfitNumber() + operateSummary.getLossNumber();
         BigDecimal avgProfitRate = BigDecimal.ZERO;

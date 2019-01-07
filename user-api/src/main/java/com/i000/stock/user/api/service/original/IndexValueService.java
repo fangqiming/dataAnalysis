@@ -1,7 +1,6 @@
 package com.i000.stock.user.api.service.original;
 
 import com.i000.stock.user.dao.model.IndexValue;
-import org.apache.tomcat.jni.Local;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -84,4 +83,6 @@ public interface IndexValueService {
      * @return
      */
     IndexValue getLastOne();
+
+    IndexValue getBefore(LocalDate date);
 }

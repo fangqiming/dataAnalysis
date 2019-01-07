@@ -5,27 +5,21 @@ import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.api.service.original.HoldService;
 import com.i000.stock.user.api.service.util.EmailService;
 import com.i000.stock.user.api.service.util.FileService;
-import com.i000.stock.user.core.result.Results;
-import com.i000.stock.user.core.result.base.ResultEntity;
-import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.model.Hold;
 import com.i000.stock.user.dao.model.UserInfo;
 import com.i000.stock.user.service.impl.RecommendParseImpl;
 import com.i000.stock.user.web.config.MailSendConfig;
+import com.i000.stock.user.web.config.WechatConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +33,9 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class DataHandleTask {
+
+    @Autowired
+    private WechatConfig wechatConfig;
 
     @Autowired
     private FileService fileService;
@@ -85,6 +82,7 @@ public class DataHandleTask {
             if (needSave > 0) {
                 emailService.sendMail("【千古:数据解析成功】", content, mailSendConfig.isSendSuccessNotice());
             }
+//            wechatConfig.sendRecommendMsg();
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error("[DATA PARES ERROR] e=[{}]", e);

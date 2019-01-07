@@ -13,6 +13,7 @@
         <result column="gender" property="gender"/>
         <result column="phone" property="phone"/>
         <result column="create_time" property="createTime"/>
+        <result column="can_see" property="canSee"/>
     </resultMap>
 
 

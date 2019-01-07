@@ -5,7 +5,7 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.Page;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.Hold;
-import org.apache.tomcat.jni.Local;
+import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -155,5 +155,9 @@ public interface AssetService {
      * @return
      */
     Asset getByUserCodeAndDate(String userCode, LocalDate date);
+
+    Asset getBeforeDate(LocalDate date, String userCode);
+
+    Asset getInit(@Param("userCode") String userCode);
 
 }

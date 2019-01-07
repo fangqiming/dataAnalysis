@@ -1,6 +1,9 @@
 package com.i000.stock.user.web.controller;
 
-import com.i000.stock.user.api.entity.bo.*;
+import com.i000.stock.user.api.entity.bo.AccountSummaryVo;
+import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
+import com.i000.stock.user.api.entity.bo.TodayAccountBo;
+import com.i000.stock.user.api.entity.bo.TotalAccountBo;
 import com.i000.stock.user.api.entity.vo.*;
 import com.i000.stock.user.api.service.buiness.*;
 import com.i000.stock.user.api.service.external.CompanyService;
@@ -13,10 +16,12 @@ import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.LineGroupQuery;
 import com.i000.stock.user.dao.bo.Page;
-import com.i000.stock.user.dao.model.*;
+import com.i000.stock.user.dao.model.Asset;
+import com.i000.stock.user.dao.model.HoldNow;
+import com.i000.stock.user.dao.model.ReverseRepo;
+import com.i000.stock.user.dao.model.UserInfo;
 import com.i000.stock.user.service.impl.ReverseRepoService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -24,12 +29,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -79,16 +85,18 @@ public class TradeController {
      * @return
      */
     @GetMapping(path = "/find_gain")
-    public ResultEntity findProfit(@RequestParam(defaultValue = "")  String data) {
+    public ResultEntity findProfit(@RequestParam(defaultValue = "") String data) {
         LocalDate temp = StringUtils.isEmpty(data) ? LocalDate.now() : LocalDate.parse(data, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String userCode = getUserCode();
         List<PageGainVo> result = new ArrayList<>(4);
-        result.add(gainRateService.getRecentlyGain(userCode, 7, temp, "近一周"));
-        result.add(gainRateService.getRecentlyGain(userCode, 30, temp, "近一月"));
-        result.add(gainRateService.getRecentlyGain(userCode, 90, temp, "近一季"));
-        result.add(gainRateService.getRecentlyGain(userCode, 365, temp, "近一年"));
+        result.add(gainRateService.getRecentlyGain(userCode, temp.minusDays(7), "近一周"));
+
+        result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(1), "近一月"));
+        result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(3), "近一季"));
+        result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(12), "近一年"));
         return Results.newListResultEntity(result);
     }
+
 
     /**
      * 127.0.0.1:8081/trade/get_gain_contrast
@@ -100,9 +108,10 @@ public class TradeController {
     @GetMapping(path = "/get_gain_contrast")
     public ResultEntity getContrast(@RequestParam(defaultValue = "365") Integer diff) {
         String userCode = getUserCode();
-
+        Integer month = diff / 30;
+        LocalDate date = LocalDate.now().minusMonths(month);
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
-        YieldRateVo result = gainRateService.getIndexTrend(userCode, diff, LocalDate.now());
+        YieldRateVo result = gainRateService.getIndexTrend(userCode, date, LocalDate.now());
         return Results.newSingleResultEntity(result);
     }
 
@@ -158,7 +167,10 @@ public class TradeController {
                 .build();
         if (now.getTotalRepoAmount().compareTo(BigDecimal.ZERO) > 0) {
             //
-            BigDecimal profitRate = now.getTotalRepoProfit().divide(now.getTotalRepoAmount(), 4, BigDecimal.ROUND_UP).multiply(new BigDecimal(100));
+            BigDecimal total = now.getStock().add(now.getBalance()).add(now.getCover());
+            BigDecimal profitRate =
+                    now.getTotalRepoProfit().divide(total, 4, BigDecimal.ROUND_UP).multiply(new BigDecimal(100));
+            //此处需要查看原因
             totalAccountBo.setRepoProfitRate(profitRate);
         }
         AccountSummaryVo result = new AccountSummaryVo();
@@ -243,9 +255,12 @@ public class TradeController {
 
 
     private String getUserCode() {
-        String userCode = RequestContext.getInstance().getAmountShare();
-        userCode = StringUtils.isEmpty(userCode) ? "10000000" : userCode;
-        return userCode;
+        RequestContext instance = RequestContext.getInstance();
+        if (Objects.nonNull(instance)) {
+            String userCode = instance.getAmountShare();
+            return StringUtils.isEmpty(userCode) ? "10000000" : userCode;
+        }
+        return "10000000";
     }
 
 

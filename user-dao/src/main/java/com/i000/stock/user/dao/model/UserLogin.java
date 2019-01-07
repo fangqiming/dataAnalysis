@@ -43,4 +43,9 @@ public class UserLogin {
     private String gender;
 
     private LocalDateTime createTime;
+
+    /**
+     * 能否看推荐信息
+     */
+    private Integer canSee;
 }

@@ -21,6 +21,10 @@
         <result column="is_repo" property="isRepo"/>
     </resultMap>
 
+    <select id="getInit" resultMap="Asset">
+        select * from asset where user_code=#{userCode} ORDER BY id  limit 1
+    </select>
+
     <select id="getLately" resultMap="Asset">
         select * from asset where user_code=#{userCode} ORDER BY id DESC  limit 1
     </select>
@@ -75,6 +79,10 @@
 
     <select id="getByUserCodeAndDate" resultMap="Asset">
         select * from asset where date= #{date} and user_code=#{userCode}
+    </select>
+
+    <select id="getBeforeDate" resultMap="Asset">
+        select * from asset where date &lt;#{date} and user_code=#{userCode} ORDER BY date DESC limit 1
     </select>
 
 </mapper>
