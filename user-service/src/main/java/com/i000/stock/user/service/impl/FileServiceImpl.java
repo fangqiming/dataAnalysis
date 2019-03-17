@@ -7,11 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 /**
  * @Author:qmfang
@@ -31,14 +35,14 @@ public class FileServiceImpl implements FileService {
     private static final String url = "http://127.0.0.1:8081/engine/receive_recommend?needSave=0";
 
     @Override
-    public void saveFile(String content) {
+    public void saveFile(String content, String path) {
         try {
-            File folder = new File("./recommend");
+            File folder = new File("./" + path);
             if (!folder.exists()) {
                 System.out.println("文件已创建");
                 folder.mkdir();
             }
-            File file = new File(String.format("./recommend/%s.report", sdf.format(new Date())));
+            File file = new File(String.format("./%s/%s.report", path, sdf.format(new Date())));
             file.deleteOnExit();
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
@@ -48,6 +52,7 @@ public class FileServiceImpl implements FileService {
             log.error("FILE WRITE ERROR e=[{}]", e);
         }
     }
+
 
     @Override
     public String restoreData(String start, String end) {
@@ -98,5 +103,29 @@ public class FileServiceImpl implements FileService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 将Gz文件解压并且读取文件内容
+     */
+    @Override
+    public File parseGz(MultipartFile file, String path) throws IOException {
+        File outdir = new File(path);
+        GZIPInputStream gzin = new GZIPInputStream(file.getInputStream());
+        String name = String.format("%s_Rank", LocalDate.now().format(DateTimeFormatter.ofPattern("yy-MM-dd")));
+        this.extractFile(gzin, outdir, name);
+        return new File(outdir + name);
+    }
+
+
+    private void extractFile(GZIPInputStream in, File outdir, String name) throws IOException {
+        byte[] buffer = new byte[1024];
+        BufferedOutputStream out = new BufferedOutputStream(
+                new FileOutputStream(new File(outdir + name)));
+        int count = -1;
+        while ((count = in.read(buffer)) != -1) {
+            out.write(buffer, 0, count);
+        }
+        out.close();
     }
 }

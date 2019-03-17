@@ -1,0 +1,43 @@
+------ Daily Snapshot ------
+   date   LONG1	LONG2	SHORT	#cash	maxsect	maxindu	market	total	gain%
+2019/02/01	0	0	0	12	0	0	2707	2707	0.0%
+beta = 0
+benchmark_volatility = 0	portfolio_volatility = 0
+avg_cash_pct = -1
+
+------ Portfolio for 20190201 , LONG1 ------
+type	L
+cash	0
+value	0
+num_positions	0
+Total gain = 0.0 %
+
+------ Portfolio for 20190201 , LONG2 ------
+type	L
+cash	0
+value	0
+num_positions	0
+Total gain = 0.0 %
+
+------ Portfolio for 20190201 , SHORT ------
+type	S
+cash	0
+value	0
+num_positions	0
+Total gain = 0.0 %
+
+------ Details for closed positions on 20190201 , LONG1 ------
+
+------ Details for closed positions on 20190201 , LONG2 ------
+
+------ Details for closed positions on 20190201 , SHORT ------
+
+------ Todays Trades ------
+cat /home/longji/MMdata/prod/daily/big/201902/20190201/trade_desc_20190201.txt
+date	category	symbol	action	price	shares	capital	note
+
+------ Tomorrows Plan ------
+cat /home/longji/MMdata/prod/daily/big/201902/20190201/plan_desc_20190201.txt
+date	category	symbol	action	price	shares	capital	score	note
+2019/02/01	SHORT	ACB	SHORT	TBD	TBD	1 unit	0.06	Aurora Cannabis Inc | DRUGS - Drug Manufacturers - Other
+2019/02/01	SHORT	CRC	SHORT	TBD	TBD	1 unit	0.10	California Resources | ENERGY - Oil & Gas Drilling & Explo

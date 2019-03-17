@@ -1,17 +1,21 @@
 package com.i000.stock.user.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.i000.stock.user.api.entity.constant.AuthEnum;
 import com.i000.stock.user.api.service.buiness.UserLoginService;
 import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.ServiceException;
-import com.i000.stock.user.dao.mapper.UserInfoMapper;
+import com.i000.stock.user.core.util.MD5Factory;
 import com.i000.stock.user.dao.mapper.UserLoginMapper;
-import com.i000.stock.user.dao.model.UserInfo;
 import com.i000.stock.user.dao.model.UserLogin;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -25,9 +29,13 @@ import java.util.regex.Pattern;
 @Transactional
 public class UserLoginServiceImpl implements UserLoginService {
 
+    /**
+     * 登录60分钟后超时失效
+     */
+    private static Integer TIME_OUT_MIN = 60;
+
     @Resource
     private UserLoginMapper userLoginMapper;
-
 
     @Override
     public UserLogin getByPhone(String name) {
@@ -67,4 +75,44 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
         return user;
     }
+
+    @Override
+    public UserLogin createAccessCode(UserLogin userLogin) {
+        long time = System.currentTimeMillis();
+        String key = String.format("%s_%s", userLogin.getPassword(), time);
+        String md5 = MD5Factory.getMD5(key);
+        userLogin.setAccessCode(md5 + userLogin.getId());
+        userLogin.setLoginTime(LocalDateTime.now());
+        userLoginMapper.updateById(userLogin);
+        return userLogin;
+    }
+
+    @Override
+    public void checkAuth(String accessCode, AuthEnum authEnum) {
+        UserLogin userLogin = getByAccessCode(accessCode);
+        Duration between = Duration.between(userLogin.getLoginTime(), LocalDateTime.now());
+        long diffMinute = between.toMinutes();
+        if (diffMinute >= TIME_OUT_MIN) {
+            throw new ServiceException(ApplicationErrorMessage.ACCESS_CODE_TIME_OUT);
+        }
+        if (Objects.nonNull(userLogin.getAuthority())) {
+            if (!userLogin.getAuthority().contains(authEnum.getValue())) {
+                throw new ServiceException(ApplicationErrorMessage.NO_AUTH);
+            }
+        } else {
+            throw new ServiceException(ApplicationErrorMessage.NO_AUTH);
+        }
+    }
+
+    private UserLogin getByAccessCode(String accessCode) {
+        EntityWrapper<UserLogin> ew = new EntityWrapper<>();
+        ew.where("access_code = {0}", accessCode);
+        List<UserLogin> userLogins = userLoginMapper.selectList(ew);
+        if (CollectionUtils.isEmpty(userLogins) || userLogins.size() > 1) {
+            throw new ServiceException(ApplicationErrorMessage.ACCESS_CODE_IS_INVALID);
+        }
+        return userLogins.get(0);
+    }
+
+
 }

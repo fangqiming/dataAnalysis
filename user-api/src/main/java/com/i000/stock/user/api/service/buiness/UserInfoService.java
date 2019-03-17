@@ -1,7 +1,7 @@
 package com.i000.stock.user.api.service.buiness;
 
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.UserInfo;
 
 /**
@@ -26,7 +26,7 @@ public interface UserInfoService {
      * @param baseSearchVo
      * @return
      */
-    Page<UserInfo> search(BaseSearchVo baseSearchVo);
+    PageResult<UserInfo> search(BaseSearchVo baseSearchVo);
 
     /**
      * 注册

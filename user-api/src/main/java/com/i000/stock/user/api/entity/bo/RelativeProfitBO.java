@@ -18,7 +18,17 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RelativeProfitBO {
+
+    /**
+     * 收益
+     */
     private BigDecimal relativeProfit;
+    /**
+     * 收益率
+     */
     private BigDecimal relativeProfitRate;
+    /**
+     * 跑赢指数
+     */
     private BigDecimal beatStandardRate;
 }

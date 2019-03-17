@@ -45,7 +45,17 @@ public class UserLogin {
     private LocalDateTime createTime;
 
     /**
-     * 能否看推荐信息
+     * 最后登录时间
      */
-    private Integer canSee;
+    private LocalDateTime loginTime;
+
+    /**
+     * 随机码
+     */
+    private String accessCode;
+
+    /**
+     * 权限码 AS 表示A股  USS表示美股  AD 表示诊股权限
+     */
+    private String authority;
 }

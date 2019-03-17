@@ -2,7 +2,6 @@ package com.i000.stock.user.api.entity.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.i000.stock.user.api.jackson.ActionSerializer;
-import com.i000.stock.user.api.jackson.TypeSerializer;
 import com.i000.stock.user.core.jackson.serialize.LocalDateSerializer;
 import lombok.Data;
 
@@ -72,4 +71,6 @@ public class TradeRecordVo {
      * 盈亏绝对值
      */
     private BigDecimal gain;
+
+
 }

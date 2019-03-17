@@ -13,5 +13,6 @@ public class UserInfoVo {
 
     private Long id;
     private String name;
-    private Integer canSee;
+    private String accessCode;
+    private String authority;
 }

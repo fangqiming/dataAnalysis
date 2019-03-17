@@ -12,6 +12,7 @@ import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.WebApiException;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.model.Asset;
+import com.i000.stock.user.dao.model.AssetUs;
 import com.i000.stock.user.dao.model.IndexValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -191,6 +192,38 @@ public class GainRateServiceImpl implements GainRateService {
                 .relativeProfitRate(getRelativeProfitRate(nowAsset, afterAsset))
                 .beatStandardRate(getBeatStandardRate(bd, sz)).build();
         return relativeProfitBO;
+    }
+
+    @Override
+    public BigDecimal getWithdrawal(String user, Integer diff) {
+        int month = diff / 30;
+        LocalDate now = LocalDate.now();
+        LocalDate before = now.minusMonths(month);
+        return getWithdrawal(before, now, user);
+    }
+
+    private BigDecimal getWithdrawal(LocalDate start, LocalDate end, String user) {
+        Asset ltDateAsset = assetService.getLtDateByDateAndUser(start, user);
+        if (Objects.isNull(ltDateAsset)) {
+            ltDateAsset = assetService.getOldestOneByUser(user);
+        }
+        List<Asset> assets = assetService.findBetweenDateByUser(ltDateAsset.getDate(), end, user);
+        assets.sort(Comparator.comparing(Asset::getDate));
+        List<BigDecimal> assetPrice = assets.stream()
+                .map(a -> a.getStock().add(a.getCover().add(a.getBalance()))).collect(Collectors.toList());
+        return calcMaxDd(assetPrice);
+    }
+
+    private BigDecimal calcMaxDd(List<BigDecimal> price) {
+        BigDecimal max_unit_value = price.get(0);
+        BigDecimal max_dd = BigDecimal.ZERO;
+        BigDecimal dd;
+        for (int i = 1; i < price.size(); i++) {
+            max_unit_value = price.get(i).compareTo(max_unit_value) > 0 ? price.get(i) : max_unit_value;
+            dd = price.get(i).divide(max_unit_value, 4, BigDecimal.ROUND_UP).subtract(new BigDecimal(1));
+            max_dd = dd.compareTo(max_dd) < 0 ? dd : max_dd;
+        }
+        return max_dd.multiply(new BigDecimal(100));
     }
 
 

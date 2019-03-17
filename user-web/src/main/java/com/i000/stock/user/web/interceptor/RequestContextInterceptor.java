@@ -38,10 +38,13 @@ public class RequestContextInterceptor extends HandlerInterceptorAdapter {
 
     private void initRequestContext(HttpServletRequest request) throws UnsupportedEncodingException {
         String sign = request.getHeader(RequestValue.HEADER_SIGN);
-        String accessCode = request.getHeader(RequestValue.HEAD_Account_Code);
-        accessCode = StringUtils.isEmpty(accessCode) ? null : URLDecoder.decode(accessCode, "utf-8");
+        String accountCode = request.getHeader(RequestValue.HEAD_Account_Code);
+        accountCode = StringUtils.isEmpty(accountCode) ? null : URLDecoder.decode(accountCode, "utf-8");
         String amountShare = request.getHeader(RequestValue.HEAD_Amount_Share);
-        new RequestContext.RequestContextBuild().accountCode(accessCode).amountShare(amountShare).sign(sign).build();
+        String accessCode = request.getHeader(RequestValue.HEAD_ACCESS_CODE);
+        new RequestContext.RequestContextBuild().accountCode(accountCode)
+                .amountShare(amountShare).sign(sign).accessCode(accessCode).build();
+
     }
 
 }

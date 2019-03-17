@@ -11,7 +11,7 @@ import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Reply;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -84,7 +84,7 @@ public class ReplyController {
         ValidationUtils.validate(baseSearchVo);
         ValidationUtils.validateId(topicId, "话题主键不合法");
         List<ReplyVo> result = new ArrayList<>();
-        Page<ReplyVos> search = replyService.search(baseSearchVo, topicId);
+        PageResult<ReplyVos> search = replyService.search(baseSearchVo, topicId);
         if (CollectionUtils.isEmpty(search.getList())) {
             return Results.newPageResultEntity(0L, new ArrayList<>(0));
         }

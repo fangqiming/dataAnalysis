@@ -12,11 +12,13 @@ public class RequestContext {
     private String sign;
     private String amountShare;
     private String accountCode;
+    private String accessCode;
 
     private RequestContext(RequestContextBuild requestContextBuild) {
         this.sign = requestContextBuild.sign;
         this.accountCode = requestContextBuild.accountCode;
         this.amountShare = requestContextBuild.amountShare;
+        this.accessCode = requestContextBuild.accessCode;
         setContext(this);
     }
 
@@ -30,6 +32,10 @@ public class RequestContext {
 
     public String getAccountCode() {
         return accountCode;
+    }
+
+    public String getAccessCode() {
+        return accessCode;
     }
 
     public static RequestContext getInstance() {
@@ -49,6 +55,7 @@ public class RequestContext {
         public String sign;
         public String amountShare;
         public String accountCode;
+        public String accessCode;
 
         public RequestContextBuild sign(String sign) {
             this.sign = sign;
@@ -62,6 +69,11 @@ public class RequestContext {
 
         public RequestContextBuild accountCode(String accountCode) {
             this.accountCode = accountCode;
+            return this;
+        }
+
+        public RequestContextBuild accessCode(String accessCode) {
+            this.accessCode = accessCode;
             return this;
         }
 

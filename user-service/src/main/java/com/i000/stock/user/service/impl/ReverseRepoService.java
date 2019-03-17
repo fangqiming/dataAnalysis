@@ -4,7 +4,7 @@ import com.i000.stock.user.api.entity.bo.RepoProfitBO;
 import com.i000.stock.user.api.service.util.EmailService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.mapper.HolidayMapper;
 import com.i000.stock.user.dao.mapper.ReverseRepoMapper;
 import com.i000.stock.user.dao.model.Holiday;
@@ -85,11 +85,11 @@ public class ReverseRepoService {
         return amount.divide(MIN_AMOUNT, 0, BigDecimal.ROUND_DOWN).multiply(MIN_AMOUNT);
     }
 
-    public Page<ReverseRepo> search(String userCode, BaseSearchVo baseSearchVo) {
+    public PageResult<ReverseRepo> search(String userCode, BaseSearchVo baseSearchVo) {
         baseSearchVo.setStart();
         List<ReverseRepo> data = reverseRepoMapper.search(userCode, baseSearchVo);
         Long total = reverseRepoMapper.pageTotal();
-        Page<ReverseRepo> result = new Page<>();
+        PageResult<ReverseRepo> result = new PageResult<>();
         result.setTotal(total);
         result.setList(data);
         return result;

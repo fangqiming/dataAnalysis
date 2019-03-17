@@ -3,21 +3,18 @@ package com.i000.stock.user.web.controller;
 import com.i000.stock.user.api.entity.vo.UserInfoLoginVo;
 import com.i000.stock.user.api.entity.vo.UserInfoRegisterVo;
 import com.i000.stock.user.api.entity.vo.UserInfoVo;
-import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.api.service.buiness.UserLoginService;
-import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
-import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
-import com.i000.stock.user.dao.model.UserInfo;
 import com.i000.stock.user.dao.model.UserLogin;
+import com.i000.stock.user.service.impl.external.material.MaterialPriceService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -46,7 +43,7 @@ public class UserInfoController {
     public ResultEntity checkUserName(@RequestParam String name) {
         ValidationUtils.validateParameter(name, "用户名不能为空");
         UserLogin byName = userLoginService.getByPhone(name);
-        return Results.newNormalResultEntity("result", Objects.isNull(byName) ? 1: 0);
+        return Results.newNormalResultEntity("result", Objects.isNull(byName) ? 1 : 0);
     }
 
     /**
@@ -67,15 +64,29 @@ public class UserInfoController {
     /**
      * 用户登录
      * 127.0.0.1:8082/userInfo/login
+     *
      * @param userInfoLoginVo
      * @return
      */
-    @PostMapping(value = "login")
+    @PostMapping(value = "/login")
     public ResultEntity login(@RequestBody UserInfoLoginVo userInfoLoginVo) {
         ValidationUtils.validate(userInfoLoginVo);
         UserLogin userInfo = ConvertUtils.beanConvert(userInfoLoginVo, new UserLogin());
         UserLogin login = userLoginService.login(userInfo);
-        return Results.newSingleResultEntity(ConvertUtils.beanConvert(login, new UserInfoVo()));
+        UserLogin accessLogin = userLoginService.createAccessCode(login);
+        //登录成功之后生成一个唯一码，然后修改
+        return Results.newSingleResultEntity(ConvertUtils.beanConvert(accessLogin, new UserInfoVo()));
     }
+
+
+    @Autowired
+    private MaterialPriceService materialPriceService;
+
+    @GetMapping(value = "/login_a")
+    public Object get() {
+        materialPriceService.savePrice();
+        return "OK";
+    }
+
 
 }

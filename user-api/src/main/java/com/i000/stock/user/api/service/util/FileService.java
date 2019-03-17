@@ -1,5 +1,8 @@
 package com.i000.stock.user.api.service.util;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -16,7 +19,7 @@ public interface FileService {
      * @param content
      * @throws IOException
      */
-    void saveFile(String content);
+    void saveFile(String content, String path);
 
     /**
      * 从推荐文件中中恢复数据
@@ -26,4 +29,14 @@ public interface FileService {
      * @return
      */
     String restoreData(String start, String end);
+
+
+    /**
+     * 将文件保存并返回文件对象
+     *
+     * @param file
+     * @param path
+     * @return
+     */
+    File parseGz(MultipartFile file, String path) throws IOException;
 }

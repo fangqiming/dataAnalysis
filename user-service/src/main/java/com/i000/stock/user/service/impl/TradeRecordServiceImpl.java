@@ -5,7 +5,7 @@ import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.api.service.buiness.TradeRecordService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.mapper.TradeRecordMapper;
 import com.i000.stock.user.dao.model.TradeRecord;
 import org.springframework.stereotype.Component;
@@ -49,11 +49,11 @@ public class TradeRecordServiceImpl implements TradeRecordService {
     }
 
     @Override
-    public Page<TradeRecordVo> search(String userCode, BaseSearchVo baseSearchVo) {
+    public PageResult<TradeRecordVo> search(String userCode, BaseSearchVo baseSearchVo) {
         baseSearchVo.setStart();
         List<TradeRecord> recode = tradeRecordMapper.search(userCode, baseSearchVo);
         Long total = tradeRecordMapper.pageTotal();
-        Page<TradeRecordVo> result = new Page<>();
+        PageResult<TradeRecordVo> result = new PageResult<>();
         List<TradeRecordVo> tradeRecordVos = setRecode(recode);
         result.setList(tradeRecordVos);
         result.setTotal(total);

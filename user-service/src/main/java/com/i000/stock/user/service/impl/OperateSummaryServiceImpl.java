@@ -96,7 +96,6 @@ public class OperateSummaryServiceImpl implements OperateSummaryService {
         Integer holdNumber = operateSummary.getProfitNumber() + operateSummary.getLossNumber();
         BigDecimal avgProfitRate = BigDecimal.ZERO;
         if (holdNumber != 0) {
-            avgHoldNumber = Math.toIntExact(Math.round(operateSummary.getHoldTotalDay() / 1.0 / holdNumber));
             winRate = new BigDecimal(operateSummary.getProfitNumber()).divide(new BigDecimal(holdNumber), 4, BigDecimal.ROUND_HALF_UP);
             avgProfitRate = asset.getTotalGain().divide(new BigDecimal(holdNumber), 4, BigDecimal.ROUND_HALF_UP);
         }

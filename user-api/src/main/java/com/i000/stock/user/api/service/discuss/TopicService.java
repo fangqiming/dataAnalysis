@@ -1,7 +1,7 @@
 package com.i000.stock.user.api.service.discuss;
 
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Topic;
 
 /**
@@ -26,7 +26,7 @@ public interface TopicService {
      * @param search
      * @return
      */
-    Page<Topic> search(BaseSearchVo search);
+    PageResult<Topic> search(BaseSearchVo search);
 
     /**
      * 根据话题主键获取话题

@@ -1,9 +1,11 @@
 package com.i000.stock.user.web.controller;
 
+import com.i000.stock.user.api.entity.constant.AuthEnum;
 import com.i000.stock.user.api.entity.vo.PlanInfoVo;
 import com.i000.stock.user.api.entity.vo.PlanVo;
 import com.i000.stock.user.api.service.buiness.AssetService;
 import com.i000.stock.user.api.service.buiness.UserInfoService;
+import com.i000.stock.user.api.service.buiness.UserLoginService;
 import com.i000.stock.user.api.service.external.CompanyInfoCrawlerService;
 import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.api.service.original.PlanService;
@@ -18,6 +20,7 @@ import com.i000.stock.user.service.impl.ReverseRepoService;
 import com.i000.stock.user.service.impl.operate.BuyAssetImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,6 +68,9 @@ public class RecommendController {
     @Resource
     private AssetService assetService;
 
+    @Autowired
+    private UserLoginService userLoginService;
+
     /**
      * 127.0.0.1:8082/recommend/find
      * 用于获取最新推荐
@@ -74,9 +80,11 @@ public class RecommendController {
     @CrossOrigin(origins = "*", maxAge = 3600)
     @GetMapping(path = "/find")
     public ResultEntity find() {
+        String accessCode = getAccessCode();
+        userLoginService.checkAuth(accessCode, AuthEnum.A_STOCK);
         RequestContext instance = RequestContext.getInstance();
         String userCode = Objects.isNull(instance) ? "10000000" :
-                (StringUtils.isBlank(instance.getAmountShare()) ? "10000000"  : instance.getAmountShare());
+                (StringUtils.isBlank(instance.getAmountShare()) ? "10000000" : instance.getAmountShare());
         LocalDate date = planService.getMaxDate();
         List<Plan> plans = planService.findByDate(date);
         UserInfo user = userInfoService.getByName(userCode);
@@ -175,5 +183,14 @@ public class RecommendController {
                 .investmentRatio(buyAmount.divide((asset.getBalance().add(asset.getStock())), 4, BigDecimal.ROUND_HALF_DOWN))
                 .name("204001").stockName("GC001").type("LONG1").note("国债 | 1天期国债").build();
 
+    }
+
+    private String getAccessCode() {
+        RequestContext instance = RequestContext.getInstance();
+        if (Objects.nonNull(instance)) {
+            String accessCode = instance.getAccessCode();
+            return org.springframework.util.StringUtils.isEmpty(accessCode) ? "NOT" : accessCode;
+        }
+        return "NOT";
     }
 }

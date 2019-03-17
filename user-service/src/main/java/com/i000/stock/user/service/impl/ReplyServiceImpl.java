@@ -5,7 +5,7 @@ import com.i000.stock.user.api.entity.vo.ReplyVos;
 import com.i000.stock.user.api.service.discuss.ReplyService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.mapper.ReplyMapper;
 import com.i000.stock.user.dao.mapper.TopicMapper;
 import com.i000.stock.user.dao.model.Reply;
@@ -40,12 +40,12 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
-    public Page<ReplyVos> search(BaseSearchVo baseSearchVo, Long id) {
+    public PageResult<ReplyVos> search(BaseSearchVo baseSearchVo, Long id) {
         baseSearchVo.setStart();
         List<Reply> replies = replyMapper.search(baseSearchVo, id);
         topicMapper.updateNum(id);
         Long count = replyMapper.count();
-        Page<ReplyVos> result = new Page<>();
+        PageResult<ReplyVos> result = new PageResult<>();
         if (!CollectionUtils.isEmpty(replies)) {
             List<ReplyVos> list = new ArrayList<>(replies.size());
             for (Reply reply : replies) {

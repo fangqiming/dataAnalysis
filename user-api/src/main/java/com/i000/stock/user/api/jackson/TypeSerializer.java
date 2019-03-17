@@ -21,9 +21,9 @@ public class TypeSerializer extends JsonSerializer<String> {
     private static Map<String, String> map = new HashMap<>(3);
 
     static {
-        map.put("LONG1", "稳定型");
-        map.put("LONG2", "波动强");
-        map.put("SHORT", "做空(稳定型)");
+        map.put("LONG1", "做多");
+        map.put("LONG2", "做多");
+        map.put("SHORT", "做空");
     }
 
     @Override

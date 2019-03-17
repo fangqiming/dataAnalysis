@@ -2,7 +2,7 @@ package com.i000.stock.user.api.service.buiness;
 
 import com.i000.stock.user.api.entity.vo.GainBo;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.Hold;
 import org.apache.ibatis.annotations.Param;
@@ -87,7 +87,7 @@ public interface AssetService {
      * @param baseSearchVo
      * @return
      */
-    Page<Asset> search(BaseSearchVo baseSearchVo, String userCode);
+    PageResult<Asset> search(BaseSearchVo baseSearchVo, String userCode);
 
     /**
      * 获取平均资金的闲置率
@@ -159,5 +159,11 @@ public interface AssetService {
     Asset getBeforeDate(LocalDate date, String userCode);
 
     Asset getInit(@Param("userCode") String userCode);
+
+    Asset getLtDateByDateAndUser(LocalDate date, String user);
+
+    Asset getOldestOneByUser(String user);
+
+    List<Asset> findBetweenDateByUser(LocalDate start, LocalDate end, String user);
 
 }

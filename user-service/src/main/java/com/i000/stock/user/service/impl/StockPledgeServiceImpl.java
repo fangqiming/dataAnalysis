@@ -1,11 +1,13 @@
 package com.i000.stock.user.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.i000.stock.user.api.entity.vo.StockPledgeVo;
 import com.i000.stock.user.api.service.external.StockPledgeService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.mapper.StockPledgeMapper;
+import com.i000.stock.user.dao.model.Financial;
 import com.i000.stock.user.dao.model.StockPledge;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -14,6 +16,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -77,11 +80,11 @@ public class StockPledgeServiceImpl implements StockPledgeService {
     }
 
     @Override
-    public Page<StockPledgeVo> search(BaseSearchVo baseSearchVo, String code, String name) {
+    public PageResult<StockPledgeVo> search(BaseSearchVo baseSearchVo, String code, String name) {
         baseSearchVo.setStart();
         List<StockPledge> recode = stockPledgeMapper.search(baseSearchVo, code, name);
         Long total = stockPledgeMapper.pageTotal();
-        Page<StockPledgeVo> result = new Page<>();
+        PageResult<StockPledgeVo> result = new PageResult<>();
         List<StockPledgeVo> tradeRecordVos = ConvertUtils.listConvert(recode, StockPledgeVo.class);
         result.setList(tradeRecordVos);
         result.setTotal(total);
@@ -104,5 +107,17 @@ public class StockPledgeServiceImpl implements StockPledgeService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public StockPledge getByCode(String code) {
+        EntityWrapper<StockPledge> ew = new EntityWrapper();
+        ew.where("code = {0}", code);
+        List<StockPledge> stockPledges = stockPledgeMapper.selectList(ew);
+        if (CollectionUtils.isEmpty(stockPledges)) {
+            return null;
+        }
+        return stockPledges.get(0);
+
     }
 }

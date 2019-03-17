@@ -3,7 +3,7 @@ package com.i000.stock.user.api.service.discuss;
 
 import com.i000.stock.user.api.entity.vo.ReplyVos;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Reply;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public interface ReplyService {
      * @param id
      * @return
      */
-    Page<ReplyVos> search(BaseSearchVo baseSearchVo, Long id);
+    PageResult<ReplyVos> search(BaseSearchVo baseSearchVo, Long id);
 
     /**
      * 根据评论查ID找评论的回复

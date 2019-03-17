@@ -96,7 +96,6 @@ public class WechatConfig implements ApplicationRunner {
         return new StringBuffer(String.format(winStr, winRate));
     }
 
-
     private StringBuffer createPlan() {
         String planStr = "明日推荐:\n";
         ResultEntity resultEntity = recommendController.find();
@@ -126,6 +125,13 @@ public class WechatConfig implements ApplicationRunner {
         sendMsg(result.toString());
     }
 
+    public void sendGroup(String msg){
+        if (!StringUtils.isEmpty(msg)) {
+            setGroupId();
+            System.out.println("组Id为：" + groupId);
+            MessageTools.sendMsgById(msg, groupId);
+        }
+    }
 
     private void sendMsg(String msg) {
         if (!StringUtils.isEmpty(msg)) {
@@ -134,7 +140,6 @@ public class WechatConfig implements ApplicationRunner {
             MessageTools.sendMsgById(msg, groupId);
         }
     }
-
 
     private void setGroupId() {
         if (StringUtils.isEmpty(groupId)) {

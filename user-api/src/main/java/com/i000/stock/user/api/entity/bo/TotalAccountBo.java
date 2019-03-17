@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 /**
  * @Author:qmfang
@@ -36,4 +35,7 @@ public class TotalAccountBo {
 
     private BigDecimal repoProfitRate;
 
+    private BigDecimal maxWithdrawal;
+
+    private BigDecimal shortRate;
 }

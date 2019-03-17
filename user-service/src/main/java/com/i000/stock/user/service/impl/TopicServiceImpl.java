@@ -2,7 +2,7 @@ package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.service.discuss.TopicService;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.mapper.TopicMapper;
 import com.i000.stock.user.dao.model.Topic;
 import org.springframework.stereotype.Service;
@@ -31,11 +31,11 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public Page<Topic> search(BaseSearchVo search) {
+    public PageResult<Topic> search(BaseSearchVo search) {
         search.setStart();
         List<Topic> topicList = topicMapper.search(search);
         Long count = topicMapper.count();
-        Page<Topic> result = new Page<>();
+        PageResult<Topic> result = new PageResult<>();
         result.setList(topicList);
         result.setTotal(count);
         return result;

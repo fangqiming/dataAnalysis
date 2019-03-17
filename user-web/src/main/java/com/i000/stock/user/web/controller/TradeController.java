@@ -4,6 +4,7 @@ import com.i000.stock.user.api.entity.bo.AccountSummaryVo;
 import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
 import com.i000.stock.user.api.entity.bo.TodayAccountBo;
 import com.i000.stock.user.api.entity.bo.TotalAccountBo;
+import com.i000.stock.user.api.entity.constant.AuthEnum;
 import com.i000.stock.user.api.entity.vo.*;
 import com.i000.stock.user.api.service.buiness.*;
 import com.i000.stock.user.api.service.external.CompanyService;
@@ -15,7 +16,7 @@ import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.LineGroupQuery;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.HoldNow;
 import com.i000.stock.user.dao.model.ReverseRepo;
@@ -77,6 +78,9 @@ public class TradeController {
     @Autowired
     private ReverseRepoService reverseRepoService;
 
+    @Autowired
+    private UserLoginService userLoginService;
+
     /**
      * 127.0.0.1:8081/trade/find_gain
      * 获取首页的最近获利情况描述
@@ -101,18 +105,37 @@ public class TradeController {
     /**
      * 127.0.0.1:8081/trade/get_gain_contrast
      * 获取首页各种指数收益的折线对比  网站首页接口需要更改
-     * 近1月(31)  近3月(90)  近6月(180)  近一年(365)
+     * 近一周 7   近一月 30  近一季 90  今年以来 0  上线以来 -1
      *
      * @return
      */
     @GetMapping(path = "/get_gain_contrast")
     public ResultEntity getContrast(@RequestParam(defaultValue = "365") Integer diff) {
         String userCode = getUserCode();
-        Integer month = diff / 30;
-        LocalDate date = LocalDate.now().minusMonths(month);
+        LocalDate date = getDate(diff);
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         YieldRateVo result = gainRateService.getIndexTrend(userCode, date, LocalDate.now());
         return Results.newSingleResultEntity(result);
+    }
+
+    private LocalDate getDate(Integer diff) {
+        //此处为月或者季
+        if (diff > 0 && diff % 30 == 0) {
+            Integer month = diff / 30;
+            return LocalDate.now().minusMonths(month);
+        }
+        //为周，或者以天数计
+        if (diff > 0) {
+            return LocalDate.now().minusDays(diff);
+        }
+        //今年以来
+        if (diff == 0) {
+            String year = LocalDate.now().format(DateTimeFormatter.ofPattern("yy"));
+            String dateStr = year + "-01-01";
+            return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yy-MM-dd"));
+        }
+        //出错，或者其它均是上线以来
+        return LocalDate.parse("18-01-01", DateTimeFormatter.ofPattern("yy-MM-dd"));
     }
 
 
@@ -155,7 +178,8 @@ public class TradeController {
                 .balance(now.getBalance()).build();
 
         RelativeProfitBO totalBeatByUserCode = gainRateService.getTotalBeatByUserCode(userCode);
-        TotalAccountBo totalAccountBo = TotalAccountBo.builder().date(userInfo.getCreatedTime().toLocalDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
+        TotalAccountBo totalAccountBo = TotalAccountBo.builder()
+                .date(userInfo.getCreatedTime().toLocalDate().format(DateTimeFormatter.ofPattern("yy-MM-dd")))
                 .initAmount(userInfo.getInitAmount())
                 .relativeProfit(totalBeatByUserCode.getRelativeProfit())
                 .relativeProfitRate(totalBeatByUserCode.getRelativeProfitRate())
@@ -163,6 +187,7 @@ public class TradeController {
                 //平均仓位的计算方式
                 .avgPosition((BigDecimal.ONE.subtract(assetService.getAvgIdleRate(userCode))).multiply(new BigDecimal(100)))
                 .repoProfit(now.getTotalRepoProfit())
+                .maxWithdrawal(gainRateService.getWithdrawal(userCode, 365))
                 .repoProfitRate(BigDecimal.ZERO)
                 .build();
         if (now.getTotalRepoAmount().compareTo(BigDecimal.ZERO) > 0) {
@@ -170,7 +195,6 @@ public class TradeController {
             BigDecimal total = now.getStock().add(now.getBalance()).add(now.getCover());
             BigDecimal profitRate =
                     now.getTotalRepoProfit().divide(total, 4, BigDecimal.ROUND_UP).multiply(new BigDecimal(100));
-            //此处需要查看原因
             totalAccountBo.setRepoProfitRate(profitRate);
         }
         AccountSummaryVo result = new AccountSummaryVo();
@@ -196,6 +220,8 @@ public class TradeController {
     @GetMapping(path = "/find_stock")
     public ResultEntity findHoldStock() {
         String userCode = getUserCode();
+        String accessCode = getAccessCode();
+        userLoginService.checkAuth(accessCode, AuthEnum.A_STOCK);
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         List<HoldNow> hold = holdNowService.find(userCode);
         if (!CollectionUtils.isEmpty(hold)) {
@@ -234,7 +260,7 @@ public class TradeController {
     public ResultEntity searchTrade(BaseSearchVo baseSearchVo) {
         ValidationUtils.validate(baseSearchVo);
         String userCode = getUserCode();
-        Page<TradeRecordVo> result = tradeRecordService.search(userCode, baseSearchVo);
+        PageResult<TradeRecordVo> result = tradeRecordService.search(userCode, baseSearchVo);
         return CollectionUtils.isEmpty(result.getList())
                 ? Results.newPageResultEntity(0L, new ArrayList<>(0))
                 : Results.newPageResultEntity(result.getTotal(), result.getList());
@@ -244,7 +270,7 @@ public class TradeController {
     public ResultEntity searchRepo(BaseSearchVo baseSearchVo) {
         ValidationUtils.validate(baseSearchVo);
         String userCode = getUserCode();
-        Page<ReverseRepo> search = reverseRepoService.search(userCode, baseSearchVo);
+        PageResult<ReverseRepo> search = reverseRepoService.search(userCode, baseSearchVo);
 
         if (search.getTotal() == 0) {
             return Results.newPageResultEntity(0L, new ArrayList<>(0));
@@ -261,6 +287,15 @@ public class TradeController {
             return StringUtils.isEmpty(userCode) ? "10000000" : userCode;
         }
         return "10000000";
+    }
+
+    private String getAccessCode() {
+        RequestContext instance = RequestContext.getInstance();
+        if (Objects.nonNull(instance)) {
+            String accessCode = instance.getAccessCode();
+            return StringUtils.isEmpty(accessCode) ? "NOT" : accessCode;
+        }
+        return "NOT";
     }
 
 

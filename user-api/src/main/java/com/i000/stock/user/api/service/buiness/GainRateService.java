@@ -4,6 +4,7 @@ import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
 import com.i000.stock.user.api.entity.vo.PageGainVo;
 import com.i000.stock.user.api.entity.vo.YieldRateVo;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -71,4 +72,13 @@ public interface GainRateService {
      * @return
      */
     RelativeProfitBO getTotalBeatByUserCode(String userCode);
+
+    /**
+     * 计算回撤
+     *
+     * @param user
+     * @param diff
+     * @return
+     */
+    BigDecimal getWithdrawal(String user, Integer diff);
 }

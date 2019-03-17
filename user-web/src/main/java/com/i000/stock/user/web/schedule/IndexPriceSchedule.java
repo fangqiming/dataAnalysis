@@ -1,13 +1,15 @@
 package com.i000.stock.user.web.schedule;
 
-import com.i000.stock.user.api.service.buiness.OffsetPriceService;
 import com.i000.stock.user.api.service.external.CompanyCrawlerService;
 import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.api.service.external.IndexPriceService;
 import com.i000.stock.user.api.service.external.StockPledgeService;
-import com.i000.stock.user.api.service.util.EmailService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.dao.model.IndexPrice;
+import com.i000.stock.user.dao.model.IndexUs;
+import com.i000.stock.user.service.impl.DiagnosisFlushService;
+import com.i000.stock.user.service.impl.external.material.MaterialPriceService;
+import com.i000.stock.user.service.impl.us.service.IndexUSService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -38,17 +40,19 @@ public class IndexPriceSchedule {
     private CompanyCrawlerService companyCrawlerService;
 
     @Autowired
-    private OffsetPriceService offsetPriceService;
-
-    @Autowired
     private IndexPriceCacheService indexPriceCacheService;
-
-
-    @Autowired
-    private EmailService emailService;
 
     @Autowired
     private StockPledgeService stockPledgeService;
+
+    @Autowired
+    private IndexUSService indexUSService;
+
+    @Autowired
+    private DiagnosisFlushService diagnosisFlushService;
+
+    @Autowired
+    private MaterialPriceService materialPriceService;
 
     /**
      * 保存指数价格信息到数据库中
@@ -112,7 +116,6 @@ public class IndexPriceSchedule {
             stockPledgeService.save();
         } catch (Exception e) {
             log.warn("股权质押信息获取失败", e);
-//            emailService.sendMail("千古【股权质押信息获取失败】", "请相关人员立即处理", true);
             e.printStackTrace();
         }
     }
@@ -129,5 +132,28 @@ public class IndexPriceSchedule {
         String[] split = str.split(",");
         LocalDate localDates = LocalDate.parse(split[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         return LocalDate.now().compareTo(localDates) == 0;
+    }
+
+    /**
+     * 凌晨5:30 执行一次
+     */
+    @Scheduled(cron = "0 30 11 * * ?")
+    public void saveUsIndex() {
+        try {
+            IndexUs newIndexUs = indexUSService.getNewestFromNet();
+            indexUSService.insert(newIndexUs);
+        } catch (Exception e) {
+            log.warn("美股指数信息插入失败", e);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 每天凌晨两点向同花顺以及生意网获获取同花顺打分与原材料价格
+     */
+    @Scheduled(cron = "0 00 02 * * ?")
+    public void updateScore() {
+        diagnosisFlushService.refreshDiagnosisFlush();
+        materialPriceService.savePrice();
     }
 }

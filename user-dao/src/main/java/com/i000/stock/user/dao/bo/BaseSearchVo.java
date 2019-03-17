@@ -20,11 +20,12 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class BaseSearchVo {
 
+    @NotNull(message = "页大小不能为空")
     @Range(min = 1, max = Integer.MAX_VALUE, message = "页大小不能小于1")
     private Integer pageSize;
 
     @Range(min = 1, max = Integer.MAX_VALUE, message = "查询页不能小于1")
-    @NotNull
+    @NotNull(message = "查询页不能为空")
     private Integer pageNo;
 
     private Integer start;

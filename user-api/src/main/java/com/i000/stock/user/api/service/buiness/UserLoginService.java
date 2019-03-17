@@ -1,8 +1,6 @@
 package com.i000.stock.user.api.service.buiness;
 
-import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
-import com.i000.stock.user.dao.model.UserInfo;
+import com.i000.stock.user.api.entity.constant.AuthEnum;
 import com.i000.stock.user.dao.model.UserLogin;
 
 /**
@@ -34,4 +32,20 @@ public interface UserLoginService {
      * @return
      */
     UserLogin login(UserLogin userInfo);
+
+    /**
+     * 为该用户生成用户码
+     *
+     * @param userLogin
+     * @return
+     */
+    UserLogin createAccessCode(UserLogin userLogin);
+
+    /**
+     * 通过访问码校验权限
+     *
+     * @param accessCode 访问码
+     * @param authEnum   权限码
+     */
+    void checkAuth(String accessCode, AuthEnum authEnum);
 }

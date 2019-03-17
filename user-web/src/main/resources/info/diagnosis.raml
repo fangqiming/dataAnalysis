@@ -1,0 +1,272 @@
+﻿#%RAML 1.0
+title: A股诊股
+version: v1
+documentation:
+ - title: 诊股API
+   content: |
+     baseUri如下:
+     - dev: 未定
+     - clone: 未定
+     - online: 未定
+
+mediaType:  application/json
+
+/diagnosis/search_rank:
+  description: 分页查找股票得分
+  get:
+    queryParameters:
+        pageSize:
+          required: true
+          type: integer
+          description: 页大小
+        pageNo:
+          required: true
+          type: integer
+          description: 第几页
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entities": [
+                             {
+                               "code": "002320",     //股票代码
+                               "date": "19-01-16",   //评分日期
+                               "score": 0.8529,      //AI得分
+                               "name": "海峡股份"    //公司名称
+                             }
+                           ],
+                           "total": 273
+                         }
+                       }
+
+/diagnosis/find_technology:
+  description: 根据股票代码获取该股票的技术评分
+  get:
+    queryParameters:
+        code:
+          required: true
+          type: string
+          description: 股票代码
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entities": [
+                             {
+                               "title": "选股动向：",  //注意title一共有三个 选股动向，技术形态，买入信号
+                               "value": [
+                                 "3连阳",
+                                 "本月发生大宗交易",
+                                 "信托持股（近六个月）",
+                                 "收盘高于年线的股票",
+                                 "低估值",
+                                 "优质股",
+                                 "市场关注度高",
+                                 "圆弧顶",
+                                 "绩优股",
+                                 "朝阳产业"
+                               ]
+                             },
+                             {
+                               "title": "技术形态：",
+                               "value": [
+                                 "趋势拐点",
+                                 "缩量",
+                                 "价升量涨",
+                                 "上涨两颗星",
+                                 "量价巨增",
+                                 "阳线"
+                               ]
+                             }
+                           ]
+                         }
+                       }
+
+
+
+/diagnosis/get:
+  description: 根据公司名称或者是股票代码获取综合诊断结果
+  get:
+    queryParameters:
+      code:
+        required: true
+        type: string
+        description: 公司名称|股票代码
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entity": {
+                             "code": "000002",  //股票代码
+                             "name": "万科A",   //公司名称
+                             "aiIndexBo": {     //AI诊股
+                               "date": "19-01-16",  //诊断日期
+                               "score": 55.8719,    //综合得分
+                               "beat": 43.96,       //打败了 43.96%的股票
+                               "winRate": 50.61,    //预期胜率为 50.61%
+                               "minProfitRate": -6.37,  //持有15天预期最大亏损为 -6.37%
+                               "maxProfitRate": 6.79    //持有15天预期最大收益为 6.79%
+                             },
+                             "financialRiskBo": {      //财务风险指标
+                               "date": "19-01-21",     //该财务数据的更新日期
+                               "pledgeRate": 9.55,     //质押率 9.55%
+                               "pledgeRateMsg": null,  //质押率解释
+                               "goodwillRate": 0.08,   //商誉占市值比 0.08%
+                               "goodwillRateMsg": null, //商誉占市值比的解释
+                               "netOperateCashFlowRate": -1.5,  //净经营现金流占总资产 -1.5%
+                               "netOperateCashFlowRateMsg": null,  //净经营现金流占总资产的解释
+                               "debtRate": 84.93, //负载率 84.93%
+                               "debtRateMsg": null  //负载率的解释
+                             },
+                             "operateBo": {
+                               "dateRange": "2013--2017", //基础财务数据为 2013-2017年的数据
+                               "grossProfitMarginAvg": 30.85, //平均毛利 30.85%
+                               "grossProfitMarginGrowthRate": 0.91, //毛利的增长速度为 0.91
+                               "roeAvg": 20.45, //平均roe为 20.45%
+                               "roeGrowthRate": 0.71, //roe的增长速度
+                               "operatingRevenueAvg": 1921.46, //平均经营现金流为 1921.46 亿
+                               "operatingRevenueGrowthRate": 104.75  //增长速度
+                             }
+                           }
+                         }
+                       }
+
+
+
+/diagnosis/find_financial:
+  description: 根据股票代码查询近5年的财务数据
+  get:
+    queryParameters:
+      code:
+        required: true
+        type: string
+        description: 公司名称|股票代码
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entity": {
+                             "financial": [
+                               {
+                                 "day": "13-12-31",          //日期
+                                 "grossProfitMargin": 31.47, //毛利率 31.47%
+                                 "netProfitMargin": 13.51,   //净利率 13.51%
+                                 "incRevenueYearOnYear": 31.33, //营收同比增长率 31.33%
+                                 "operatingRevenue": 135418789888, //营业收入135418789888元（可能会改成亿）
+                                 "netProfit": 18297550848,  //净利润18297550848（可能会改成亿）
+                                 "inventories": 331133222912, //存货331133222912（可能会改成亿）
+                                 "accountReceivable": 3078969856, //应收账款3078969856（可能会改成亿）
+                                 "netOperateCashFlow": 1923868928, //经营活动产生的现金流量净额
+                                 "cashAndEquivalentsAtEnd": 43004149760, //期末的现金流量净额
+                                 "cashEquivalentIncrease": -8116075008, //期末现金流量净增加额
+                                 "goodWill": 201689840, //商誉
+                                 "totalLiability": 373765898240, //总负载
+                                 "totalAssets": 479205326848,  //总资产
+                                 "marketCap": 884.5,  //市值（亿）
+                                 "nonOperatingRevenue": 118969560,  //营业外收入
+                                 "roe": 21.49  //roe 21.49%
+                               },
+                               {
+                                 "day": "14-12-31",
+                                 "grossProfitMargin": 29.94,
+                                 "netProfitMargin": 13.18,
+                                 "incRevenueYearOnYear": 8.1,
+                                 "operatingRevenue": 146388008960,
+                                 "netProfit": 19287523328,
+                                 "inventories": 317726392320,
+                                 "accountReceivable": 1894071808,
+                                 "netOperateCashFlow": 41724817408,
+                                 "cashAndEquivalentsAtEnd": 61653319680,
+                                 "cashEquivalentIncrease": 18649169920,
+                                 "goodWill": 201689840,
+                                 "totalLiability": 392515125248,
+                                 "totalAssets": 508408758272,
+                                 "marketCap": 1534.21,
+                                 "nonOperatingRevenue": 351866400,
+                                 "roe": 19.08
+                               },
+                               {
+                                 "day": "15-12-31",
+                                 "grossProfitMargin": 29.35,
+                                 "netProfitMargin": 13.27,
+                                 "incRevenueYearOnYear": 33.58,
+                                 "operatingRevenue": 195549134848,
+                                 "netProfit": 25949437952,
+                                 "inventories": 368121937920,
+                                 "accountReceivable": 2510653184,
+                                 "netOperateCashFlow": 16046020608,
+                                 "cashAndEquivalentsAtEnd": 51747622912,
+                                 "cashEquivalentIncrease": -9905698816,
+                                 "goodWill": 201689840,
+                                 "totalLiability": 474985955328,
+                                 "totalAssets": 611295559680,
+                                 "marketCap": 2699.91,
+                                 "nonOperatingRevenue": 855431488,
+                                 "roe": 19.24
+                               },
+                               {
+                                 "day": "16-12-30",
+                                 "grossProfitMargin": 29.41,
+                                 "netProfitMargin": 11.79,
+                                 "incRevenueYearOnYear": 22.98,
+                                 "operatingRevenue": 240477236923,
+                                 "netProfit": 28350255480.7,
+                                 "inventories": 467361333248,
+                                 "accountReceivable": 2075256832,
+                                 "netOperateCashFlow": 39566129021.7,
+                                 "cashAndEquivalentsAtEnd": 79490014945.7,
+                                 "cashEquivalentIncrease": 27742393779.8,
+                                 "goodWill": 201689840,
+                                 "totalLiability": 668997648384,
+                                 "totalAssets": 830674239488,
+                                 "marketCap": 2300.56,
+                                 "nonOperatingRevenue": 398311678.19,
+                                 "roe": 19.68
+                               },
+                               {
+                                 "day": "17-12-29",
+                                 "grossProfitMargin": 34.1,
+                                 "netProfitMargin": 15.32,
+                                 "incRevenueYearOnYear": 1.01,
+                                 "operatingRevenue": 242897110251,
+                                 "netProfit": 37208387330.1,
+                                 "inventories": 598087657618,
+                                 "accountReceivable": 1432734013.84,
+                                 "netOperateCashFlow": 82322834216.5,
+                                 "cashAndEquivalentsAtEnd": 164326007371,
+                                 "cashEquivalentIncrease": 84835992425.6,
+                                 "goodWill": 206342883.92,
+                                 "totalLiability": 978672978646,
+                                 "totalAssets": 1165346917800,
+                                 "marketCap": 3363.28,
+                                 "nonOperatingRevenue": 723287994.91,
+                                 "roe": 22.8
+                               }
+                             ],
+                             "title": [
+                               "2013",
+                               "2014",
+                               "2015",
+                               "2016",
+                               "2017"
+                             ]
+                           }
+                         }
+                       }
+

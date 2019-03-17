@@ -1,0 +1,348 @@
+﻿#%RAML 1.0
+title: 美股接口文档
+version: v1
+documentation:
+ - title: us_stock_api
+   content: |
+     baseUri如下:
+     - dev: 未定
+     - clone: 未定
+     - online: 未定
+
+mediaType:  application/json
+
+
+
+/trade_us/get_asset_summary:
+  description: 获取账户总览
+  get:
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entity": {
+                             "todayAccountBo": {
+                               "date": "18-07-26",           //当前日期
+                               "totalAsset": 10498948,        //总资产
+                               "relativeProfit": 64801,       //盈亏额 $
+                               "relativeProfitRate": 0.0062,  //盈亏率  0.62%
+                               "beatStandardRate": 0.1,       //跑赢标普500 0.1%
+                               "position": 116.84,            //当前仓位 116.84%
+                               "stockMarket": 11396957,       //股票市值
+                               "balance": -898009             //余额
+                             },
+                             "totalAccountBo": {
+                                 "date": "16-01-01",            //截止日期
+                                 "initAmount": 10000000,        //初始投入金额
+                                 "relativeProfit": 498948,      //累计盈亏额
+                                 "relativeProfitRate": 0.0499,  //累计盈亏率 4.99%
+                                 "beatStandardRate": 4.57,      //跑赢标普500 4.57%
+                                 "avgPosition": 65.43341199,    //平均仓位 65.433%
+                                 "repoProfit": null,            //理财收益 0
+                                 "maxWithdrawal": -1.07         //最大回撤 -1.07%
+                             }
+                           }
+                         }
+                       }
+
+
+/topic/find_gain:
+  description: 获取业绩总览
+  get:
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entities": [
+                             {
+                               "gain": [
+                                 {
+                                   "indexName": "毕达指数",
+                                   "profit": 0
+                                 },
+                                 {
+                                   "indexName": "标普500",
+                                   "profit": 2.31   // 2.31%
+                                 },
+                                 {
+                                   "indexName": "纳斯达克",
+                                   "profit": 1.9   // 1.9%
+                                 },
+                                 {
+                                   "indexName": "道琼斯",
+                                   "profit": 2.66  // 2.66%
+                                 },
+                                 {
+                                   "indexName": "跑赢标普500",
+                                   "profit": -2.26  // -2.26%
+                                 }
+                               ],
+                               "title": "近一周"
+                             },
+                             {
+                               "gain": [
+                                 {
+                                   "indexName": "毕达指数",
+                                   "profit": 0
+                                 },
+                                 {
+                                   "indexName": "标普500",
+                                   "profit": 10.51
+                                 },
+                                 {
+                                   "indexName": "纳斯达克",
+                                   "profit": 13.02
+                                 },
+                                 {
+                                   "indexName": "道琼斯",
+                                   "profit": 10.07
+                                 },
+                                 {
+                                   "indexName": "跑赢标普500",
+                                   "profit": -9.52
+                                 }
+                               ],
+                               "title": "近一月"
+                             },
+                             {
+                               "gain": [
+                                 {
+                                   "indexName": "毕达指数",
+                                   "profit": 0
+                                 },
+                                 {
+                                   "indexName": "标普500",
+                                   "profit": -3.09
+                                 },
+                                 {
+                                   "indexName": "纳斯达克",
+                                   "profit": -4.17
+                                 },
+                                 {
+                                   "indexName": "道琼斯",
+                                   "profit": -2.41
+                                 },
+                                 {
+                                   "indexName": "跑赢标普500",
+                                   "profit": 3.19
+                                 }
+                               ],
+                               "title": "近一季"
+                             },
+                             {
+                               "gain": [
+                                 {
+                                   "indexName": "毕达指数",
+                                   "profit": 4.99
+                                 },
+                                 {
+                                   "indexName": "标普500",
+                                   "profit": -5.73
+                                 },
+                                 {
+                                   "indexName": "纳斯达克",
+                                   "profit": -3.39
+                                 },
+                                 {
+                                   "indexName": "道琼斯",
+                                   "profit": -5.75
+                                 },
+                                 {
+                                   "indexName": "跑赢标普500",
+                                   "profit": 11.38
+                                 }
+                               ],
+                               "title": "近一年"
+                             }
+                           ]
+                         }
+                       }
+
+
+/topic/get_gain_contrast:
+  description: 获取对比图
+  get:
+      queryParameters:
+        diff:
+          required: true
+          type: integer
+          description: 30（近一月） 90（近三月） 180（近六月）  365（近一年）
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entity": {
+                             "stockGain": [
+                               0,
+                               0
+                             ],
+                             "sp500Gain": [
+                               0,
+                               -4.227
+                             ],
+                             "djiGain": [
+                               0,
+                               -7.7811,
+                             ],
+                             "nasdaqGain": [
+                               0,
+                               1.2775
+                             ],
+                             "time": [
+                               "18-07-02",
+                               "18-07-03"
+                             ]
+                           }
+                         }
+                       }
+
+/topic/get_operator_summary:
+  description: 获取交易统计
+  get:
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entity": {
+                             "sellNumber": 4,  //卖出数量
+                             "buyNumber": 17,  //买入数量
+                             "shortNumber": 2,  //做空数量
+                             "coverNumber": 1,  //平仓数量
+                             "tradeNumber": 24,  //交易总数
+                             "holdNumber": 19,  //当前持仓
+                             "profitNumber": 4, //赚钱只数
+                             "lossNumber": 1,   //赔钱只数
+                             "avgHoldDay": 12,  //平均持有天数
+                             "winRate": 80      //胜率 80%
+                           }
+                         }
+                       }
+
+/trade_us/find_stock:
+  description: 获取当前持股
+  get:
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                         "code": 0,
+                         "data": {
+                           "entities": [
+                             {
+                               "id": 5,
+                               "name": "VLO",           //股票代码
+                               "oldDate": "18-07-06",   //交易日期
+                               "oldPrice": 107.83,      //交易价格
+                               "newDate": "18-07-26",   //当前日期
+                               "newPrice": 116.83,      //当前价格
+                               "gain": 8.35,            //收益率 8.35%
+                               "type": "做多",          //交易类型
+                               "amount": 7728,          //交易份数
+                               "cost": 833310.24,       //交易成本
+                               "value": 902862.24,      //目前市值
+                               "earning": 69552,        //浮动盈亏
+                               "stockName": "Valero Energy Corp " //公司名称
+                             }
+                           ]
+                         }
+                       }
+
+
+/trade_us/find_plan:
+  description: 获取交易计划
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+                {
+                  "code": 0,
+                  "data": {
+                    "entities": [
+                      {
+                        "id": 28,
+                        "newDate": "18-07-26",  //推荐日期
+                        "name": "DK",           //股票代码
+                        "action": "卖出",       //计划操作
+                        "note": "Delek US Holdings In | ENERGY - Oil & Gas Refining & Marke", //备注
+                        "investmentRatio": 8.34,  //计划操作比  8.34%
+                        "amount": 874912,         //计划操作额
+                        "stockName": " ENERGY - Oil & Gas Refining & Marke"  //公司名称
+                      }
+                    ]
+                  }
+                }
+
+
+/trade_us/search_trade:
+  description: 分页查找交易记录
+  get:
+    queryParameters:
+      pageSize:
+        required: true
+        type: integer
+        description: 页大小
+      pageNo:
+        required: true
+        type: integer
+        description: 第几页
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "code": 0,
+                "data": {
+                  "entities": [
+                    {
+                      "id": 16,
+                      "tradeDate": "18-07-05",            //交易日期
+                      "name": "ALGN",                     //股票代码
+                      "action": "卖出",                   //交易类型
+                      "oldDate": "18-07-05",              //交易日期
+                      "oldPrice": 341.38,                 //交易价格
+                      "newDate": "18-07-19",              //清仓日期
+                      "newPrice": 370.32,                 //清仓价格
+                      "amount": 2442,                     //股票份数
+                      "companyName": "Align Tech Inc ",   //公司名称
+                      "gainRate": 8.48,                   //盈亏率 8.48%
+                      "gain": 70671.48                    //盈亏额
+                    },
+                    {
+                      "id": 19,
+                      "tradeDate": "18-07-09",
+                      "name": "CWH",
+                      "action": "平仓",
+                      "oldDate": "18-07-09",
+                      "oldPrice": 26.61,
+                      "newDate": "18-07-19",
+                      "newPrice": 24.85,
+                      "amount": 31315,
+                      "companyName": "Camping World Holdin ",
+                      "gainRate": 6.61,
+                      "gain": 55114.4
+                    }
+                  ],
+                  "total": 5
+                }
+              }

@@ -2,7 +2,7 @@ package com.i000.stock.user.api.service.external;
 
 import com.i000.stock.user.api.entity.vo.StockPledgeVo;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.StockPledge;
 
 import java.util.List;
@@ -26,6 +26,14 @@ public interface StockPledgeService {
      * @param baseSearchVo
      * @return
      */
-    Page<StockPledgeVo> search(BaseSearchVo baseSearchVo, String code, String name);
+    PageResult<StockPledgeVo> search(BaseSearchVo baseSearchVo, String code, String name);
+
+    /**
+     * 根据股票代码获取股票质押率
+     *
+     * @param code
+     * @return
+     */
+    StockPledge getByCode(String code);
 
 }

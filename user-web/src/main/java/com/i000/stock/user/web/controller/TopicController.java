@@ -8,7 +8,7 @@ import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Topic;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -60,10 +60,10 @@ public class TopicController {
     @GetMapping("/search")
     public ResultEntity search(BaseSearchVo baseSearchVo) {
         ValidationUtils.validate(baseSearchVo);
-        Page<Topic> pageInfo = topicService.search(baseSearchVo);
-        return CollectionUtils.isEmpty(pageInfo.getList())
+        PageResult<Topic> pageResultInfo = topicService.search(baseSearchVo);
+        return CollectionUtils.isEmpty(pageResultInfo.getList())
                 ? Results.newPageResultEntity(0L, new ArrayList<>(0)) :
-                Results.newPageResultEntity(pageInfo.getTotal(), ConvertUtils.listConvert(pageInfo.getList(),
+                Results.newPageResultEntity(pageResultInfo.getTotal(), ConvertUtils.listConvert(pageResultInfo.getList(),
                         TopicVo.class, (t, m) -> t.setUserCode(getUserName(m.getUserCode()))));
     }
 

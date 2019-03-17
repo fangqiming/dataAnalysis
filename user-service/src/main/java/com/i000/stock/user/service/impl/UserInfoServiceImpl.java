@@ -4,7 +4,7 @@ import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.mapper.UserInfoMapper;
 import com.i000.stock.user.dao.model.UserInfo;
 import org.springframework.stereotype.Component;
@@ -33,10 +33,10 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public Page<UserInfo> search(BaseSearchVo baseSearchVo) {
+    public PageResult<UserInfo> search(BaseSearchVo baseSearchVo) {
         baseSearchVo.setStart();
         List<UserInfo> search = userInfoMapper.search(baseSearchVo);
-        Page<UserInfo> result = new Page<>();
+        PageResult<UserInfo> result = new PageResult<>();
         result.setList(search);
         result.setTotal(userInfoMapper.pageTotal());
         return result;

@@ -6,7 +6,7 @@ import com.i000.stock.user.api.service.original.HoldService;
 import com.i000.stock.user.api.service.util.EmailService;
 import com.i000.stock.user.api.service.util.FileService;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Hold;
 import com.i000.stock.user.dao.model.UserInfo;
 import com.i000.stock.user.service.impl.RecommendParseImpl;
@@ -59,7 +59,7 @@ public class DataHandleTask {
     @Transactional(rollbackFor = RuntimeException.class)
     public void run(String content, Integer needSave) {
         if (needSave > 0) {
-            fileService.saveFile(content);
+            fileService.saveFile(content, "recommend");
         }
         try {
             //获取了推荐日期 保存了原始数据
@@ -70,19 +70,18 @@ public class DataHandleTask {
             List<Hold> holdInit = holdService.findHoldInit(date);
             if (Objects.nonNull(date)) {
                 //分页获取用户
-                Page<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
+                PageResult<UserInfo> search = userInfoService.search(BaseSearchVo.builder().pageNo(1).pageSize(50).build());
                 double ceil = Math.ceil(search.getTotal() / 50.0);
                 //开始计算每一个用户的收益，同时记录用户交易记录，持股记录
                 calculate(search, date, trade, holdInit);
                 for (int i = 2; i <= ceil; i++) {
-                    Page<UserInfo> page = userInfoService.search(BaseSearchVo.builder().pageNo(i).pageSize(50).build());
-                    calculate(page, date, trade, holdInit);
+                    PageResult<UserInfo> pageResult = userInfoService.search(BaseSearchVo.builder().pageNo(i).pageSize(50).build());
+                    calculate(pageResult, date, trade, holdInit);
                 }
             }
             if (needSave > 0) {
-                emailService.sendMail("【千古:数据解析成功】", content, mailSendConfig.isSendSuccessNotice());
+                emailService.sendMail("【毕达:A股Report解析成功】", content, mailSendConfig.isSendSuccessNotice());
             }
-//            wechatConfig.sendRecommendMsg();
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error("[DATA PARES ERROR] e=[{}]", e);
@@ -90,14 +89,13 @@ public class DataHandleTask {
             email.append("\r\n\r\n\r\n\r\n\r\n");
             email.append("-------------EXCEPTION INFO----------------\r\n");
             email.append(e);
-            emailService.sendMail("【千古:推荐数据解析错误-相关人员请立即查看】", email.toString(), mailSendConfig.isSendSuccessNotice());
+            emailService.sendMail("【毕达:A股Report解析失败】", email.toString(), mailSendConfig.isSendSuccessNotice());
         }
     }
 
-
-    private void calculate(Page<UserInfo> page, LocalDate date, List<Hold> trade, List<Hold> holdInit) {
-        if (!CollectionUtils.isEmpty(page.getList())) {
-            for (UserInfo userInfo : page.getList()) {
+    private void calculate(PageResult<UserInfo> pageResult, LocalDate date, List<Hold> trade, List<Hold> holdInit) {
+        if (!CollectionUtils.isEmpty(pageResult.getList())) {
+            for (UserInfo userInfo : pageResult.getList()) {
                 assetService.calculate(date, userInfo.getName(), trade, holdInit);
             }
         }

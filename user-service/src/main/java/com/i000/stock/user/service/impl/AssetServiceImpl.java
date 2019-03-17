@@ -1,6 +1,7 @@
 package com.i000.stock.user.service.impl;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.i000.stock.user.api.entity.bo.RepoProfitBO;
 import com.i000.stock.user.api.entity.vo.GainBo;
 import com.i000.stock.user.api.service.buiness.AssetService;
@@ -10,11 +11,10 @@ import com.i000.stock.user.api.service.buiness.UserInfoService;
 import com.i000.stock.user.api.service.original.HoldService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.mapper.AssetMapper;
 import com.i000.stock.user.dao.model.*;
 import com.i000.stock.user.service.impl.operate.UpdateAssetImpl;
-import com.sun.tools.javac.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,6 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -152,11 +151,11 @@ public class AssetServiceImpl implements AssetService {
     }
 
     /**
-     * 处理逆回购的逻辑
+     * 处理逆回购的逻辑  逆回购的金额消失了。
      *
      * @param asset
      */
-    private void handleRepo(Asset asset) {
+    public void handleRepo(Asset asset) {
         RepoProfitBO profit = reverseRepoService.getProfitDaysByDate(asset.getDate(), asset.getBalance());
 
         //修改余额信息
@@ -262,10 +261,10 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public Page<Asset> search(BaseSearchVo baseSearchVo, String userCode) {
+    public PageResult<Asset> search(BaseSearchVo baseSearchVo, String userCode) {
         baseSearchVo.setStart();
         List<Asset> search = assetMapper.search(baseSearchVo, userCode);
-        Page<Asset> result = new Page<>();
+        PageResult<Asset> result = new PageResult<>();
         result.setList(search);
         result.setTotal(assetMapper.pageTotal());
         return result;
@@ -332,6 +331,39 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Asset getInit(String userCode) {
         return assetMapper.getInit(userCode);
+    }
+
+    @Override
+    public Asset getLtDateByDateAndUser(LocalDate date, String user) {
+        EntityWrapper<Asset> ew = new EntityWrapper<>();
+        ew.where("date<{0}", date)
+                .and("user_code={0}", user)
+                .orderBy("date", false)
+                .last("limit 1");
+        return getOne(ew);
+    }
+
+    @Override
+    public Asset getOldestOneByUser(String user) {
+        EntityWrapper<Asset> ew = new EntityWrapper<>();
+        ew.where("user_code={0}", user).orderBy("date", true).last("limit 1");
+        return getOne(ew);
+    }
+
+    @Override
+    public List<Asset> findBetweenDateByUser(LocalDate start, LocalDate end, String user) {
+        EntityWrapper<Asset> ew = new EntityWrapper<>();
+        ew.where("user_code={0}", user).and()
+                .between("date", start, end);
+        return assetMapper.selectList(ew);
+    }
+
+    private Asset getOne(EntityWrapper<Asset> ew) {
+        List<Asset> assetUses = assetMapper.selectList(ew);
+        if (CollectionUtils.isEmpty(assetUses)) {
+            return null;
+        }
+        return assetUses.get(0);
     }
 
 

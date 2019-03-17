@@ -28,5 +28,15 @@ public interface CompanyService {
      */
     String getNameByCode(String code);
 
+    /**
+     * 根据公司名称关键字批量获取公司信息
+     *
+     * @param name
+     * @return
+     */
+    List<Company> findByName(String name);
+
     List<Company> findAll();
+
+    List<Company> findByCodes(List<String> codes);
 }

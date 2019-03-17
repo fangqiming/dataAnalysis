@@ -1,0 +1,45 @@
+
+------ Daily Snapshot ------
+   date   	LONG1	LONG2	SHORT	#cash	maxsect	maxindu	market	total	gain%
+>>> 20180702 : 5000000 : 2726.71
+2018/07/02	0	0	0	12	0	0	2727	2727	0.0%
+beta = 0
+benchmark_volatility = 0	portfolio_volatility = 0
+avg_cash_pct = -1
+
+------ Portfolio for 20180702 , LONG1 ------
+type	L
+cash	0
+value	0
+num_positions	0
+Total gain = 0.0 %
+
+------ Portfolio for 20180702 , LONG2 ------
+type	L
+cash	0
+value	0
+num_positions	0
+Total gain = 0.0 %
+
+------ Portfolio for 20180702 , SHORT ------
+type	S
+cash	0
+value	0
+num_positions	0
+Total gain = 0.0 %
+
+------ Details for closed positions on 20180702 , LONG1 ------
+
+------ Details for closed positions on 20180702 , LONG2 ------
+
+------ Details for closed positions on 20180702 , SHORT ------
+
+------ Todays Trades ------
+cat /home/longji/MMdata/prod/daily/big/201807/20180702/trade_desc_20180702.txt
+date	category	symbol	action	price	shares	capital	note
+
+------ Tomorrows Plan ------
+cat /home/longji/MMdata/prod/daily/big/201807/20180702/plan_desc_20180702.txt
+date	category	symbol	action	price	shares	capital	score	note
+2018/07/02	LONG1	RH	BUY	TBD	TBD	1 unit	0.01	Restoration Hardware | RETAIL - Home Furnishing Stores
+2018/07/02	LONG2	AERI	BUY	TBD	TBD	1 unit	0.09	Aerie Pharmaceutical | DRUGS - Drug Manufacturers - Major

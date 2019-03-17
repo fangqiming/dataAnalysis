@@ -1,0 +1,49 @@
+
+------ Daily Snapshot ------
+   date   LONG1	LONG2	SHORT	#cash	maxsect	maxindu	market	total	gain%
+2019/02/01	0	0	0	20	0	0	2707	2707	0.0%
+2019/02/04	0	0	2	18	4	4	2725	2706	-0.7%
+beta = 0
+benchmark_volatility = 0	portfolio_volatility = 0
+avg_cash_pct = -1
+
+------ Portfolio for 20190204 , LONG1 ------
+type	L
+cash	0
+value	0
+num_positions	0
+Total gain = 0.0 %
+
+------ Portfolio for 20190204 , LONG2 ------
+type	L
+cash	0
+value	0
+num_positions	0
+Total gain = 0.0 %
+
+------ Portfolio for 20190204 , SHORT ------
+type	S
+cash	832920.781275
+value	-416.668724999879
+num_positions	2
+ACB	8.04	20190204	0.06	8.04	20190204	0.04	0	0.0%
+CRC	20.99	20190204	0.10	20.99	20190204	0.09	0	0.0%
+total gain = 0 %
+
+------ Details for closed positions on 20190204 , LONG1 ------
+
+------ Details for closed positions on 20190204 , LONG2 ------
+
+------ Details for closed positions on 20190204 , SHORT ------
+
+------ Todays Trades ------
+cat /home/longji/MMdata/prod/daily/big/201902/20190204/trade_desc_20190204.txt
+date	category	symbol	action	price	shares	capital	note
+2019/02/04	SHORT	ACB	SHORT	8.04	51824	416665	Aurora Cannabis Inc | DRUGS - Drug Manufacturers - Other
+2019/02/04	SHORT	CRC	SHORT	20.99	19851	416672	California Resources | ENERGY - Oil & Gas Drilling & Explo
+
+------ Tomorrows Plan ------
+cat /home/longji/MMdata/prod/daily/big/201902/20190204/plan_desc_20190204.txt
+date	category	symbol	action	price	shares	capital	score	note
+2019/02/04	SHORT	LABU	SHORT	TBD	TBD	1 unit	0.19	Direxion Daily S&P B | DRUGS - Biotechnology
+2019/02/04	SHORT	ROKU	SHORT	TBD	TBD	1 unit	0.17	Roku Inc | MEDIA - CATV Systems

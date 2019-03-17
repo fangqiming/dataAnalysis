@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 /**
  * @Author:qmfang
@@ -59,4 +58,9 @@ public class TodayAccountBo {
      * 账户余额
      */
     private BigDecimal balance;
+
+    /**
+     * 做空市值
+     */
+    private BigDecimal cover;
 }

@@ -1,5 +1,6 @@
 package com.i000.stock.user.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.dao.mapper.CompanyMapper;
 import com.i000.stock.user.dao.model.Company;
@@ -45,8 +46,22 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    public List<Company> findByName(String name) {
+        EntityWrapper<Company> we = new EntityWrapper<>();
+        we.like("name", "%" + name + "%");
+        return companyMapper.selectList(we);
+    }
+
+    @Override
     public List<Company> findAll() {
         return companyMapper.selectList(null);
+    }
+
+    @Override
+    public List<Company> findByCodes(List<String> codes) {
+        EntityWrapper<Company> ew = new EntityWrapper();
+        ew.in("code", codes);
+        return companyMapper.selectList(ew);
     }
 
 }

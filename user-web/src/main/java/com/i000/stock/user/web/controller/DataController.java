@@ -7,7 +7,7 @@ import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Company;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class DataController {
     @GetMapping(path = "/search")
     public ResultEntity searchTrade(BaseSearchVo baseSearchVo, String code, String name) {
         ValidationUtils.validate(baseSearchVo);
-        Page<StockPledgeVo> result = stockPledgeService.search(baseSearchVo, code, name);
+        PageResult<StockPledgeVo> result = stockPledgeService.search(baseSearchVo, code, name);
         return CollectionUtils.isEmpty(result.getList())
                 ? Results.newPageResultEntity(0L, new ArrayList<>(0))
                 : Results.newPageResultEntity(result.getTotal(), result.getList());

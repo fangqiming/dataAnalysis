@@ -2,7 +2,7 @@ package com.i000.stock.user.api.service.buiness;
 
 import com.i000.stock.user.api.entity.vo.TradeRecordVo;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
-import com.i000.stock.user.dao.bo.Page;
+import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.TradeRecord;
 
 import java.math.BigDecimal;
@@ -47,7 +47,7 @@ public interface TradeRecordService {
      * @param baseSearchVo
      * @return
      */
-    Page<TradeRecordVo> search(String userCode, BaseSearchVo baseSearchVo);
+    PageResult<TradeRecordVo> search(String userCode, BaseSearchVo baseSearchVo);
 
     void updateAmountAndPriceById(Long id, BigDecimal newAmount, BigDecimal newPrice);
 

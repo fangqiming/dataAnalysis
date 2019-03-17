@@ -2,7 +2,6 @@ package com.i000.stock.user.service.impl.external;
 
 import com.alibaba.fastjson.JSONObject;
 import com.i000.stock.user.api.entity.bo.IndexBo;
-import com.i000.stock.user.api.entity.bo.IpInfoBo;
 import com.i000.stock.user.api.entity.bo.Price;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +15,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -61,14 +59,17 @@ public class ExternalServiceImpl {
                 param += index.startsWith("60") ? "sh" + index + "," : "sz" + index + ",";
             }
             return parsePriceStr(getPrice(param));
-
         }
         return new ArrayList<>(0);
     }
 
+    public String getString(String param) {
+        return getPrice(param);
+    }
+
 
     private String getPrice(String param) {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             try {
                 String priceStr = execute(service.getPrice(param));
                 if (!StringUtils.isBlank(priceStr)) {
