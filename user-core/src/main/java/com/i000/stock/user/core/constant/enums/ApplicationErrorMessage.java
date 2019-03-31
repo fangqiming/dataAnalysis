@@ -20,7 +20,7 @@ public enum ApplicationErrorMessage implements BaseEnum {
     US_PARSE_ERROR(11090007L, "美股报告解析错误"),
 
     US_REPORT_HAD_PARSE(11090008L, "美股报告已经解析"),
-    NET_DATA_GET_ERROR(11090009L, "美股报告已经解析"),
+    NET_DATA_GET_ERROR(11090009L, "网络数据获取失败"),
 
 
     ACCESS_CODE_IS_INVALID(11090010L, "无效的访问码"),
@@ -32,7 +32,8 @@ public enum ApplicationErrorMessage implements BaseEnum {
     USER_STOCK_OVER(11090014L, "用户关注的股票已经超过了上限"),
     NO_AI_SCORE(11090015L, "AI未对该股票进行评分"),
 
-    NO_LOGIN(11090015L, "未登录"),;
+    NO_LOGIN(11090016L, "未登录"),
+    ACTUAL_DISC_DATA_ERROR(11090017L, "实盘数据错误"),;
 
     @Getter
     private Long code;

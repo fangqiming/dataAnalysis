@@ -85,4 +85,6 @@ public interface IndexValueService {
     IndexValue getLastOne();
 
     IndexValue getBefore(LocalDate date);
+
+    List<IndexValue> findByDates(List<LocalDate> list);
 }

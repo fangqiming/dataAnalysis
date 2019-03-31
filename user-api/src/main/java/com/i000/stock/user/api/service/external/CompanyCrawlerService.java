@@ -26,5 +26,5 @@ public interface CompanyCrawlerService {
      * @return
      * @throws IOException
      */
-    Map<String, String> getCodeName() throws IOException;
+    Map<String, String> getCodeName();
 }

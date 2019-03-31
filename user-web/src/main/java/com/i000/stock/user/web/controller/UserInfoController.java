@@ -9,9 +9,7 @@ import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.model.UserLogin;
-import com.i000.stock.user.service.impl.external.material.MaterialPriceService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -79,14 +77,17 @@ public class UserInfoController {
     }
 
 
-    @Autowired
-    private MaterialPriceService materialPriceService;
+//    @Autowired
+//    private MaterialPriceService materialPriceService;
+//
+//    @Autowired
+//    private CompanyCrawlerServiceImpl companyCrawlerService;
 
-    @GetMapping(value = "/login_a")
-    public Object get() {
-        materialPriceService.savePrice();
-        return "OK";
-    }
+//    @GetMapping(value = "/login_a")
+//    public Object get() {
+//        return companyCrawlerService.getAllCode();
+////        return "OK";
+//    }
 
 
 }

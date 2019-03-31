@@ -263,17 +263,7 @@ public class ParseReportService {
      * @return
      */
     private BigDecimal getOneShareMoney(UserInfoUs userInfoUs, AssetUs assetUs) {
-        BigDecimal holdCount = holdNowUsService.getHoldCount();
-        BigDecimal holdLongCount = holdNowUsService.getHoldLongCount();
-        if (holdCount.compareTo(new BigDecimal(userInfoUs.getShare())) > 0) {
-            //需要融资
-            return (assetUs.getBalance().add(assetUs.getCover()).add(assetUs.getStock()))
-                    .divide(new BigDecimal(userInfoUs.getShare()), 0, BigDecimal.ROUND_DOWN);
-        } else {
-            //不需要融资
-            return (assetUs.getBalance().add(assetUs.getCover()))
-                    .divide((new BigDecimal(userInfoUs.getShare()))
-                            .subtract(holdLongCount), 0, BigDecimal.ROUND_DOWN);
-        }
+            return (assetUs.getStock().add(assetUs.getBalance()).add(assetUs.getCover()))
+                    .divide(new BigDecimal(userInfoUs.getShare()), 0, BigDecimal.ROUND_UP);
     }
 }

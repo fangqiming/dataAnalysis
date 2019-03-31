@@ -1,11 +1,13 @@
 package com.i000.stock.user.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.i000.stock.user.api.service.original.IndexValueService;
 import com.i000.stock.user.dao.mapper.IndexValueMapper;
 import com.i000.stock.user.dao.model.IndexValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.parser.Entity;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -74,6 +76,13 @@ public class IndexValueServiceImpl implements IndexValueService {
     @Override
     public IndexValue getBefore(LocalDate date) {
         return indexValueMapper.getBefore(date);
+    }
+
+    @Override
+    public List<IndexValue> findByDates(List<LocalDate> list) {
+        EntityWrapper<IndexValue> ew = new EntityWrapper<>();
+        ew.in("date", list);
+        return indexValueMapper.selectList(ew);
     }
 
 

@@ -25,7 +25,6 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     private CompanyMapper companyMapper;
 
-
     @Override
     public void batchSave(Map<String, String> info) {
         if (!CollectionUtils.isEmpty(info)) {

@@ -101,7 +101,6 @@ public class TradeController {
         return Results.newListResultEntity(result);
     }
 
-
     /**
      * 127.0.0.1:8081/trade/get_gain_contrast
      * 获取首页各种指数收益的折线对比  网站首页接口需要更改
@@ -137,7 +136,6 @@ public class TradeController {
         //出错，或者其它均是上线以来
         return LocalDate.parse("18-01-01", DateTimeFormatter.ofPattern("yy-MM-dd"));
     }
-
 
     /**
      * 127.0.0.1:8082/recommend/get_index_contrast
@@ -187,7 +185,7 @@ public class TradeController {
                 //平均仓位的计算方式
                 .avgPosition((BigDecimal.ONE.subtract(assetService.getAvgIdleRate(userCode))).multiply(new BigDecimal(100)))
                 .repoProfit(now.getTotalRepoProfit())
-                .maxWithdrawal(gainRateService.getWithdrawal(userCode, 365))
+                .maxWithdrawal(gainRateService.getWithdrawal(userCode, 90))
                 .repoProfitRate(BigDecimal.ZERO)
                 .build();
         if (now.getTotalRepoAmount().compareTo(BigDecimal.ZERO) > 0) {
@@ -203,13 +201,11 @@ public class TradeController {
         return Results.newSingleResultEntity(result);
     }
 
-
     private BigDecimal getPosition(Asset asset) {
         return asset.getStock()
                 .divide((asset.getStock().add(asset.getCover()).add(asset.getBalance())), 4, BigDecimal.ROUND_UP)
                 .multiply(new BigDecimal(100));
     }
-
 
     /**
      * 127.0.0.1:8081/trade/find_stock
@@ -252,7 +248,6 @@ public class TradeController {
         return Results.newSingleResultEntity(operatorSummary);
     }
 
-
     /**
      * 需要获取每天的交易记录分页获取交易详情的接口
      */
@@ -279,7 +274,6 @@ public class TradeController {
         return Results.newPageResultEntity(search.getTotal(), data);
     }
 
-
     private String getUserCode() {
         RequestContext instance = RequestContext.getInstance();
         if (Objects.nonNull(instance)) {
@@ -297,6 +291,4 @@ public class TradeController {
         }
         return "NOT";
     }
-
-
 }

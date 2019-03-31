@@ -8,7 +8,6 @@ import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.mapper.UserStockMapper;
 import com.i000.stock.user.dao.model.Company;
-import com.i000.stock.user.dao.model.DiagnosisFlush;
 import com.i000.stock.user.dao.model.Rank;
 import com.i000.stock.user.dao.model.UserStock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +31,6 @@ public class UserStockService {
 
     @Autowired
     private CompanyService companyService;
-
-    @Autowired
-    private DiagnosisFlushService diagnosisFlushService;
 
     @Autowired
     private RankService rankService;
@@ -71,11 +67,12 @@ public class UserStockService {
         List<RankVo> rankVos = new ArrayList<>();
         if (!CollectionUtils.isEmpty(userStocks)) {
             List<String> codes = userStocks.stream().map(a -> a.getCode()).collect(Collectors.toList());
-            List<DiagnosisFlush> diagnosis = diagnosisFlushService.findByCodes(codes);
-            if (!CollectionUtils.isEmpty(diagnosis)) {
+            List<Rank> ranks = rankService.findByCode(codes);
+            if (!CollectionUtils.isEmpty(ranks)) {
                 List<Company> companies = companyService.findByCodes(codes);
                 Map<String, List<Company>> companyMap = companies.stream().collect(Collectors.groupingBy(Company::getCode));
-                rankVos = ConvertUtils.listConvert(diagnosis, RankVo.class, (d, s) -> {
+                rankVos = ConvertUtils.listConvert(ranks, RankVo.class, (d, s) -> {
+                    d.setAiScore(s.getScore());
                     d.setName(companyMap.get(s.getCode()).get(0).getName());
                 });
             }

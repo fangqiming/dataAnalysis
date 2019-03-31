@@ -107,5 +107,11 @@ public class IndexUSService {
         return indexUses.get(0);
     }
 
+    public List<IndexUs> findByDate(List<LocalDate> dates) {
+        EntityWrapper<IndexUs> ew = new EntityWrapper<>();
+        ew.in("date", dates);
+        return indexUsMapper.selectList(ew);
+    }
+
 
 }

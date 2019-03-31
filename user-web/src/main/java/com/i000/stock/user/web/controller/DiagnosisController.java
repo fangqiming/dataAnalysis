@@ -1,5 +1,6 @@
 package com.i000.stock.user.web.controller;
 
+import com.i000.stock.user.api.entity.constant.AuthEnum;
 import com.i000.stock.user.api.entity.vo.*;
 import com.i000.stock.user.api.service.buiness.UserLoginService;
 import com.i000.stock.user.api.service.external.CompanyService;
@@ -13,10 +14,7 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Company;
 import com.i000.stock.user.dao.model.UserStock;
-import com.i000.stock.user.service.impl.DiagnosisFlushService;
-import com.i000.stock.user.service.impl.FinancialService;
-import com.i000.stock.user.service.impl.RankExplainService;
-import com.i000.stock.user.service.impl.UserStockService;
+import com.i000.stock.user.service.impl.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +47,14 @@ public class DiagnosisController {
     @Autowired
     private UserStockService userStockService;
 
+    @Autowired
+    private EverydayStockService everydayStockService;
+
+    @Autowired
+    private RankService rankService;
+
+
+
     /**
      * 根据得分的高低分页查询股票打分，仅仅针对内部人员开放
      *
@@ -58,7 +64,7 @@ public class DiagnosisController {
     @GetMapping(path = "/search_rank")
     public ResultEntity searchRank(BaseSearchVo baseSearchVo, String filed, Boolean isAsc) {
         String accessCode = getAccessCode();
-//        userLoginService.checkAuth(accessCode, AuthEnum.A_RANK);
+        userLoginService.checkAuth(accessCode, AuthEnum.A_RANK);
         ValidationUtils.validate(baseSearchVo);
         PageResult<RankVo> rankPage = rankExplainService.searchRankVo(baseSearchVo, filed, isAsc);
         RankUsVo result = new RankUsVo();
@@ -69,6 +75,22 @@ public class DiagnosisController {
         return Results.newSingleResultEntity(result);
     }
 
+    @GetMapping(path = "/find_industry")
+    public ResultEntity findIndustry() {
+        String accessCode = getAccessCode();
+        userLoginService.checkAuth(accessCode, AuthEnum.A_RANK);
+        List<IndustryRankVO> industry = rankService.findIndustry();
+        return Results.newListResultEntity(industry);
+    }
+
+    @GetMapping(path = "/find_rank_scatter")
+    public ResultEntity findRankScatter() {
+        String accessCode = getAccessCode();
+//        userLoginService.checkAuth(accessCode, AuthEnum.A_RANK);
+        List<RankScatterVO> rankScatter = rankService.findRankScatter();
+        return Results.newListResultEntity(rankScatter);
+    }
+
     /**
      * 根据股票代码获取股票的技术形态
      *
@@ -77,7 +99,7 @@ public class DiagnosisController {
      */
     @GetMapping(path = "/find_technology")
     public ResultEntity findTechIndex(@RequestParam String code) {
-        ValidationUtils.validateStringParameter(code, "股票代码不能为空");
+        code = getCodeByName(code);
         List<TechnologyVo> technologyVos = financialService.findTechnologyByCode(code);
         return Results.newListResultEntity(technologyVos);
     }
@@ -139,6 +161,11 @@ public class DiagnosisController {
         return Results.newEmptyResultEntity();
     }
 
+    @GetMapping(path = "/find_everyday_stock")
+    public ResultEntity findEverydayStock() {
+        PageResultVO<EverydayStockVO> result = everydayStockService.find();
+        return Results.newSingleResultEntity(result);
+    }
 
     private String getAccessCode() {
         RequestContext instance = RequestContext.getInstance();
@@ -160,9 +187,11 @@ public class DiagnosisController {
         throw new ServiceException(ApplicationErrorMessage.NO_LOGIN);
     }
 
-
     private String getCodeByName(String code) {
         String codeName;
+        if (StringUtils.isEmpty(code)) {
+            return everydayStockService.getEverydayStock();
+        }
         if (code.matches("(6|0|3)[0-9]{5}")) {
             codeName = companyService.getNameByCode(code);
             if (StringUtils.isEmpty(codeName)) {
@@ -173,20 +202,9 @@ public class DiagnosisController {
             if (CollectionUtils.isEmpty(company)) {
                 return null;
             }
-            codeName = company.get(0).getName();
             code = company.get(0).getCode();
         }
         return code;
     }
-
-    @Autowired
-    private DiagnosisFlushService diagnosisFlushService;
-
-    @GetMapping(path = "/test")
-    public ResultEntity test() {
-        diagnosisFlushService.refreshDiagnosisFlush();
-        return Results.newEmptyResultEntity();
-    }
-
 
 }

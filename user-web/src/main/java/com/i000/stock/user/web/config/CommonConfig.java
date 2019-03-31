@@ -1,6 +1,7 @@
 package com.i000.stock.user.web.config;
 
 import com.i000.stock.user.api.entity.bo.AssetInitBo;
+import com.i000.stock.user.api.entity.bo.TokenBo;
 import com.i000.stock.user.core.file.oss.OSSFileUpload;
 import com.i000.stock.user.core.file.oss.OSSUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Properties;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @Author:qmfang
@@ -80,5 +80,12 @@ public class CommonConfig {
         properties.put("mail.smtp.socketFactory.class", mailServiceConfig.getSocketFactory());
         javaMailSender.setJavaMailProperties(properties);
         return javaMailSender;
+    }
+
+
+    @Bean
+    @ConfigurationProperties(prefix = "jq.data")
+    public TokenBo tokenBo() {
+        return new TokenBo();
     }
 }

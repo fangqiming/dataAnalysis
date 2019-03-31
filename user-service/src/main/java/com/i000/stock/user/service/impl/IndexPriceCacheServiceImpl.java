@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author:qmfang
@@ -50,6 +51,9 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
 
     @Autowired
     private ExternalServiceImpl externalService;
+
+    @Autowired
+    private CompanyServiceImpl companyService;
 
 
     private static List<IndexInfo> INDEX = new ArrayList<>();
@@ -83,7 +87,16 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
             try {
                 List<Price> result = new ArrayList<>(4000);
                 //获取了全部的公司码
-                List<String> codes = companyCrawlerService.getCode();
+                List<String> codes;
+                try {
+                    codes = companyCrawlerService.getCode();
+                } catch (Exception e) {
+                    log.warn("从聚宽获取数据失败，请仔细查看错误");
+                    e.printStackTrace();
+                    codes = companyService.findAll().stream().map(a -> a.getCode()).collect(Collectors.toList());
+                }
+
+
                 //将公司码拼接成参数
                 List<List<String>> cutList = cutting(codes, 100.0);
                 //遍历

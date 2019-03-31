@@ -22,4 +22,10 @@ public interface RankMapper extends BaseMapper<Rank> {
     @Select("select * from rank where code =#{code}")
     Rank getByCode(@Param("code") String code);
 
+    @Select("select count(*) from rank where score >= #{low} and score < #{high}")
+    BigDecimal getScoreRangeCount(@Param("low") Integer low, @Param("high") Integer high);
+
+    @Select("select avg(score) from rank ")
+    BigDecimal getAvgScore();
+
 }

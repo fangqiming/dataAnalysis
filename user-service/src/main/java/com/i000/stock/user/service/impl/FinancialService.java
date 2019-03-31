@@ -165,6 +165,7 @@ public class FinancialService {
             }
             return result;
         } catch (IOException e) {
+            e.printStackTrace();
             throw new ServiceException(ApplicationErrorMessage.NET_DATA_GET_ERROR);
         }
     }
@@ -173,7 +174,7 @@ public class FinancialService {
         Rank rank = rankExplainService.getRankByCode(code);
         AIIndexBo result = new AIIndexBo();
         if (Objects.nonNull(rank)) {
-            result.setScore(new BigDecimal(100).subtract(rank.getScore()));
+            result.setScore(new BigDecimal(100).subtract(vagueScore(rank.getScore())));
             BigDecimal beatRate = rankExplainService.getBeatRateByScore(rank.getScore());
             result.setBeat(beatRate);
             result.setResult(getGradeByBeat(rank.getScore()));
@@ -190,14 +191,18 @@ public class FinancialService {
 
     private String getGradeByBeat(BigDecimal score) {
         //得分低于15分
-        if (score.compareTo(new BigDecimal(15)) <= 0) {
+        if (score.compareTo(new BigDecimal(10)) <= 0) {
             return "买入";
         }
-        //打败了80%的股票
         if (score.compareTo(new BigDecimal(50)) >= 0) {
             return "卖出";
         }
         return "观望";
+    }
+
+    private BigDecimal vagueScore(BigDecimal score) {
+        BigDecimal multiple = score.divide(new BigDecimal(5), 0, BigDecimal.ROUND_DOWN);
+        return (multiple.add(new BigDecimal(1))).multiply(new BigDecimal(5));
     }
 
     private FinancialRiskBo createFinancialRiskBo(String code) {
@@ -301,6 +306,5 @@ public class FinancialService {
         }
         return ema;
     }
-
-
+    
 }

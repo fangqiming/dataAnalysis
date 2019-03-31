@@ -7,6 +7,7 @@ import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.model.IndexUs;
+import com.i000.stock.user.service.impl.EverydayStockService;
 import com.i000.stock.user.service.impl.RankService;
 import com.i000.stock.user.service.impl.us.ParseReportService;
 import com.i000.stock.user.service.impl.us.service.IndexUSService;
@@ -52,6 +53,9 @@ public class EngineController {
     @Autowired
     private RankService rankService;
 
+    @Autowired
+    private EverydayStockService everydayStockService;
+
     @Transactional(rollbackFor = RuntimeException.class)
     @PostMapping(value = "/receive_recommend")
     public ResultEntity receiveRecommend(@RequestBody String content, @RequestParam(defaultValue = "1") Integer needSave) {
@@ -88,6 +92,7 @@ public class EngineController {
     public ResultEntity receiveRank(@RequestBody String content) throws IOException {
         fileService.saveFile(content, "recommend/rank");
         rankService.save(content);
+        receiveRecommendThread.execute(() -> everydayStockService.save(7));
         return Results.newNormalResultEntity("result", "success");
     }
 

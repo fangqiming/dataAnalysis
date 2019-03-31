@@ -4,6 +4,7 @@ import com.i000.stock.user.api.entity.bo.AccountSummaryVo;
 import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
 import com.i000.stock.user.api.entity.bo.TodayAccountBo;
 import com.i000.stock.user.api.entity.bo.TotalAccountBo;
+import com.i000.stock.user.api.entity.constant.AuthEnum;
 import com.i000.stock.user.api.entity.vo.*;
 import com.i000.stock.user.api.service.buiness.UserLoginService;
 import com.i000.stock.user.core.constant.enums.TimeZoneEnum;
@@ -16,6 +17,7 @@ import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.*;
+import com.i000.stock.user.service.impl.ActualDiscService;
 import com.i000.stock.user.service.impl.us.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,6 @@ import static java.util.stream.Collectors.toList;
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class TradeUsController {
 
-    @Autowired
-    private UserLoginService userLoginService;
 
     @Autowired
     private UserInfoUsService userInfoUsService;
@@ -58,6 +58,12 @@ public class TradeUsController {
 
     @Autowired
     private PlanUsService planUsService;
+
+    @Autowired
+    private ActualDiscService actualDiscService;
+
+    @Autowired
+    private UserLoginService userLoginService;
 
     /**
      * 127.0.0.1:8081//trade/get_asset_summary
@@ -117,7 +123,7 @@ public class TradeUsController {
                     //平均仓位的计算方式
                     .avgPosition(assetUsService.getAvgPositionByUser(user))
                     //最大回撤
-                    .maxWithdrawal(usGainRateService.getWithdrawal(user, 365))
+                    .maxWithdrawal(usGainRateService.getWithdrawal(user, 90))
                     .repoProfit(BigDecimal.ZERO)
                     .shortRate(tradeRecordUsService.getShortWinRate(user))
                     .build();
@@ -208,7 +214,7 @@ public class TradeUsController {
     public ResultEntity findHoldStock() {
         String userCode = getUserCode();
         String accessCode = getAccessCode();
-//        userLoginService.checkAuth(accessCode, AuthEnum.US_STOCK);
+        userLoginService.checkAuth(accessCode, AuthEnum.US_STOCK);
 
         ValidationUtils.validateParameter(userCode, "用户码不能为空");
         List<HoldNowUs> hold = holdNowUsService.findByUser(userCode);
@@ -247,7 +253,7 @@ public class TradeUsController {
     @GetMapping(path = "/find_plan")
     public ResultEntity findPlan() {
         String accessCode = getAccessCode();
-//        userLoginService.checkAuth(accessCode, AuthEnum.US_STOCK);
+        userLoginService.checkAuth(accessCode, AuthEnum.US_STOCK);
         List<PlanUs> recommend = planUsService.findRecommend();
         if (!CollectionUtils.isEmpty(recommend)) {
             List<PlanVo> result = ConvertUtils.listConvert(recommend, PlanVo.class, (d, s) -> {
@@ -288,6 +294,40 @@ public class TradeUsController {
         return CollectionUtils.isEmpty(trades)
                 ? Results.newPageResultEntity(0L, new ArrayList<>(0))
                 : Results.newPageResultEntity(tradeRecords.getTotal(), result);
+    }
+
+    /**
+     * 查看实盘列表
+     *
+     * @param type
+     * @return
+     */
+    @GetMapping(path = "/find_actual_list")
+    public ResultEntity findActual(@RequestParam String type) {
+        ValidationUtils.validateStringParameter(type, "类型不能为空");
+        ActualDiscVO actual = actualDiscService.findActual(type);
+        return Results.newSingleResultEntity(actual);
+    }
+
+    /**
+     * 查看实盘详情
+     *
+     * @param name
+     * @param baseSearchVo
+     * @return
+     */
+    @GetMapping(path = "/search_actual_detail")
+    public ResultEntity findActualDetail(String name, BaseSearchVo baseSearchVo) {
+        ValidationUtils.validateStringParameter(name, "名称不能为空");
+        ActualDiscDetailVO detail = actualDiscService.getDetailByName(name, baseSearchVo);
+        return Results.newSingleResultEntity(detail);
+    }
+
+    @GetMapping(path = "/get_actual_line")
+    public ResultEntity findActualLine(@RequestParam String name) {
+        ValidationUtils.validateStringParameter(name, "名称不能为空");
+        BaseLineTrendVO trend = actualDiscService.getTrendByName(name);
+        return Results.newSingleResultEntity(trend);
     }
 
     private String getUserCode() {

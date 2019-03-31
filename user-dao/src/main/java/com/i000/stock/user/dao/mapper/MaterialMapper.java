@@ -13,7 +13,10 @@ public interface MaterialMapper extends BaseMapper<Material> {
     @Select("select  max(date) from material ")
     LocalDate getMaxDate();
 
-    @Select("select count(*) from material where date=#{date}")
-    BigDecimal getCount(@Param("date") LocalDate date);
+    @Select("select count(*) from material where date=#{date} and `name` LIKE CONCAT('%',#{name},'%')")
+    BigDecimal getCount(@Param("date") LocalDate date, @Param("name") String name);
+
+    @Select("select identifier from material where `name` =#{name} limit 1")
+    String getIdByName(@Param("name") String name);
 
 }

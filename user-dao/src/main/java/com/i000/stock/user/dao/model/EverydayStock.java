@@ -9,44 +9,35 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * 同花顺诊断
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DiagnosisFlush {
+public class EverydayStock {
 
-    /**
-     * 主键
-     */
     @TableId
     private Long id;
+
+    /**
+     * 勾出日期
+     */
+    private LocalDate date;
+    /**
+     * 股票名称
+     */
+    private String name;
 
     /**
      * 股票代码
      */
     private String code;
-
     /**
-     * 诊断日期
+     * 勾出价格
      */
-    private LocalDate date;
-
-
+    private BigDecimal oldPrice;
     /**
-     * AI等分
+     * 最新价格
      */
-    private BigDecimal aiScore;
-    /**
-     * 同花顺得分
-     */
-    private BigDecimal flushScore;
-    /**
-     * 综合得分
-     */
-    private BigDecimal totalScore;
-
+    private BigDecimal newPrice;
 
 }

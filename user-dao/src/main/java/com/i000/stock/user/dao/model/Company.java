@@ -24,4 +24,6 @@ public class Company {
     private String name;
 
     private String code;
+
+    private String industry;
 }

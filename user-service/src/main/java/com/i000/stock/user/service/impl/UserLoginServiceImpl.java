@@ -32,7 +32,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     /**
      * 登录60分钟后超时失效
      */
-    private static Integer TIME_OUT_MIN = 60;
+    private static Integer TIME_OUT_MIN = 60 * 24 * 7;
 
     @Resource
     private UserLoginMapper userLoginMapper;

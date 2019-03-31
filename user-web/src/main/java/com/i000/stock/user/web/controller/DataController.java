@@ -1,14 +1,19 @@
 package com.i000.stock.user.web.controller;
 
+import com.i000.stock.user.api.entity.vo.InvestorLogDetailVO;
+import com.i000.stock.user.api.entity.vo.InvestorLogVO;
 import com.i000.stock.user.api.entity.vo.StockPledgeVo;
 import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.api.service.external.StockPledgeService;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
+import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Company;
+import com.i000.stock.user.dao.model.InvestorLog;
+import com.i000.stock.user.service.impl.InvestorLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -36,6 +41,9 @@ public class DataController {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private InvestorLogService investorLogService;
 
     /**
      * 股权质押数据页面
@@ -70,6 +78,19 @@ public class DataController {
         System.out.println(codes);
         System.out.println(no);
         return Results.newListResultEntity(codes);
+    }
+
+    @GetMapping(path = "/find_investor_summary")
+    public ResultEntity findSummary() {
+        List<InvestorLogVO> summary = investorLogService.findSummary();
+        return Results.newListResultEntity(summary);
+    }
+
+    @GetMapping(path = "/find_detail")
+    public ResultEntity findDetail(@RequestParam String name) {
+        List<InvestorLog> investor = investorLogService.findByName(name);
+        List<InvestorLogDetailVO> investorLogVOS = ConvertUtils.listConvert(investor, InvestorLogDetailVO.class);
+        return Results.newListResultEntity(investorLogVOS);
     }
 
 }

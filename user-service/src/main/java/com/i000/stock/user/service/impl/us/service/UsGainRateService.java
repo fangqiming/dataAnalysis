@@ -217,7 +217,7 @@ public class UsGainRateService {
      * @param price
      * @return
      */
-    private BigDecimal calcMaxDd(List<BigDecimal> price) {
+    public BigDecimal calcMaxDd(List<BigDecimal> price) {
         BigDecimal max_unit_value = price.get(0);
         BigDecimal max_dd = BigDecimal.ZERO;
         BigDecimal dd;

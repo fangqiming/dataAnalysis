@@ -22,22 +22,5 @@ public class RankVo {
      * AI等分
      */
     private BigDecimal aiScore;
-    /**
-     * 同花顺得分
-     */
-    private BigDecimal flushScore;
-    /**
-     * 综合得分
-     */
-    private BigDecimal totalScore;
-
-    private BigDecimal marketCap;
-
-    private BigDecimal grossProfitMargin;
-
-    private BigDecimal peRatio;
-
-    private BigDecimal debtRate;
-
 
 }

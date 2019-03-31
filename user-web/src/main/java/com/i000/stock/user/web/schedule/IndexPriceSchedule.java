@@ -1,13 +1,11 @@
 package com.i000.stock.user.web.schedule;
 
-import com.i000.stock.user.api.service.external.CompanyCrawlerService;
-import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.api.service.external.IndexPriceService;
 import com.i000.stock.user.api.service.external.StockPledgeService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.dao.model.IndexPrice;
 import com.i000.stock.user.dao.model.IndexUs;
-import com.i000.stock.user.service.impl.DiagnosisFlushService;
+import com.i000.stock.user.service.impl.external.NoticeService;
 import com.i000.stock.user.service.impl.external.material.MaterialPriceService;
 import com.i000.stock.user.service.impl.us.service.IndexUSService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 /**
  * @Author:qmfang
@@ -34,10 +31,7 @@ public class IndexPriceSchedule {
     private IndexPriceService indexPriceService;
 
     @Autowired
-    private CompanyService companyService;
-
-    @Autowired
-    private CompanyCrawlerService companyCrawlerService;
+    private NoticeService noticeService;
 
     @Autowired
     private IndexPriceCacheService indexPriceCacheService;
@@ -48,8 +42,6 @@ public class IndexPriceSchedule {
     @Autowired
     private IndexUSService indexUSService;
 
-    @Autowired
-    private DiagnosisFlushService diagnosisFlushService;
 
     @Autowired
     private MaterialPriceService materialPriceService;
@@ -93,19 +85,6 @@ public class IndexPriceSchedule {
 
     }
 
-    /**
-     * 更新公司信息
-     */
-    @Scheduled(cron = "0 45 15 * * ?")
-    public void updateCompany() {
-        try {
-            log.warn("-----------公司信息更新中------------");
-            Map<String, String> codeName = companyCrawlerService.getCodeName();
-            companyService.batchSave(codeName);
-        } catch (Exception e) {
-            log.warn("公司信息更细失败", e);
-        }
-    }
 
     /**
      * 每天凌晨触发更新
@@ -153,7 +132,7 @@ public class IndexPriceSchedule {
      */
     @Scheduled(cron = "0 00 02 * * ?")
     public void updateScore() {
-        diagnosisFlushService.refreshDiagnosisFlush();
         materialPriceService.savePrice();
+        noticeService.findByCodes();
     }
 }

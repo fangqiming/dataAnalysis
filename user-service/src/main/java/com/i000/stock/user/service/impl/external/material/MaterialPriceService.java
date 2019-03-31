@@ -1,6 +1,10 @@
 package com.i000.stock.user.service.impl.external.material;
 
+import com.i000.stock.user.dao.model.IndustryChain;
 import com.i000.stock.user.dao.model.Material;
+import com.i000.stock.user.dao.model.MaterialCompany;
+import com.i000.stock.user.service.impl.IndustryChainService;
+import com.i000.stock.user.service.impl.MaterialCompanyService;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,6 +17,9 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 原材料的价格获取服务
@@ -24,13 +31,19 @@ public class MaterialPriceService {
     @Autowired
     private MaterialService materialService;
 
-    private static final String URL = "http://www.100ppi.com/monitor/";
+    @Autowired
+    private IndustryChainService industryChainService;
+
+    @Autowired
+    private MaterialCompanyService materialCompanyService;
+
+    private static final String PRICE_URL = "http://www.100ppi.com/monitor/";
 
     public void savePrice() {
         try {
             Document doc;
             DateTimeFormatter df = DateTimeFormatter.ofPattern("(yyyy-MM-dd)");
-            doc = Jsoup.connect(URL).get();
+            doc = Jsoup.connect(PRICE_URL).get();
             Elements tables = doc.getElementsByTag("table");
             Element content = tables.get(tables.size() - 1);
             Elements trs = content.getElementsByTag("tr");
@@ -75,6 +88,66 @@ public class MaterialPriceService {
         }
     }
 
+
+    private static final String ICHAIN_URL = "http://www.100ppi.com/cindex/ichain-397.html";
+
+    public void saveIChain() {
+        try {
+            Document document = Jsoup.connect(ICHAIN_URL).get();
+            Elements myList = document.getElementsByClass("m-list1");
+            for (Element element : myList) {
+                Elements dt = element.getElementsByTag("dt");
+                if (Objects.nonNull(dt) && dt.get(0).text().contains("产业链")) {
+                    Elements as = element.getElementsByTag("a");
+                    for (Element aElement : as) {
+                        IndustryChain industryChain = IndustryChain.builder()
+                                .name(aElement.text().split("产业链")[0])
+                                .url(aElement.attr("href").split("-")[1].split("\\.")[0]).build();
+                        industryChainService.save(industryChain);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static final String MATERIAL_COMPANY_URL = "http://stock.100ppi.com/ssgs.html";
+
+    public void saveMaterialCompany() {
+        try {
+            Document document = Jsoup.connect(MATERIAL_COMPANY_URL).get();
+            Elements uls = document.getElementsByClass("b-line");
+            for (Element element : uls) {
+                String name = element.getElementsByClass("cbc1").text();
+                List<String> companyCode = getNameCode(element);
+                MaterialCompany materialCompany = MaterialCompany.builder()
+                        .companyName(companyCode.get(0)).companyCode(companyCode.get(1))
+                        .downstreamName(companyCode.get(2)).downstreamCode(companyCode.get(3)).name(name).build();
+                materialCompanyService.save(materialCompany);
+            }
+            System.out.println(document);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<String> getNameCode(Element element) {
+        List<String> result = new ArrayList<>();
+        Elements cbc3 = element.getElementsByClass("cbc3");
+        for (Element temp : cbc3) {
+            Elements as = temp.getElementsByTag("a");
+            String code = "";
+            String name = "";
+            for (Element a : as) {
+                code = code + a.attr("href").split("-")[1].split("\\.")[0] + ",";
+                name = name + a.text() + ",";
+            }
+            result.add(name);
+            result.add(code);
+        }
+        return result;
+    }
 
     public BigDecimal calRate(String a, String b) {
         if (StringUtils.isEmpty(a) || StringUtils.isEmpty(b)) {
