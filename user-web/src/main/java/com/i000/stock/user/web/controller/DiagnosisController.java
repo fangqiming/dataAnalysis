@@ -54,7 +54,6 @@ public class DiagnosisController {
     private RankService rankService;
 
 
-
     /**
      * 根据得分的高低分页查询股票打分，仅仅针对内部人员开放
      *
@@ -139,7 +138,8 @@ public class DiagnosisController {
     @GetMapping(path = "/find_stock")
     public ResultEntity findUserStock() {
         String user = getAccountCode();
-        List<RankVo> stockUser = userStockService.findStockByUser(user);
+        String accessCode = getAccessCode();
+        List<RankVo> stockUser = userStockService.findStockByUser(user,accessCode);
         return Results.newListResultEntity(stockUser);
     }
 

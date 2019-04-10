@@ -182,7 +182,7 @@ public class UsGainRateService {
 
         BigDecimal bd = calculateAsset(baseAssert, valueAsset).setScale(2, BigDecimal.ROUND_HALF_UP);
         BigDecimal sp500 = indexValueBo.getSp500().setScale(2, BigDecimal.ROUND_HALF_UP);
-        gainVoList.add(GainVo.builder().indexName("毕达指数").profit(bd).build());
+        gainVoList.add(GainVo.builder().indexName("勾股指数").profit(bd).build());
         gainVoList.add(GainVo.builder().indexName("标普500").profit(sp500).build());
         gainVoList.add(GainVo.builder().indexName("纳斯达克").profit(indexValueBo.getNasdaq().setScale(2, BigDecimal.ROUND_HALF_UP)).build());
         gainVoList.add(GainVo.builder().indexName("道琼斯").profit(indexValueBo.getDji().setScale(2, BigDecimal.ROUND_HALF_UP)).build());

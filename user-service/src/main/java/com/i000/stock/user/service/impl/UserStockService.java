@@ -1,7 +1,9 @@
 package com.i000.stock.user.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.i000.stock.user.api.entity.constant.AuthEnum;
 import com.i000.stock.user.api.entity.vo.RankVo;
+import com.i000.stock.user.api.service.buiness.UserLoginService;
 import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.ServiceException;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,9 @@ public class UserStockService {
 
     @Autowired
     private RankService rankService;
+
+    @Autowired
+    private UserLoginService userLoginService;
 
     /**
      * 添加自选股
@@ -62,9 +68,10 @@ public class UserStockService {
      * @param user
      * @return
      */
-    public List<RankVo> findStockByUser(String user) {
+    public List<RankVo> findStockByUser(String user, String accessCode) {
         List<UserStock> userStocks = userStockMapper.findByUser(user);
         List<RankVo> rankVos = new ArrayList<>();
+        boolean hasAuth = userLoginService.hasAuth(accessCode, AuthEnum.A_RANK);
         if (!CollectionUtils.isEmpty(userStocks)) {
             List<String> codes = userStocks.stream().map(a -> a.getCode()).collect(Collectors.toList());
             List<Rank> ranks = rankService.findByCode(codes);
@@ -72,13 +79,16 @@ public class UserStockService {
                 List<Company> companies = companyService.findByCodes(codes);
                 Map<String, List<Company>> companyMap = companies.stream().collect(Collectors.groupingBy(Company::getCode));
                 rankVos = ConvertUtils.listConvert(ranks, RankVo.class, (d, s) -> {
-                    d.setAiScore(s.getScore());
+                    BigDecimal score = hasAuth ? new BigDecimal(100).subtract(s.getScore())
+                            : new BigDecimal(100).subtract(vagueScore(s.getScore()));
+                    d.setAiScore(score);
                     d.setName(companyMap.get(s.getCode()).get(0).getName());
                 });
             }
         }
         return rankVos;
     }
+
 
     /**
      * 验证用户该自选股能否添加
@@ -99,5 +109,10 @@ public class UserStockService {
         if (stockCount >= 10) {
             throw new ServiceException(ApplicationErrorMessage.USER_STOCK_OVER);
         }
+    }
+
+    private BigDecimal vagueScore(BigDecimal score) {
+        BigDecimal multiple = score.divide(new BigDecimal(5), 0, BigDecimal.ROUND_DOWN);
+        return (multiple.add(new BigDecimal(1))).multiply(new BigDecimal(5));
     }
 }

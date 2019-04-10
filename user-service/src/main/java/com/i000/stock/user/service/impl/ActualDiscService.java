@@ -62,7 +62,7 @@ public class ActualDiscService {
             List<BigDecimal> netWorths = discs.stream().map(a -> a.getNetWorth()).collect(Collectors.toList());
             BigDecimal withdrawal = usGainRateService.calcMaxDd(netWorths);
             ActualDiscBO actualDiscBO = ActualDiscBO.builder().name(entry.getKey())
-                    .marketCap(last.getMarketCap().setScale(0,BigDecimal.ROUND_UP))
+                    .marketCap(last.getMarketCap().setScale(0, BigDecimal.ROUND_UP))
                     .netWorth(last.getNetWorth()).startDate(init.getDate())
                     .initNetWorth(new BigDecimal(1)).withdrawal(withdrawal).build();
             list.add(actualDiscBO);
@@ -71,26 +71,36 @@ public class ActualDiscService {
         return result;
     }
 
+    /**
+     * 问题，1.需要倒序显示
+     * 2.周收益的计算错误
+     *
+     * @param name
+     * @param baseSearchVo
+     * @return
+     */
     public ActualDiscDetailVO getDetailByName(String name, BaseSearchVo baseSearchVo) {
         List<ActualDiscDetailBO> list = new ArrayList<>();
         EntityWrapper<ActualDisc> ew = new EntityWrapper<>();
         ew.where("name = {0}", name);
-        ew.orderBy("date");
+        ew.orderBy("date",false);
+
         Page page = new Page(baseSearchVo.getPageNo(), baseSearchVo.getPageSize());
+        //获取了实盘数据，采用的倒序
         List<ActualDisc> discs = actualDiscMapper.selectPage(page, ew);
+
         if (!CollectionUtils.isEmpty(discs)) {
-            ActualDisc init = discs.get(0);
-            ActualDiscDetailBO initDisc = ActualDiscDetailBO.builder().date(init.getDate())
-                    .marketCap(init.getMarketCap()).netWorth(init.getNetWorth()).weekRate(BigDecimal.ZERO).build();
-            list.add(initDisc);
-            for (int i = 1; i < discs.size(); i++) {
+            Collections.reverse(discs);
+            ActualDisc init = getBeforeDate(discs.get(0).getName(), discs.get(0).getDate());
+            for (int i = 0; i < discs.size(); i++) {
                 ActualDisc actual = discs.get(i);
-                BigDecimal before = discs.get(i - 1).getNetWorth();
+                BigDecimal before = i - 1 < 0 ? init.getNetWorth() : discs.get(i - 1).getNetWorth();
                 BigDecimal weekRate = (actual.getNetWorth().subtract(before)).divide(before, 4, BigDecimal.ROUND_UP);
                 ActualDiscDetailBO detail = ActualDiscDetailBO.builder().date(actual.getDate())
                         .marketCap(actual.getMarketCap()).netWorth(actual.getNetWorth()).weekRate(weekRate).build();
                 list.add(detail);
             }
+            Collections.reverse(list);
         }
         Long total = actualDiscMapper.getCountByName(name);
         return ActualDiscDetailVO.builder().name(name).list(list).total(total).build();
@@ -158,5 +168,35 @@ public class ActualDiscService {
             return ltDateOne.getSp500();
         }
         throw new ServiceException(ApplicationErrorMessage.ACTUAL_DISC_DATA_ERROR);
+    }
+
+    public ActualDisc getBeforeDate(String name, LocalDate date) {
+        ActualDisc actualDisc = getL(name, date);
+        if (Objects.isNull(actualDisc)) {
+            actualDisc = getInit(name);
+        }
+        return actualDisc;
+    }
+
+    public ActualDisc getL(String name, LocalDate date) {
+        EntityWrapper<ActualDisc> ew = new EntityWrapper<>();
+        ew.where("name={0}", name)
+                .and("date<{0}", date)
+                .orderBy("date", false).last("limit 1");
+        return getOne(ew);
+    }
+
+    private ActualDisc getInit(String name) {
+        EntityWrapper<ActualDisc> ew = new EntityWrapper<>();
+        ew.where("name={0}", name).orderBy("date").last("limit 1");
+        return getOne(ew);
+    }
+
+    private ActualDisc getOne(EntityWrapper<ActualDisc> ew) {
+        List<ActualDisc> discs = actualDiscMapper.selectList(ew);
+        if (CollectionUtils.isEmpty(discs)) {
+            return null;
+        }
+        return discs.get(0);
     }
 }

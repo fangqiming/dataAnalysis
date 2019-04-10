@@ -104,6 +104,16 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
     }
 
+    @Override
+    public boolean hasAuth(String accessCode, AuthEnum authEnum) {
+        try {
+            checkAuth(accessCode, authEnum);
+            return true;
+        } catch (ServiceException e) {
+            return false;
+        }
+    }
+
     private UserLogin getByAccessCode(String accessCode) {
         EntityWrapper<UserLogin> ew = new EntityWrapper<>();
         ew.where("access_code = {0}", accessCode);

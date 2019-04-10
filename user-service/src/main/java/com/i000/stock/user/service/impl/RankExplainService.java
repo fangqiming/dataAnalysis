@@ -10,9 +10,11 @@ import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.mapper.RankExplainMapper;
 import com.i000.stock.user.dao.mapper.RankMapper;
 import com.i000.stock.user.dao.model.*;
+import com.i000.stock.user.service.impl.external.StockChangeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -34,6 +36,9 @@ public class RankExplainService {
 
     @Autowired
     private FinancialNowService financialNowService;
+
+    @Autowired
+    private StockChangeService stockChangeService;
 
 
     public BigDecimal getBeatRateByScore(BigDecimal score) {
@@ -67,7 +72,11 @@ public class RankExplainService {
         for (Rank rank : ranks) {
             RankVo rankVo = new RankVo();
             RankVo rankVo1 = ConvertUtils.beanConvert(rank, rankVo);
-            rankVo1.setAiScore(rank.getScore());
+            rankVo1.setAiScore(new BigDecimal(100).subtract(rank.getScore()));
+            String url = String.format("https://xueqiu.com/S/%s", rank.getCode().startsWith("6")
+                    ? "SH" + rank.getCode() : "SZ" + rank.getCode());
+            rankVo1.setUrl(url);
+            rankVo1.setChangeStock(stockChangeService.getChangeNumber(rank.getCode()));
             rankVo1.setName(companyService.getNameByCode(rank.getCode()));
             rankVos.add(rankVo1);
         }

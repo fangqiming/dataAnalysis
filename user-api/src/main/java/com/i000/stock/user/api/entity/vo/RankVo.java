@@ -23,4 +23,13 @@ public class RankVo {
      */
     private BigDecimal aiScore;
 
+    /**
+     * 雪球的URL
+     */
+    private String url;
+
+    /**
+     * 高管持股变化
+     */
+    private BigDecimal changeStock;
 }

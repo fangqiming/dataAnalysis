@@ -6,6 +6,8 @@ import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.dao.model.IndexPrice;
 import com.i000.stock.user.dao.model.IndexUs;
 import com.i000.stock.user.service.impl.external.NoticeService;
+import com.i000.stock.user.service.impl.external.StockChangeService;
+import com.i000.stock.user.service.impl.external.macro.MacroService;
 import com.i000.stock.user.service.impl.external.material.MaterialPriceService;
 import com.i000.stock.user.service.impl.us.service.IndexUSService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,9 @@ public class IndexPriceSchedule {
 
     @Autowired
     private MaterialPriceService materialPriceService;
+
+    @Autowired
+    private MacroService macroService;
 
     /**
      * 保存指数价格信息到数据库中
@@ -89,7 +94,7 @@ public class IndexPriceSchedule {
     /**
      * 每天凌晨触发更新
      */
-    @Scheduled(cron = "0 00 02 * * ?")
+    @Scheduled(cron = "0 00 01 * * ?")
     public void updateStockPledge() {
         try {
             stockPledgeService.save();
@@ -127,12 +132,21 @@ public class IndexPriceSchedule {
         }
     }
 
-    /**
-     * 每天凌晨两点向同花顺以及生意网获获取同花顺打分与原材料价格
-     */
+
     @Scheduled(cron = "0 00 02 * * ?")
     public void updateScore() {
         materialPriceService.savePrice();
         noticeService.findByCodes();
+        macroService.updateData();
     }
+
+    @Autowired
+    private StockChangeService stockChangeService;
+
+    @Scheduled(cron = "0 00 04 * * ?")
+    public void updateStockChange() {
+        stockChangeService.updateStockChange();
+    }
+
+
 }

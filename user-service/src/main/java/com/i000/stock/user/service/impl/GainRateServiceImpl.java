@@ -126,7 +126,7 @@ public class GainRateServiceImpl implements GainRateService {
         Asset valueAsset = assetService.getLately(userCode);
         BigDecimal bd = calculateAsset(baseAssert, valueAsset).setScale(2, BigDecimal.ROUND_HALF_UP);
         BigDecimal sz = indexValueBo.getSz().setScale(2, BigDecimal.ROUND_HALF_UP);
-        gainVoList.add(GainVo.builder().indexName("毕达指数").profit(bd).build());
+        gainVoList.add(GainVo.builder().indexName("勾股指数").profit(bd).build());
         gainVoList.add(GainVo.builder().indexName("上证指数").profit(sz).build());
         gainVoList.add(GainVo.builder().indexName("创业板指").profit(indexValueBo.getCyb().setScale(2, BigDecimal.ROUND_HALF_UP)).build());
         gainVoList.add(GainVo.builder().indexName("沪深300指").profit(indexValueBo.getHs().setScale(2, BigDecimal.ROUND_HALF_UP)).build());

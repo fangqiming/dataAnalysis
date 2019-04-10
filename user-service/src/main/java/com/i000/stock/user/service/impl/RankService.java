@@ -1,7 +1,6 @@
 package com.i000.stock.user.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.i000.stock.user.api.entity.bo.KVBo;
 import com.i000.stock.user.api.entity.bo.RankBO;
 import com.i000.stock.user.api.entity.vo.IndustryRankVO;
 import com.i000.stock.user.api.entity.vo.RankScatterVO;
@@ -148,13 +147,13 @@ public class RankService {
         BigDecimal rang3_10 = rankMapper.getScoreRangeCount(3, 10);
         BigDecimal rang10_50 = rankMapper.getScoreRangeCount(10, 50);
 
-        result.add(RankScatterVO.builder().name("0-1分").score(rang0_1.setScale(2, BigDecimal.ROUND_UP))
+        result.add(RankScatterVO.builder().name("100-99分").score(rang0_1.setScale(2, BigDecimal.ROUND_UP))
                 .rate(rang0_1.divide(total, 4, BigDecimal.ROUND_UP).multiply(new BigDecimal(100))).build());
-        result.add(RankScatterVO.builder().name("1-3分").score(rang1_3.setScale(2, BigDecimal.ROUND_UP))
+        result.add(RankScatterVO.builder().name("99-97分").score(rang1_3.setScale(2, BigDecimal.ROUND_UP))
                 .rate(rang1_3.divide(total, 4, BigDecimal.ROUND_UP).multiply(new BigDecimal(100))).build());
-        result.add(RankScatterVO.builder().name("3-10分").score(rang3_10.setScale(2, BigDecimal.ROUND_UP))
+        result.add(RankScatterVO.builder().name("97-90分").score(rang3_10.setScale(2, BigDecimal.ROUND_UP))
                 .rate(rang3_10.divide(total, 4, BigDecimal.ROUND_UP).multiply(new BigDecimal(100))).build());
-        result.add(RankScatterVO.builder().name("10-50分").score(rang10_50.setScale(2, BigDecimal.ROUND_UP))
+        result.add(RankScatterVO.builder().name("90-50分").score(rang10_50.setScale(2, BigDecimal.ROUND_UP))
                 .rate(rang10_50.divide(total, 4, BigDecimal.ROUND_UP).multiply(new BigDecimal(100))).build());
         return result;
     }

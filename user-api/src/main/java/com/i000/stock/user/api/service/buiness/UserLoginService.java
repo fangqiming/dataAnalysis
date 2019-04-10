@@ -48,4 +48,13 @@ public interface UserLoginService {
      * @param authEnum   权限码
      */
     void checkAuth(String accessCode, AuthEnum authEnum);
+
+    /**
+     * 根据用户名判断用户是否有某一个指定的权限
+     *
+     * @param accessCode
+     * @param authEnum
+     * @return
+     */
+    boolean hasAuth(String accessCode, AuthEnum authEnum);
 }

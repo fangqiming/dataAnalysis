@@ -130,8 +130,10 @@ public class TradeUsController {
         }
 
         AccountSummaryVo result = new AccountSummaryVo();
+        OperatorUsVO operatorSummary = tradeRecordUsService.getOperatorInfo(user);
         result.setTodayAccountBo(todayAccountBo);
         result.setTotalAccountBo(totalAccountBo);
+        result.setOperatorUsVO(operatorSummary);
         return Results.newSingleResultEntity(result);
     }
 

@@ -9,4 +9,5 @@ public interface ActualDiscMapper extends BaseMapper<ActualDisc> {
 
     @Select("select count(*) from actual_disc where `name` =#{name}")
     Long getCountByName(@Param("name") String name);
+
 }

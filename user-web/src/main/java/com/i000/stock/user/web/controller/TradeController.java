@@ -196,8 +196,10 @@ public class TradeController {
             totalAccountBo.setRepoProfitRate(profitRate);
         }
         AccountSummaryVo result = new AccountSummaryVo();
+        OperatorVo operatorSummary = operateSummaryService.getOperatorSummary(userCode);
         result.setTodayAccountBo(todayAccountBo);
         result.setTotalAccountBo(totalAccountBo);
+        result.setOperatorVo(operatorSummary);
         return Results.newSingleResultEntity(result);
     }
 
