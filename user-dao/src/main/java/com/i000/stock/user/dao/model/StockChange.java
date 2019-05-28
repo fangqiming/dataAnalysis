@@ -32,5 +32,4 @@ public class StockChange {
 
     private String occupation;
 
-    private String way;
 }

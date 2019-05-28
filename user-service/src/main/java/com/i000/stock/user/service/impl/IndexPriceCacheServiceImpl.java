@@ -60,6 +60,8 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
 
     private static List<Price> PRICE = new ArrayList<>();
 
+
+
     @Override
     public List<IndexInfo> putIndexToCache(Integer tryNumber) {
         INDEX.clear();
@@ -75,7 +77,7 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
             }
         }
         if (tryNumber < 100) {
-            emailService.sendMail("【千古：指数信息获取失败】", "网络不稳定,指数信息获取失败,请重试", true);
+            emailService.sendMail("【毕达：指数信息获取失败】", "网络不稳定,指数信息获取失败,请重试", true);
         }
         throw new ServiceException(ApplicationErrorMessage.SERVER_ERROR.getCode(), "指数信息获取失败，请重试");
     }
@@ -114,7 +116,7 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
             }
         }
         if (tryNumber < 100) {
-            emailService.sendMail("【千古：价格信息获取失败】", "网络不稳定,价格信息获取失败,请重试", true);
+            emailService.sendMail("【毕达：价格信息获取失败】", "网络不稳定,价格信息获取失败,请重试", true);
         }
         throw new ServiceException(ApplicationErrorMessage.SERVER_ERROR.getCode(), "股票价格信息获取失败，请重试");
     }
@@ -170,6 +172,11 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
             }
         }
         return new BigDecimal("2.65");
+    }
+
+    @Override
+    public void clearCache() {
+
     }
 
     private void sleep(Long second) {

@@ -145,15 +145,16 @@ public class TradeUsController {
      */
     @GetMapping(path = "/find_gain")
     public ResultEntity findProfit(@RequestParam(defaultValue = "") String data) {
-        LocalDate temp = StringUtils.isEmpty(data) ?
-                TimeUtil.getDateTimeByTimeZone(TimeZoneEnum.NEW_YORK).toLocalDate() :
-                LocalDate.parse(data, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String userCode = getUserCode();
+        AssetUs newest = assetUsService.getNewest(userCode);
+        LocalDate temp = newest.getDate();
+        Integer diff = temp.compareTo(newest.getDate()) >= 0 ? -1 : 0;
+
         List<PageGainVo> result = new ArrayList<>(4);
-        result.add(usGainRateService.getRecentlyGain(userCode, temp.minusDays(7), "近一周"));
-        result.add(usGainRateService.getRecentlyGain(userCode, temp.minusMonths(1), "近一月"));
-        result.add(usGainRateService.getRecentlyGain(userCode, temp.minusMonths(3), "近一季"));
-        result.add(usGainRateService.getRecentlyGain(userCode, temp.minusMonths(12), "近一年"));
+        result.add(usGainRateService.getRecentlyGain(userCode, temp.minusDays(7).minusDays(diff), "近一周"));
+        result.add(usGainRateService.getRecentlyGain(userCode, temp.minusMonths(1).minusDays(diff), "近一月"));
+        result.add(usGainRateService.getRecentlyGain(userCode, temp.minusMonths(3).minusDays(diff), "近一季"));
+        result.add(usGainRateService.getRecentlyGain(userCode, temp.minusMonths(12).minusDays(diff), "近一年"));
         return Results.newListResultEntity(result);
     }
 
@@ -173,15 +174,18 @@ public class TradeUsController {
     }
 
     private LocalDate getDate(Integer diff) {
-        LocalDate date = TimeUtil.getDateTimeByTimeZone(TimeZoneEnum.NEW_YORK).toLocalDate();
+//        LocalDate date = TimeUtil.getDateTimeByTimeZone(TimeZoneEnum.NEW_YORK).toLocalDate();
+        AssetUs newest = assetUsService.getNewest(getUserCode());
+        LocalDate date = newest.getDate();
+        Integer diffDay = -1;
         //此处为月或者季
         if (diff > 0 && diff % 30 == 0) {
             Integer month = diff / 30;
-            return date.minusMonths(month);
+            return newest.getDate().minusMonths(month).minusDays(diffDay);
         }
         //为周，或者以天数计
         if (diff > 0) {
-            return date.minusDays(diff);
+            return newest.getDate().minusDays(diff).minusDays(diffDay);
         }
         //今年以来
         if (diff == 0) {

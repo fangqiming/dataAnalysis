@@ -120,7 +120,6 @@ public class ExternalServiceImpl {
                             .open(new BigDecimal(info[1]))
                             .sell(new BigDecimal(info[7]))
                             .date(info[30]).build());
-
                 }
 
             }

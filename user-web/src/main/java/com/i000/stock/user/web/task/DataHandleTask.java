@@ -11,7 +11,6 @@ import com.i000.stock.user.dao.model.Hold;
 import com.i000.stock.user.dao.model.UserInfo;
 import com.i000.stock.user.service.impl.RecommendParseImpl;
 import com.i000.stock.user.web.config.MailSendConfig;
-import com.i000.stock.user.web.config.WechatConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,9 +32,6 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class DataHandleTask {
-
-    @Autowired
-    private WechatConfig wechatConfig;
 
     @Autowired
     private FileService fileService;

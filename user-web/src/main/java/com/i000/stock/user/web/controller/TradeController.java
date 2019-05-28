@@ -90,14 +90,15 @@ public class TradeController {
      */
     @GetMapping(path = "/find_gain")
     public ResultEntity findProfit(@RequestParam(defaultValue = "") String data) {
-        LocalDate temp = StringUtils.isEmpty(data) ? LocalDate.now() : LocalDate.parse(data, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String userCode = getUserCode();
+       String userCode = getUserCode();
+        Asset lately = assetService.getLately(userCode);
+        LocalDate temp = lately.getDate();
+        Integer diff = -1;
         List<PageGainVo> result = new ArrayList<>(4);
-        result.add(gainRateService.getRecentlyGain(userCode, temp.minusDays(7), "近一周"));
-
-        result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(1), "近一月"));
-        result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(3), "近一季"));
-        result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(12), "近一年"));
+        result.add(gainRateService.getRecentlyGain(userCode, temp.minusDays(7).minusDays(diff), "近一周"));
+        result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(1).minusDays(diff), "近一月"));
+        result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(3).minusDays(diff), "近一季"));
+        result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(12).minusDays(diff), "近一年"));
         return Results.newListResultEntity(result);
     }
 
@@ -119,13 +120,15 @@ public class TradeController {
 
     private LocalDate getDate(Integer diff) {
         //此处为月或者季
+        //此处仍旧需要看是否更新了，如果更新了就需要减去一天，否则就不动
+        Asset lately = assetService.getLately(getUserCode());
         if (diff > 0 && diff % 30 == 0) {
             Integer month = diff / 30;
-            return LocalDate.now().minusMonths(month);
+            return lately.getDate().minusMonths(month).minusDays(-1);
         }
         //为周，或者以天数计
         if (diff > 0) {
-            return LocalDate.now().minusDays(diff);
+            return lately.getDate().minusDays(diff).minusDays(-1);
         }
         //今年以来
         if (diff == 0) {

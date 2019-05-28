@@ -51,4 +51,9 @@ public interface IndexPriceCacheService {
      * @return
      */
     BigDecimal getOnePrice(String param, Integer tryNumber);
+
+    /**
+     * 清除缓存数据
+     */
+    void clearCache();
 }

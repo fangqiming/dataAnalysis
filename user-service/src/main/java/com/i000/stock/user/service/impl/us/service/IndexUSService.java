@@ -5,6 +5,7 @@ import com.i000.stock.user.core.util.TimeUtil;
 import com.i000.stock.user.dao.mapper.IndexUsMapper;
 import com.i000.stock.user.dao.model.IndexUs;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -18,6 +19,7 @@ import java.util.List;
  * 美股的指数信息获取服务
  * 最好也是提前做好缓存
  */
+@Log4j
 @Service
 public class IndexUSService {
 
@@ -30,7 +32,9 @@ public class IndexUSService {
     private final String INDEX_US = "list=gb_$dji,gb_ixic,gb_$inx";
 
     public IndexUs getNewestFromNet() {
+        log.warn("调取美股指数");
         String origin = externalService.getString(INDEX_US);
+        System.out.println(origin);
         IndexUs result = new IndexUs();
         if (!StringUtils.isEmpty(origin)) {
             String[] split = origin.split(";");
@@ -39,9 +43,9 @@ public class IndexUSService {
                     result.setDji(getValue(str));
                 } else if (str.contains("gb_ixic")) {
                     result.setNasdaq(getValue(str));
-                    result.setDate(getDate(str));
                 } else if (str.contains("gb_$inx")) {
                     result.setSp500(getValue(str));
+                    result.setDate(getDate(str));
                 }
             }
         }

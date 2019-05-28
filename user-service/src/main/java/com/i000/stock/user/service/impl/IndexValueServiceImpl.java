@@ -85,5 +85,10 @@ public class IndexValueServiceImpl implements IndexValueService {
         return indexValueMapper.selectList(ew);
     }
 
+    @Override
+    public IndexValue getByDate(LocalDate date) {
+        return indexValueMapper.getByDate(date);
+    }
+
 
 }

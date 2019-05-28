@@ -55,4 +55,7 @@ public interface IndexValueMapper extends BaseMapper<IndexValue> {
 
     @Select("select * from index_value where date <#{date}  ORDER BY date DESC limit 1")
     IndexValue getBefore(@Param("date") LocalDate date);
+
+    @Select("select * from index_value where date =#{date}")
+    IndexValue getByDate(@Param("date") LocalDate date);
 }

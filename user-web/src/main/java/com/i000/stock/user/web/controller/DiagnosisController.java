@@ -84,8 +84,6 @@ public class DiagnosisController {
 
     @GetMapping(path = "/find_rank_scatter")
     public ResultEntity findRankScatter() {
-        String accessCode = getAccessCode();
-//        userLoginService.checkAuth(accessCode, AuthEnum.A_RANK);
         List<RankScatterVO> rankScatter = rankService.findRankScatter();
         return Results.newListResultEntity(rankScatter);
     }
@@ -111,8 +109,6 @@ public class DiagnosisController {
      */
     @GetMapping(path = "/get")
     public ResultEntity getDiagnosis(@RequestParam String code) {
-        String accessCode = getAccessCode();
-//        userLoginService.checkAuth(accessCode, AuthEnum.A_DIAGNOSIS);
         String stockCode = getCodeByName(code);
         ValidationUtils.validateStringParameter(stockCode, "股票代码或公司名称不能为空");
         DiagnosisVo diagnosisResult = financialService.getDiagnosisResult(stockCode);
@@ -127,8 +123,6 @@ public class DiagnosisController {
      */
     @GetMapping(path = "/find_financial")
     public ResultEntity findFinancial(@RequestParam String code) {
-        String accessCode = getAccessCode();
-//        userLoginService.checkAuth(accessCode, AuthEnum.A_DIAGNOSIS);
         String stockCode = getCodeByName(code);
         ValidationUtils.validateStringParameter(stockCode, "股票代码不能为空或公司名称错误");
         FinancialVo financials = financialService.findFinancialByCode(stockCode);

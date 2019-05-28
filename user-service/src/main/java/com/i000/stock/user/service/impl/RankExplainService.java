@@ -38,6 +38,9 @@ public class RankExplainService {
     private FinancialNowService financialNowService;
 
     @Autowired
+    private FundamentalsService fundamentalsService;
+
+    @Autowired
     private StockChangeService stockChangeService;
 
 
@@ -75,9 +78,20 @@ public class RankExplainService {
             rankVo1.setAiScore(new BigDecimal(100).subtract(rank.getScore()));
             String url = String.format("https://xueqiu.com/S/%s", rank.getCode().startsWith("6")
                     ? "SH" + rank.getCode() : "SZ" + rank.getCode());
+
+            String changeStockUrl = String.format("https://xueqiu.com/snowman/S/%s/detail#/INSIDER",
+                    rank.getCode().startsWith("6") ? "SH" + rank.getCode() : "SZ" + rank.getCode());
             rankVo1.setUrl(url);
             rankVo1.setChangeStock(stockChangeService.getChangeNumber(rank.getCode()));
-            rankVo1.setName(companyService.getNameByCode(rank.getCode()));
+            rankVo1.setChangeStockUrl(changeStockUrl);
+            Fundamentals fun = fundamentalsService.getByCode(rank.getCode());
+            if (Objects.nonNull(fun)) {
+                rankVo1.setAvgPe(fun.getAvgPe());
+                rankVo1.setPe(fun.getPe());
+                rankVo1.setSharpeRatio(fun.getSharpeRatio());
+                rankVo1.setPeg(fun.getPeg());
+                rankVo1.setName(fun.getName());
+            }
             rankVos.add(rankVo1);
         }
         BigDecimal count = rankMapper.getCount();

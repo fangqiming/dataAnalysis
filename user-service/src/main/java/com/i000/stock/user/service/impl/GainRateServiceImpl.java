@@ -12,7 +12,6 @@ import com.i000.stock.user.core.constant.enums.ApplicationErrorMessage;
 import com.i000.stock.user.core.exception.WebApiException;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.model.Asset;
-import com.i000.stock.user.dao.model.AssetUs;
 import com.i000.stock.user.dao.model.IndexValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -104,8 +103,6 @@ public class GainRateServiceImpl implements GainRateService {
      */
     @Override
     public PageGainVo getRecentlyGain(String userCode, LocalDate start, String title) {
-        System.out.println(start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-
         IndexValue baseIndex = indexValueService.getBefore(start);
         if (Objects.isNull(baseIndex)) {
             baseIndex = indexValueService.getLastOne();
@@ -120,17 +117,17 @@ public class GainRateServiceImpl implements GainRateService {
     }
 
     private PageGainVo getRecentlyGain(IndexValue baseIndex, Asset baseAssert, String userCode, String title) {
-        IndexValue value = indexValueService.getLately();
+        Asset valueAsset = assetService.getLately(userCode);
+        IndexValue value = indexValueService.getByDate(valueAsset.getDate());
         IndexValueBo indexValueBo = calculateIndex(baseIndex, value);
         List<GainVo> gainVoList = new ArrayList<>(5);
-        Asset valueAsset = assetService.getLately(userCode);
+
         BigDecimal bd = calculateAsset(baseAssert, valueAsset).setScale(2, BigDecimal.ROUND_HALF_UP);
         BigDecimal sz = indexValueBo.getSz().setScale(2, BigDecimal.ROUND_HALF_UP);
         gainVoList.add(GainVo.builder().indexName("勾股指数").profit(bd).build());
         gainVoList.add(GainVo.builder().indexName("上证指数").profit(sz).build());
         gainVoList.add(GainVo.builder().indexName("创业板指").profit(indexValueBo.getCyb().setScale(2, BigDecimal.ROUND_HALF_UP)).build());
         gainVoList.add(GainVo.builder().indexName("沪深300指").profit(indexValueBo.getHs().setScale(2, BigDecimal.ROUND_HALF_UP)).build());
-        //毕达指数 <--> 上证指数   毕达上涨 1%  上证跌 -2%  （1+0.01 - （1-0.02））/ （1-0.02）= (0.01 + 0.02)/(1 - 0.02)
         BigDecimal more = (bd.subtract(sz)).divide(new BigDecimal(100).add(sz), 4, BigDecimal.ROUND_UP).multiply(new BigDecimal("100"));
         gainVoList.add(GainVo.builder().indexName("跑赢上证").profit(more).build());
         return PageGainVo.builder().Title(title).gain(gainVoList).build();

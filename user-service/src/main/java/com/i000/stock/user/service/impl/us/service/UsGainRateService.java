@@ -175,10 +175,11 @@ public class UsGainRateService {
     }
 
     private PageGainVo getRecentlyGain(IndexUs baseIndex, AssetUs baseAssert, String userCode, String title) {
-        IndexUs value = indexUSService.getNewestFromDB();
+
+        AssetUs valueAsset = assetUsService.getNewest(userCode);
+        IndexUs value = indexUSService.getByDate(valueAsset.getDate());
         IndexUsBo indexValueBo = calculateIndex(baseIndex, value);
         List<GainVo> gainVoList = new ArrayList<>(5);
-        AssetUs valueAsset = assetUsService.getNewest(userCode);
 
         BigDecimal bd = calculateAsset(baseAssert, valueAsset).setScale(2, BigDecimal.ROUND_HALF_UP);
         BigDecimal sp500 = indexValueBo.getSp500().setScale(2, BigDecimal.ROUND_HALF_UP);

@@ -35,4 +35,6 @@ public interface IndexPriceService {
      */
     StringBuffer get() throws IOException;
 
+
+
 }

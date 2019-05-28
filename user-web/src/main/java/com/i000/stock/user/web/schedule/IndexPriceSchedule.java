@@ -72,9 +72,11 @@ public class IndexPriceSchedule {
      */
     @Scheduled(cron = "0 02 15 * * ?")
     public void cacheIndexPrice() {
+        log.warn("定时器触发更新A股股市数据");
         indexPriceCacheService.putIndexToCache(101);
         indexPriceCacheService.putPriceToCache(101);
     }
+
 
     /**
      * 计算并保存指数的收益信息
@@ -118,10 +120,8 @@ public class IndexPriceSchedule {
         return LocalDate.now().compareTo(localDates) == 0;
     }
 
-    /**
-     * 凌晨5:30 执行一次
-     */
-    @Scheduled(cron = "0 30 11 * * ?")
+
+    @Scheduled(cron = "0 30 16 * * ?")
     public void saveUsIndex() {
         try {
             IndexUs newIndexUs = indexUSService.getNewestFromNet();

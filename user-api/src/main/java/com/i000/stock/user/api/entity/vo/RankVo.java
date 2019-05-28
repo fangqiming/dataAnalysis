@@ -32,4 +32,17 @@ public class RankVo {
      * 高管持股变化
      */
     private BigDecimal changeStock;
+
+    /**
+     * 高管持股变化的url
+     */
+    private String changeStockUrl;
+
+    private BigDecimal pe;
+
+    private BigDecimal avgPe;
+
+    private BigDecimal peg;
+
+    private BigDecimal sharpeRatio;
 }

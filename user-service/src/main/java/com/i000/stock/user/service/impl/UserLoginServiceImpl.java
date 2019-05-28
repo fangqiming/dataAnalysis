@@ -11,6 +11,7 @@ import com.i000.stock.user.dao.model.UserLogin;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.time.Duration;
@@ -90,6 +91,9 @@ public class UserLoginServiceImpl implements UserLoginService {
     @Override
     public void checkAuth(String accessCode, AuthEnum authEnum) {
         UserLogin userLogin = getByAccessCode(accessCode);
+        if (StringUtils.isEmpty(userLogin.getAuthority()) || !userLogin.getAuthority().contains("AS")) {
+            return;
+        }
         Duration between = Duration.between(userLogin.getLoginTime(), LocalDateTime.now());
         long diffMinute = between.toMinutes();
         if (diffMinute >= TIME_OUT_MIN) {
@@ -123,6 +127,4 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
         return userLogins.get(0);
     }
-
-
 }

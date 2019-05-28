@@ -8,7 +8,6 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Data
 @AllArgsConstructor
@@ -24,11 +23,10 @@ public class Rank {
 
     public Rank(String content) {
         if (!StringUtils.isEmpty(content)) {
-            System.out.println(content);
-            String[] items = content.split(",");
-            date = LocalDate.parse(items[0], DateTimeFormatter.ofPattern("yyyyMMdd"));
-            code = items[1];
-            score = new BigDecimal(items[9]);
+            String[] item = content.split("\t");
+            date = LocalDate.now();
+            code = item[0];
+            score = new BigDecimal(item[1]);
         }
     }
 }

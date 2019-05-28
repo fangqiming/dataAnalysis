@@ -5,4 +5,5 @@ import com.i000.stock.user.dao.model.IndexUs;
 
 public interface IndexUsMapper extends BaseMapper<IndexUs> {
 
+
 }
