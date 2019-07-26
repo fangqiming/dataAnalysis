@@ -23,4 +23,9 @@ public class ExampleServiceImpl implements ExampleService {
     public Example get(Long id) {
         return exampleMapper.selectById(id);
     }
+
+    @Override
+    public void insert(Example example) {
+        exampleMapper.insert(example);
+    }
 }

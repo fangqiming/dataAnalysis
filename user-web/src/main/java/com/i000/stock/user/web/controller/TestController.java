@@ -71,10 +71,11 @@ public class TestController {
      *
      * @return
      */
-    @GetMapping("/test_postDataBind")
+    @PostMapping("/test_save")
     public ResultEntity testPostDataBind(ExampleVo exampleVo) {
-        System.out.println(exampleVo);
-        return Results.newEmptyResultEntity();
+        Example example = ConvertUtils.beanConvert(exampleVo, new Example());
+        exampleService.insert(example);
+        return Results.newNormalResultEntity("save", "success");
     }
 
     /**

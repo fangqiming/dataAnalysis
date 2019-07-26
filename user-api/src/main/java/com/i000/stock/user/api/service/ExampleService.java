@@ -18,4 +18,11 @@ public interface ExampleService {
      */
     Example get(Long id);
 
+    /**
+     * 插入一条examle
+     *
+     * @param example
+     */
+    void insert(Example example);
+
 }
