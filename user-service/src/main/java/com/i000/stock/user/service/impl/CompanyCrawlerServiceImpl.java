@@ -1,8 +1,11 @@
 package com.i000.stock.user.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.i000.stock.user.api.entity.bo.AllCodeParamBO;
+import com.i000.stock.user.api.entity.bo.JQKlineBo;
 import com.i000.stock.user.api.entity.bo.TokenBo;
 import com.i000.stock.user.api.entity.bo.TokenCache;
+import com.i000.stock.user.api.entity.constant.PeriodEnum;
 import com.i000.stock.user.api.service.external.CompanyCrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -15,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +34,8 @@ import java.util.*;
 @Transactional
 public class CompanyCrawlerServiceImpl implements CompanyCrawlerService {
 
+    private static final String JQ_URL = "https://dataapi.joinquant.com/apis";
+    private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     public List<String> getCode() throws IOException {
@@ -56,6 +62,35 @@ public class CompanyCrawlerServiceImpl implements CompanyCrawlerService {
         return result;
     }
 
+    @Override
+    public List<JQKlineBo> findKLine(String code, PeriodEnum periodEnum, Integer count) {
+        code = getCode(code);
+        List<JQKlineBo> result = new ArrayList<>(count);
+        String date = LocalDate.now().format(DF);
+        JSONObject param = new JSONObject();
+        param.put("method", "get_price");
+        param.put("token", getToken());
+        param.put("code", code);
+        param.put("count", count);
+        param.put("unit", periodEnum.getValue());
+        param.put("end_date", date);
+        param.put("fq_ref_date", date);
+        String body = getRequest(param);
+        String[] item = body.split("\n");
+        for (String str : item) {
+            if (!StringUtils.isEmpty(str)) {
+                if (!str.contains("close")) {
+                    String[] split = str.split(",");
+                    JQKlineBo jqKlineBo = JQKlineBo.builder().date(split[0]).open(Double.valueOf(split[1]))
+                            .close(Double.valueOf(split[2])).high(Double.valueOf(split[3])).low(Double.valueOf(split[4]))
+                            .volume(Double.valueOf(split[5])).money(Double.valueOf(split[6])).build();
+                    result.add(jqKlineBo);
+                }
+            }
+        }
+        return result;
+    }
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -75,26 +110,47 @@ public class CompanyCrawlerServiceImpl implements CompanyCrawlerService {
     }
 
     private String getTokenFromNet() {
-        String url = "https://dataapi.joinquant.com/apis";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity httpEntity = new HttpEntity(tokenBo, headers);
-        ResponseEntity<String> request = restTemplate.postForEntity(url, httpEntity, String.class);
+        ResponseEntity<String> request = restTemplate.postForEntity(JQ_URL, httpEntity, String.class);
         String body = request.getBody();
         return body;
     }
 
     private String getAllCode() {
         String token = getToken();
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String date = LocalDate.now().format(DF);
         AllCodeParamBO param = AllCodeParamBO.builder().code("stock").date(date)
                 .method("get_all_securities").token(token).build();
-        String url = "https://dataapi.joinquant.com/apis";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity httpEntity = new HttpEntity(param, headers);
-        ResponseEntity<String> request = restTemplate.postForEntity(url, httpEntity, String.class);
+        ResponseEntity<String> request = restTemplate.postForEntity(JQ_URL, httpEntity, String.class);
         String body = request.getBody();
         return body;
     }
+
+    private String getCode(String code) {
+        if (!StringUtils.isEmpty(code)) {
+            if (code.contains(".")) {
+                return code;
+            } else {
+                code = code.startsWith("6") ? code + ".XSHG" : code + ".XSHE";
+            }
+        }
+        return code;
+    }
+
+    private String getRequest(JSONObject param) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity httpEntity = new HttpEntity(param, headers);
+        ResponseEntity<String> request = restTemplate.postForEntity(JQ_URL, httpEntity, String.class);
+        String body = request.getBody();
+        return body;
+    }
+
 }

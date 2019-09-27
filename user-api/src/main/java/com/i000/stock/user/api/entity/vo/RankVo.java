@@ -38,11 +38,37 @@ public class RankVo {
      */
     private String changeStockUrl;
 
+    /**
+     * PE
+     */
     private BigDecimal pe;
 
+    /**
+     * 平均PE
+     */
     private BigDecimal avgPe;
 
+    /**
+     * PEG
+     */
     private BigDecimal peg;
-
+    /**
+     * 夏普比率
+     */
     private BigDecimal sharpeRatio;
+
+    /**
+     * 增减持平均成本
+     */
+    private BigDecimal avgCost;
+
+    /**
+     * 最新价格
+     */
+    private BigDecimal close;
+
+    /**
+     * 增减持金额
+     */
+    private BigDecimal amount;
 }

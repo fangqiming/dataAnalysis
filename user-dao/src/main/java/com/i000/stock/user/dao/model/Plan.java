@@ -31,5 +31,4 @@ public class Plan {
     private String note;
 
 
-
 }

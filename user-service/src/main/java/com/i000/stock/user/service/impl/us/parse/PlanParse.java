@@ -29,7 +29,7 @@ public class PlanParse implements Parse {
                 if (items.length < 5) {
                     items = line.split(PatternUtil.TWO_BLANK.pattern());
                 }
-                String name = items[8].split("\\|")[1];
+                String name = items[8].split("\\|")[0];
                 PlanUs planUs = PlanUs.builder().date(LocalDate.parse(items[0], PatternUtil.DF_SLANT))
                         .type(items[1])
                         .code(items[2])

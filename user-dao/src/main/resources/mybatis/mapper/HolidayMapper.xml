@@ -11,7 +11,7 @@
     </resultMap>
 
     <select id="getTwentyDaysByDate" resultMap="Holiday">
-        select * from holiday where date >= #{date} ORDER BY id  limit 20
+        select * from holiday where date >= #{date} ORDER BY id limit 20
     </select>
 
 </mapper>

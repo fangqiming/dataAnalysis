@@ -22,11 +22,11 @@
     </resultMap>
 
     <select id="getInit" resultMap="Asset">
-        select * from asset where user_code=#{userCode} ORDER BY id  limit 1
+        select * from asset where user_code=#{userCode} ORDER BY id limit 1
     </select>
 
     <select id="getLately" resultMap="Asset">
-        select * from asset where user_code=#{userCode} ORDER BY id DESC  limit 1
+        select * from asset where user_code=#{userCode} ORDER BY id DESC limit 1
     </select>
 
     <select id="getDiff" resultMap="Asset">
@@ -54,7 +54,8 @@
     </select>
 
     <select id="search" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo" resultMap="Asset">
-        select sql_calc_found_rows  * from asset where user_code=#{userCode}   ORDER BY date DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
+        select sql_calc_found_rows * from asset where user_code=#{userCode} ORDER BY date DESC limit
+        ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
     <select id="findByDateUser" resultMap="Asset">
@@ -66,11 +67,11 @@
 
 
     <select id="findBetween" resultMap="Asset">
-        select * from asset  where user_code=#{userCode} and date between #{start} and #{end} ORDER BY date
+        select * from asset where user_code=#{userCode} and date between #{start} and #{end} ORDER BY date
     </select>
 
     <select id="getYearFirst" resultMap="Asset">
-        select * from asset where date>= #{year} and user_code=#{userCode} ORDER BY id  limit 1
+        select * from asset where date>= #{year} and user_code=#{userCode} ORDER BY id limit 1
     </select>
 
     <select id="getLatelyTwoByUserCode" resultMap="Asset">

@@ -228,6 +228,7 @@ public class TradeUsController {
             //开始做转化了
             List<HoldNowUs> collect = hold.stream().filter(a -> a.getAmount().compareTo(BigDecimal.ZERO) > 0).collect(toList());
             List<HoldNowVo> holdNowVos = ConvertUtils.listConvert(collect, HoldNowVo.class, (d, s) -> {
+                d.setUrl(String.format("https://xueqiu.com/S/%s", s.getCode()));
                 d.setAmount(s.getAmount().intValue());
                 d.setName(s.getCode());
                 d.setStockName(s.getName());
@@ -263,6 +264,7 @@ public class TradeUsController {
         List<PlanUs> recommend = planUsService.findRecommend();
         if (!CollectionUtils.isEmpty(recommend)) {
             List<PlanVo> result = ConvertUtils.listConvert(recommend, PlanVo.class, (d, s) -> {
+                d.setUrl(String.format("https://xueqiu.com/S/%s", s.getCode()));
                 d.setStockName(s.getName());
                 d.setName(s.getCode());
                 d.setNewDate(s.getDate());

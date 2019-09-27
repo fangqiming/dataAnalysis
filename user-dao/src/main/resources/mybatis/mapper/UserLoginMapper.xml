@@ -18,12 +18,12 @@
 
 
     <select id="getByPhone" resultMap="UserLogin">
-        select * from user_login where  `phone`=#{phone}
+        select * from user_login where `phone`=#{phone}
     </select>
 
 
     <select id="getByName" resultMap="UserLogin">
-        select * from user_login where  `name`=#{name}
+        select * from user_login where `name`=#{name}
     </select>
 
 

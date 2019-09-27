@@ -44,5 +44,5 @@ public class IndexInfo {
     private BigDecimal amount;
 
     private String date;
-    
+
 }

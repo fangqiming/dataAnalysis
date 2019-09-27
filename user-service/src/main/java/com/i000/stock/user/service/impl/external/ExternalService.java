@@ -21,5 +21,5 @@ public interface ExternalService {
     Call<JSONObject> getIndex();
 
     @HTTP(method = "GET", path = "http://int.dpool.sina.com.cn/iplookup/iplookup.php")
-    Call<JSONObject> getIpInfo(@Query("format") String format,@Query("ip") String ip);
+    Call<JSONObject> getIpInfo(@Query("format") String format, @Query("ip") String ip);
 }

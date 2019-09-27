@@ -7,7 +7,7 @@ import com.i000.stock.user.api.entity.vo.PageResultVO;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.mapper.EverydayStockMapper;
 import com.i000.stock.user.dao.model.EverydayStock;
-import com.i000.stock.user.dao.model.Rank;
+import com.i000.stock.user.dao.model.StockRank;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -103,12 +103,12 @@ public class EverydayStockService {
      * @param number 保存的数量，默认保存数量为 5天的每日推荐
      */
     public void save(Integer number) {
-        Rank rank = rankService.getEverydayStock();
-        if (!Objects.isNull(rank)) {
+        StockRank stockRank = rankService.getEverydayStock();
+        if (!Objects.isNull(stockRank)) {
             EverydayStock everydayStock = new EverydayStock();
-            everydayStock.setCode(rank.getCode());
-            everydayStock.setDate(rank.getDate());
-            List<String> codes = Arrays.asList(rank.getCode());
+            everydayStock.setCode(stockRank.getCode());
+            everydayStock.setDate(stockRank.getDate());
+            List<String> codes = Arrays.asList(stockRank.getCode());
             List<Price> price = externalService.getPrice(codes);
             everydayStock.setOldPrice(price.get(0).getPrice());
             everydayStock.setNewPrice(price.get(0).getPrice());
@@ -132,7 +132,7 @@ public class EverydayStockService {
         if (!CollectionUtils.isEmpty(everydayStocks)) {
             return everydayStocks.get(0).getCode();
         } else {
-            Rank everydayStock = rankService.getEverydayStock();
+            StockRank everydayStock = rankService.getEverydayStock();
             if (Objects.nonNull(everydayStock)) {
                 return everydayStock.getCode();
             }

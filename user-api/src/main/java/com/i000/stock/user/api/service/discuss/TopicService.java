@@ -38,6 +38,7 @@ public interface TopicService {
 
     /**
      * 根据话题主键获取用户userCode
+     *
      * @param id
      * @return
      */

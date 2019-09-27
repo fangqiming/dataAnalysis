@@ -65,7 +65,7 @@ public interface HoldNowService {
 
     Integer updateAmount(BigDecimal rate, String code, LocalDate date);
 
-    void updateAmountPriceByName(BigDecimal price, BigDecimal amount, String name,String userCode);
+    void updateAmountPriceByName(BigDecimal price, BigDecimal amount, String name, String userCode, LocalDate oldDate);
 
 
 }

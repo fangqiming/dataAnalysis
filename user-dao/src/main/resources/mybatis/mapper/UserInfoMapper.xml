@@ -18,11 +18,12 @@
     </resultMap>
 
     <select id="getByName" resultMap="UserInfo">
-        select * from user_info where  `name`=#{name}
+        select * from user_info where `name`=#{name}
     </select>
 
     <select id="search" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo" resultMap="UserInfo">
-        select sql_calc_found_rows  * from user_info ORDER BY created_time DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
+        select sql_calc_found_rows * from user_info ORDER BY created_time DESC limit
+        ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
 </mapper>

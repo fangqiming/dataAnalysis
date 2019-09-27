@@ -10,7 +10,7 @@
         <result column="name" property="name"/>
         <result column="type" property="type"/>
         <result column="action" property="action"/>
-        <result column="rank" property="rank"/>
+        <result column="stockRank" property="stockRank"/>
         <result column="note" property="note"/>
     </resultMap>
 

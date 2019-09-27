@@ -1,8 +1,10 @@
 package com.i000.stock.user.api.service.external;
 
 import com.i000.stock.user.dao.model.IndexPrice;
+import com.i000.stock.user.dao.model.StockPrice;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @Author:qmfang
@@ -35,6 +37,13 @@ public interface IndexPriceService {
      */
     StringBuffer get() throws IOException;
 
+
+    /**
+     * 获取当天的股票价格信息
+     *
+     * @return
+     */
+    public List<StockPrice> findStockPrice();
 
 
 }

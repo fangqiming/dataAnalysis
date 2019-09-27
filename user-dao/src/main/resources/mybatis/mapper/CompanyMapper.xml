@@ -15,7 +15,7 @@
 
     <select id="search" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo" resultMap="Company">
         select sql_calc_found_rows * from company
-		ORDER BY id DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
+        ORDER BY id DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Long">

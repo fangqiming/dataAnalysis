@@ -23,16 +23,16 @@
     </select>-->
 
     <!--当季 当年按 周/月划分-->
-  <!--  <select id="findByStepGroup" resultMap="LineGroup">
-        select DATE_FORMAT(o.date,#{step.groupCondition}) groupCondition,
-        AVG(o.ai_market) ai_market,
-        AVG(o.base_market)base_market ,
-        AVG(o.gain)gain
-        from (
-        select * from line where DATE_SUB(CURDATE(), INTERVAL #{step.step} DAY) &lt;= date(date)
-        ) o
-        group by groupCondition;
-    </select>-->
+    <!--  <select id="findByStepGroup" resultMap="LineGroup">
+          select DATE_FORMAT(o.date,#{step.groupCondition}) groupCondition,
+          AVG(o.ai_market) ai_market,
+          AVG(o.base_market)base_market ,
+          AVG(o.gain)gain
+          from (
+          select * from line where DATE_SUB(CURDATE(), INTERVAL #{step.step} DAY) &lt;= date(date)
+          ) o
+          group by groupCondition;
+      </select>-->
 
 
 </mapper>

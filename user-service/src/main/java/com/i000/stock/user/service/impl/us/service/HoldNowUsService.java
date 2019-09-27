@@ -7,6 +7,7 @@ import com.i000.stock.user.dao.model.HoldNowUs;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,7 +28,7 @@ public class HoldNowUsService {
     }
 
     public void handleShareSplitUp(ShareSplitUpBO shareSplitUpBO) {
-        holdNowUsMapper.handleShareSplitUp(shareSplitUpBO.getNewPrice(), shareSplitUpBO.getCode());
+        holdNowUsMapper.handleShareSplitUp(shareSplitUpBO.getNewPrice(), shareSplitUpBO.getCode(),shareSplitUpBO.getOldDate());
     }
 
     public void updateSharePriceAndDate(String code, BigDecimal price, LocalDate date) {
@@ -49,7 +50,9 @@ public class HoldNowUsService {
     }
 
     public void deleteBatchIds(List<Long> ids) {
-        holdNowUsMapper.deleteBatchIds(ids);
+        if (!CollectionUtils.isEmpty(ids)) {
+            holdNowUsMapper.deleteBatchIds(ids);
+        }
     }
 
     public void insert(HoldNowUs holdNowUs) {

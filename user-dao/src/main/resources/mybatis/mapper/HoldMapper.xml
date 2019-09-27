@@ -25,7 +25,7 @@
     </select>
 
     <select id="findTwoDay" resultType="java.time.LocalDate">
-         select DISTINCT new_date from hold ORDER BY new_date DESC limit 2
+        select DISTINCT new_date from hold ORDER BY new_date DESC limit 2
     </select>
 
     <select id="findTwoHold" resultMap="Hold">

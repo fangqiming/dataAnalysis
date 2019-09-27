@@ -45,4 +45,7 @@ public class PlanVo {
     private BigDecimal amount;
 
     private String stockName;
+
+    //链接到雪球
+    private String url;
 }

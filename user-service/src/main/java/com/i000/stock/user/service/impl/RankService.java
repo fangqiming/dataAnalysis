@@ -8,7 +8,7 @@ import com.i000.stock.user.api.service.external.CompanyService;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.mapper.RankMapper;
 import com.i000.stock.user.dao.model.Company;
-import com.i000.stock.user.dao.model.Rank;
+import com.i000.stock.user.dao.model.StockRank;
 import com.i000.stock.user.service.impl.us.PatternUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,48 +40,48 @@ public class RankService {
     @Autowired
     private EverydayStockService everydayStockService;
 
-    public List<Rank> finaAll() {
+    public List<StockRank> finaAll() {
         return rankMapper.selectList(null);
     }
 
-    public List<Rank> findByCode(List<String> code) {
-        EntityWrapper<Rank> ew = new EntityWrapper<>();
+    public List<StockRank> findByCode(List<String> code) {
+        EntityWrapper<StockRank> ew = new EntityWrapper<>();
         ew.in("code", code);
         return rankMapper.selectList(ew);
     }
 
-    public Rank getEverydayStock() {
-        EntityWrapper<Rank> ew = new EntityWrapper<>();
+    public StockRank getEverydayStock() {
+        EntityWrapper<StockRank> ew = new EntityWrapper<>();
         ew.orderBy("score", true).last("limit 8");
-        List<Rank> ranks = rankMapper.selectList(ew);
+        List<StockRank> stockRanks = rankMapper.selectList(ew);
         List<String> inEveryStock = everydayStockService.findInEveryStock();
-        for (int i = 2; i < ranks.size(); i++) {
-            if (inEveryStock.contains(ranks.get(i).getCode())) {
+        for (int i = 2; i < stockRanks.size(); i++) {
+            if (inEveryStock.contains(stockRanks.get(i).getCode())) {
                 continue;
             }
-            return ranks.get(i);
+            return stockRanks.get(i);
         }
         return null;
     }
 
     public void save(String content) throws IOException {
-        List<Rank> ranks = parseToRank(content);
-        if (!CollectionUtils.isEmpty(ranks)) {
-            if (canSaveClearRank(ranks.get(0).getDate())) {
-                for (Rank rank : ranks) {
-                    rankMapper.insert(rank);
+        List<StockRank> stockRanks = parseToRank(content);
+        if (!CollectionUtils.isEmpty(stockRanks)) {
+            if (canSaveClearRank(stockRanks.get(0).getDate())) {
+                for (StockRank stockRank : stockRanks) {
+                    rankMapper.insert(stockRank);
                 }
             }
         }
     }
 
-    private List<Rank> parseToRank(String content) throws IOException {
+    private List<StockRank> parseToRank(String content) throws IOException {
         if (!StringUtils.isEmpty(content)) {
-            List<Rank> result = new ArrayList<>(3600);
+            List<StockRank> result = new ArrayList<>(3600);
             String[] items = content.split(PatternUtil.LINE.pattern());
             for (String item : items) {
                 if (!StringUtils.isEmpty(item)) {
-                    result.add(new Rank(item));
+                    result.add(new StockRank(item));
                 }
             }
             return result;
@@ -90,12 +90,12 @@ public class RankService {
     }
 
     private boolean canSaveClearRank(LocalDate date) {
-        EntityWrapper<Rank> ew = new EntityWrapper<>();
+        EntityWrapper<StockRank> ew = new EntityWrapper<>();
         ew.last("limit 1");
-        List<Rank> ranks = rankMapper.selectList(ew);
-        if (!CollectionUtils.isEmpty(ranks)) {
+        List<StockRank> stockRanks = rankMapper.selectList(ew);
+        if (!CollectionUtils.isEmpty(stockRanks)) {
             //当天的报告已经存在
-            if (date.compareTo(ranks.get(0).getDate()) > 0) {
+            if (date.compareTo(stockRanks.get(0).getDate()) > 0) {
                 rankMapper.truncate();
                 return true;
             } else {
@@ -105,16 +105,16 @@ public class RankService {
         return true;
     }
 
-    public Rank getByCode(String code) {
+    public StockRank getByCode(String code) {
         return rankMapper.getByCode(code);
     }
 
     public List<IndustryRankVO> findIndustry() {
-        List<Rank> ranks = rankMapper.selectList(null);
+        List<StockRank> stockRanks = rankMapper.selectList(null);
         List<IndustryRankVO> result = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(ranks)) {
-            List<RankBO> rankBOS = ConvertUtils.listConvert(ranks, RankBO.class);
-            List<String> codes = ranks.stream().map(a -> a.getCode()).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(stockRanks)) {
+            List<RankBO> rankBOS = ConvertUtils.listConvert(stockRanks, RankBO.class);
+            List<String> codes = stockRanks.stream().map(a -> a.getCode()).collect(Collectors.toList());
             List<Company> companies = companyService.findByCodes(codes);
             Map<String, List<Company>> companyMap = companies.stream().collect(Collectors.groupingBy(Company::getCode));
             for (RankBO rankBO : rankBOS) {

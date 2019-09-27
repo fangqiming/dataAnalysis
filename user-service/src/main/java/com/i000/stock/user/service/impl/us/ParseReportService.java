@@ -81,7 +81,7 @@ public class ParseReportService {
         //报告已经解析到数据库
         LocalDate date = parseContentToDB(content);
         try {
-            //获取到最新的持仓
+            //获取到最新的持仓(为何最新的持仓和当前持仓存在差异)
             List<HoldUs> holds = holdUsService.findByDate(date);
             //获取到最新的交易详情
             List<TradeDetailUs> tradeDetails = tradeDetailUsService.findByDate(date);
@@ -199,7 +199,7 @@ public class ParseReportService {
 
         BigDecimal cost = holdUsService.getOldPriceByDateAndCode(date, code);
         if (cost.compareTo(newPrice) != 0) {
-            return ShareSplitUpBO.builder().code(code).newPrice(newPrice).oldPrice(cost).build();
+            return ShareSplitUpBO.builder().code(code).newPrice(newPrice).oldPrice(cost).oldDate(date).build();
         }
         return null;
     }
@@ -263,7 +263,7 @@ public class ParseReportService {
      * @return
      */
     private BigDecimal getOneShareMoney(UserInfoUs userInfoUs, AssetUs assetUs) {
-            return (assetUs.getStock().add(assetUs.getBalance()).add(assetUs.getCover()))
-                    .divide(new BigDecimal(userInfoUs.getShare()), 0, BigDecimal.ROUND_UP);
+        return (assetUs.getStock().add(assetUs.getBalance()).add(assetUs.getCover()))
+                .divide(new BigDecimal(userInfoUs.getShare()), 0, BigDecimal.ROUND_UP);
     }
 }

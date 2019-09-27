@@ -10,7 +10,7 @@ import com.i000.stock.user.core.exception.ServiceException;
 import com.i000.stock.user.core.util.ConvertUtils;
 import com.i000.stock.user.dao.mapper.UserStockMapper;
 import com.i000.stock.user.dao.model.Company;
-import com.i000.stock.user.dao.model.Rank;
+import com.i000.stock.user.dao.model.StockRank;
 import com.i000.stock.user.dao.model.UserStock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,8 +46,8 @@ public class UserStockService {
      *
      * @param userStock
      */
-    public void saveStock(UserStock userStock) {
-        checkStock(userStock);
+    public void saveStock(UserStock userStock, String accessCode) {
+        checkStock(userStock, accessCode);
         userStockMapper.insert(userStock);
     }
 
@@ -74,13 +74,33 @@ public class UserStockService {
         boolean hasAuth = userLoginService.hasAuth(accessCode, AuthEnum.A_RANK);
         if (!CollectionUtils.isEmpty(userStocks)) {
             List<String> codes = userStocks.stream().map(a -> a.getCode()).collect(Collectors.toList());
-            List<Rank> ranks = rankService.findByCode(codes);
-            if (!CollectionUtils.isEmpty(ranks)) {
+            List<StockRank> stockRanks = rankService.findByCode(codes);
+            if (!CollectionUtils.isEmpty(stockRanks)) {
                 List<Company> companies = companyService.findByCodes(codes);
                 Map<String, List<Company>> companyMap = companies.stream().collect(Collectors.groupingBy(Company::getCode));
-                rankVos = ConvertUtils.listConvert(ranks, RankVo.class, (d, s) -> {
+                rankVos = ConvertUtils.listConvert(stockRanks, RankVo.class, (d, s) -> {
                     BigDecimal score = hasAuth ? new BigDecimal(100).subtract(s.getScore())
                             : new BigDecimal(100).subtract(vagueScore(s.getScore()));
+                    d.setAiScore(score);
+                    d.setName(companyMap.get(s.getCode()).get(0).getName());
+                });
+            }
+        }
+        return rankVos;
+    }
+
+
+    public List<RankVo> findStockByUser(String user) {
+        List<UserStock> userStocks = userStockMapper.findByUser(user);
+        List<RankVo> rankVos = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(userStocks)) {
+            List<String> codes = userStocks.stream().map(a -> a.getCode()).collect(Collectors.toList());
+            List<StockRank> stockRanks = rankService.findByCode(codes);
+            if (!CollectionUtils.isEmpty(stockRanks)) {
+                List<Company> companies = companyService.findByCodes(codes);
+                Map<String, List<Company>> companyMap = companies.stream().collect(Collectors.groupingBy(Company::getCode));
+                rankVos = ConvertUtils.listConvert(stockRanks, RankVo.class, (d, s) -> {
+                    BigDecimal score = new BigDecimal(100).subtract(s.getScore());
                     d.setAiScore(score);
                     d.setName(companyMap.get(s.getCode()).get(0).getName());
                 });
@@ -95,19 +115,21 @@ public class UserStockService {
      *
      * @param userStock
      */
-    private void checkStock(UserStock userStock) {
+    private void checkStock(UserStock userStock, String accessCode) {
         UserStock stock = userStockMapper.getByUserAndCode(userStock.getUser(), userStock.getCode());
         //AI是否对该股票进行了打分
-        Rank rank = rankService.getByCode(userStock.getCode());
-        if (Objects.isNull(rank)) {
+        StockRank stockRank = rankService.getByCode(userStock.getCode());
+        if (Objects.isNull(stockRank)) {
             throw new ServiceException(ApplicationErrorMessage.NO_AI_SCORE);
         }
         if (Objects.nonNull(stock)) {
             throw new ServiceException(ApplicationErrorMessage.USER_HAS_STOCK);
         }
         Long stockCount = userStockMapper.getStockCountByUser(userStock.getUser());
-        if (stockCount >= 10) {
-            throw new ServiceException(ApplicationErrorMessage.USER_STOCK_OVER);
+        if (!userLoginService.hasAuth(accessCode, AuthEnum.A_RANK)) {
+            if (stockCount >= 10) {
+                throw new ServiceException(ApplicationErrorMessage.USER_STOCK_OVER);
+            }
         }
     }
 

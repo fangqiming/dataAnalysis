@@ -1,5 +1,8 @@
 package com.i000.stock.user.api.service.external;
 
+import com.i000.stock.user.api.entity.bo.JQKlineBo;
+import com.i000.stock.user.api.entity.constant.PeriodEnum;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -27,4 +30,15 @@ public interface CompanyCrawlerService {
      * @throws IOException
      */
     Map<String, String> getCodeName();
+
+    /**
+     * 获取指定周期的K线数量
+     *
+     * @param code
+     * @param periodEnum
+     * @return
+     */
+    List<JQKlineBo> findKLine(String code, PeriodEnum periodEnum,Integer count);
+
+
 }

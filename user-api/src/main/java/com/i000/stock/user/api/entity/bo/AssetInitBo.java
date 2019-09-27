@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.math.BigDecimal;
 
 @Data
-@ConfigurationProperties(prefix="business.init")
+@ConfigurationProperties(prefix = "business.init")
 public class AssetInitBo {
 
     private BigDecimal amount;

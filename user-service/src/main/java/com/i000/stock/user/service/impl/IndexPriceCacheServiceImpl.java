@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +60,6 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
     private static List<IndexInfo> INDEX = new ArrayList<>();
 
     private static List<Price> PRICE = new ArrayList<>();
-
 
 
     @Override
@@ -142,7 +142,7 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
         List<IndexInfo> indexInfos = getIndex(20);
         IndexValue indexValue = IndexValue.builder().build();
         for (IndexInfo indexInfo : indexInfos) {
-            if (!indexInfo.getDate().equals(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))) {
+            if (!isOpenMarket()) {
                 //当天不是股市交易日，不保存不计算
                 return;
             }
@@ -158,6 +158,23 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
             }
         }
         indexValueService.save(indexValue);
+    }
+
+    /**
+     * 判定当天是否是股市交易日
+     *
+     * @return
+     */
+    @Override
+    public boolean isOpenMarket() {
+        try {
+            List<Price> price = externalService.getPrice(Arrays.asList("600309"));
+            System.out.println(price.get(0).getDate());
+            return price.get(0).getDate().equals(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        } catch (Exception e) {
+            log.warn("判定当天是否休市异常");
+        }
+        return true;
     }
 
     @Override

@@ -10,7 +10,7 @@
     </resultMap>
 
     <select id="find" resultMap="FinancialCompositeBo">
-        select  ${expression} as `value`,`code`  from ${tableName} where 1=1
+        select ${expression} as `value`,`code` from ${tableName} where 1=1
         <foreach collection="codes" item="item" open="and `code` IN(" close=")" separator=",">
             #{item}
         </foreach>

@@ -27,6 +27,6 @@ public class ExampleVo {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime createdTime;
 
-    @DateTimeFormat(pattern="yyyy-MM-dd hh:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime updatedTime;
 }

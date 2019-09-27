@@ -24,4 +24,7 @@ public class ActualDiscDetailBO {
     private BigDecimal netWorth;
 
     private BigDecimal weekRate;
+
+
+
 }

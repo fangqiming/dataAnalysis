@@ -44,6 +44,7 @@ public interface TradeService {
 
     /**
      * 获取指定日期的卖出数量
+     *
      * @param date
      * @return
      */
@@ -51,6 +52,7 @@ public interface TradeService {
 
     /**
      * 获取指定日期的买入数量
+     *
      * @param date
      * @return
      */

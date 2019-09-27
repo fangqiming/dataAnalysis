@@ -29,6 +29,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <mysql.driver.version>5.1.41</mysql.driver.version>
+        <!-- <mysql.driver.version>8.0.11</mysql.driver.version>-->
         <apache.common.lang3.version>3.6</apache.common.lang3.version>
         <apache.common.io.version>2.5</apache.common.io.version>
         <apache.common.configuration.version>1.10</apache.common.configuration.version>
@@ -211,6 +212,12 @@
                 <version>1.9.22</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.tictactec</groupId>
+                <artifactId>ta-lib</artifactId>
+                <version>0.4.0</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>
@@ -223,7 +230,9 @@
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
             </releases>
-            <snapshots><enabled>false</enabled></snapshots>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

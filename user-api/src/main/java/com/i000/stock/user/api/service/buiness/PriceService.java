@@ -1,6 +1,9 @@
 package com.i000.stock.user.api.service.buiness;
 
+import com.i000.stock.user.dao.model.StockPrice;
+
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @Author:qmfang
@@ -18,6 +21,12 @@ public interface PriceService {
      */
     StringBuffer get() throws IOException;
 
+    /**
+     * 获取最新的股价数据
+     *
+     * @return
+     */
+    List<StockPrice> findStockPrice();
 
 
 }

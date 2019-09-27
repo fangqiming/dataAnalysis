@@ -7,6 +7,8 @@ import com.i000.stock.user.api.service.external.IndexService;
 import com.i000.stock.user.api.service.buiness.PriceService;
 import com.i000.stock.user.api.entity.bo.Price;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
+import com.i000.stock.user.core.util.ConvertUtils;
+import com.i000.stock.user.dao.model.StockPrice;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,19 @@ public class PriceServiceImpl implements PriceService {
         return result.append(createIndex(indexInfos)).append(createPrice(prices));
     }
 
+    @Override
+    public List<StockPrice> findStockPrice() {
+        List<IndexInfo> indexInfos = indexPriceCacheService.getIndex(5);
+        List<Price> prices = indexPriceCacheService.getPrice(5);
+        List<StockPrice> stockPrices = ConvertUtils.listConvert(indexInfos, StockPrice.class, (d, s) -> {
+            d.setClose(s.getClose());
+        });
+        List<StockPrice> result = ConvertUtils.listConvert(prices, StockPrice.class, (d, s) -> {
+            d.setClose(s.getPrice());
+        });
+        result.addAll(stockPrices);
+        return result;
+    }
 
     private StringBuffer createPrice(List<Price> prices) {
         StringBuffer result = new StringBuffer();

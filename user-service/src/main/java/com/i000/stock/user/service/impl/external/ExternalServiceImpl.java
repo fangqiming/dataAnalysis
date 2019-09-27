@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.i000.stock.user.api.entity.bo.IndexBo;
 import com.i000.stock.user.api.entity.bo.Price;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import retrofit2.Call;

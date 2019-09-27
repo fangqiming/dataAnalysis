@@ -27,7 +27,7 @@ public class ToStringConverterFactory extends Converter.Factory {
 
     @Override
     public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations,
-                                                                    Annotation[] methodAnnotations, Retrofit retrofit) {
+                                                          Annotation[] methodAnnotations, Retrofit retrofit) {
         if (String.class.equals(type)) {
             return (Converter<String, RequestBody>) value -> RequestBody.create(MEDIA_TYPE, value);
         }

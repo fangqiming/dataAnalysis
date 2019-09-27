@@ -4,6 +4,7 @@ import com.i000.stock.user.api.entity.bo.AssetInitBo;
 import com.i000.stock.user.api.entity.bo.TokenBo;
 import com.i000.stock.user.core.file.oss.OSSFileUpload;
 import com.i000.stock.user.core.file.oss.OSSUtil;
+import com.tictactec.ta.lib.Core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -87,5 +88,10 @@ public class CommonConfig {
     @ConfigurationProperties(prefix = "jq.data")
     public TokenBo tokenBo() {
         return new TokenBo();
+    }
+
+    @Bean
+    public Core core() {
+        return new Core();
     }
 }

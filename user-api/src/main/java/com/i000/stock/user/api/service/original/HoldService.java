@@ -43,6 +43,4 @@ public interface HoldService {
     List<Hold> findByNameAndDate(LocalDate date, String name);
 
 
-
-
 }

@@ -27,7 +27,7 @@
     </select>
 
     <select id="find" resultMap="IndexGain">
-         select * from index_gain
+        select * from index_gain
     </select>
 
     <select id="getDiff" resultMap="IndexGain">

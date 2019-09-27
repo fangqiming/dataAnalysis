@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +49,10 @@ public class IndexServiceImpl implements IndexService {
             try {
                 IndexBo index = externalService.getIndex();
                 if (Objects.nonNull(index)) {
+                    List<IndexInfo> data = index.getData();
+                    for (IndexInfo indexInfo : data) {
+                        indexInfo.setDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                    }
                     return index;
                 }
             } catch (Exception e) {

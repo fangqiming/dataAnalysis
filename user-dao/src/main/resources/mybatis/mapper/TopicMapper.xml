@@ -21,7 +21,7 @@
 
     <select id="search" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo" resultMap="Topic">
         select sql_calc_found_rows * from topic
-		ORDER BY created_time DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
+        ORDER BY created_time DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Long">

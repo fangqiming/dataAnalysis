@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -217,19 +218,29 @@ public class AssetServiceImpl implements AssetService {
     }
 
     private void handleShareCapitalChange(String userCode) {
+        /**
+         * 应该直接拿最后两次的进行比较,如果不对就是进行了除权除息
+         */
+
         List<Hold> hold = holdService.findHold();
         if (!(hold.size() == 1 && StringUtils.isEmpty(hold.get(0).getName()))) {
             for (Hold stock : hold) {
                 List<Hold> stocks = holdService.findByNameAndDate(stock.getOldDate(), stock.getName());
+                //获取到第一次买入时的成本价
                 BigDecimal buyPrice = stocks.get(0).getOldPrice();
+                //对整个历史时期的持股进行遍历
                 for (int i = 1; i < stocks.size(); i++) {
+                    //获取到当前的成本价
                     Hold temp = stocks.get(i);
+                    //第一次买入的成本价 ! = 当前的成本价
                     if (!buyPrice.equals(temp.getOldPrice())) {
+                        //开始进行股份数与价格的调整
                         BigDecimal newPrice = temp.getOldPrice();
                         TradeRecord trade = tradeRecordService.getByNameAndDate(temp.getOldDate(), temp.getName(), userCode);
                         BigDecimal newAmount = trade.getOldPrice().multiply(trade.getAmount()).divide(newPrice, 0, BigDecimal.ROUND_HALF_UP);
                         tradeRecordService.updateAmountAndPriceById(trade.getId(), newAmount, newPrice);
-                        holdNowService.updateAmountPriceByName(newPrice, newAmount, temp.getName(), userCode);
+                        //就在此处发生了错误
+                        holdNowService.updateAmountPriceByName(newPrice, newAmount, temp.getName(), userCode, stock.getOldDate());
                     }
                 }
             }

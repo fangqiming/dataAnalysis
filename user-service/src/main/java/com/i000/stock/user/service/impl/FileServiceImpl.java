@@ -2,7 +2,7 @@ package com.i000.stock.user.service.impl;
 
 import com.i000.stock.user.api.service.util.FileService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;

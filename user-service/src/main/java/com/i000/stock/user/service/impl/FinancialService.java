@@ -171,15 +171,15 @@ public class FinancialService {
     }
 
     private AIIndexBo createAiIndexBo(String code) {
-        Rank rank = rankExplainService.getRankByCode(code);
+        StockRank stockRank = rankExplainService.getRankByCode(code);
         AIIndexBo result = new AIIndexBo();
-        if (Objects.nonNull(rank)) {
-            result.setScore(new BigDecimal(100).subtract(vagueScore(rank.getScore())));
-            BigDecimal beatRate = rankExplainService.getBeatRateByScore(rank.getScore());
+        if (Objects.nonNull(stockRank)) {
+            result.setScore(new BigDecimal(100).subtract(vagueScore(stockRank.getScore())));
+            BigDecimal beatRate = rankExplainService.getBeatRateByScore(stockRank.getScore());
             result.setBeat(beatRate);
-            result.setResult(getGradeByBeat(rank.getScore()));
-            result.setDate(rank.getDate());
-            RankExplain rankExplain = rankExplainService.getRankExplainByScore(rank.getScore());
+            result.setResult(getGradeByBeat(stockRank.getScore()));
+            result.setDate(stockRank.getDate());
+            RankExplain rankExplain = rankExplainService.getRankExplainByScore(stockRank.getScore());
             if (Objects.nonNull(rankExplain)) {
                 result.setWinRate(rankExplain.getWinRate());
                 result.setMaxProfitRate(rankExplain.getMaxProfit());
@@ -259,7 +259,7 @@ public class FinancialService {
     }
 
     private String createDateRange(List<Financial> financials) {
-        if (Objects.nonNull(financials)) {
+        if (!CollectionUtils.isEmpty(financials)) {
             return financials.get(0).getDay().format(DateTimeFormatter.ofPattern("yyyy")) + "--" +
                     financials.get(financials.size() - 1).getDay().format(DateTimeFormatter.ofPattern("yyyy"));
         }
@@ -306,5 +306,5 @@ public class FinancialService {
         }
         return ema;
     }
-    
+
 }

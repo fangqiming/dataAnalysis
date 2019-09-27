@@ -56,4 +56,11 @@ public interface IndexPriceCacheService {
      * 清除缓存数据
      */
     void clearCache();
+
+    /**
+     * 是否开市
+     *
+     * @return
+     */
+    boolean isOpenMarket();
 }

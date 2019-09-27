@@ -43,4 +43,7 @@ public class HoldNowVo {
     //股票名称
     private String stockName;
 
+    //链接到雪球
+    private String url;
+
 }

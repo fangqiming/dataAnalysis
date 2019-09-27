@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class AssetStatisticalBo {
 
-//    @JsonSerialize(using = BigDecimalRoundSerializer.class)
+    //    @JsonSerialize(using = BigDecimalRoundSerializer.class)
     private BigDecimal total;
     private BigDecimal todayGain;
     private BigDecimal totalGain;

@@ -180,7 +180,7 @@ public class KLineData {
      * @param kLine
      * @return
      */
-    public KLineBO     buy(List<KLineBO> kLine, String symbol) {
+    public KLineBO buy(List<KLineBO> kLine, String symbol) {
 //        symbol = symbol.startsWith("60") ? "sh" + symbol : "sz" + symbol;
 //        List<KLineBO> kLine = getKLine(5, 1024, symbol);
         BollBo boll = getBoll(kLine);

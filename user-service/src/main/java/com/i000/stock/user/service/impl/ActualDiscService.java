@@ -83,7 +83,7 @@ public class ActualDiscService {
         List<ActualDiscDetailBO> list = new ArrayList<>();
         EntityWrapper<ActualDisc> ew = new EntityWrapper<>();
         ew.where("name = {0}", name);
-        ew.orderBy("date",false);
+        ew.orderBy("date", false);
 
         Page page = new Page(baseSearchVo.getPageNo(), baseSearchVo.getPageSize());
         //获取了实盘数据，采用的倒序

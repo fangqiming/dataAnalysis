@@ -91,8 +91,8 @@ public class UserLoginServiceImpl implements UserLoginService {
     @Override
     public void checkAuth(String accessCode, AuthEnum authEnum) {
         UserLogin userLogin = getByAccessCode(accessCode);
-        if (StringUtils.isEmpty(userLogin.getAuthority()) || !userLogin.getAuthority().contains("AS")) {
-            return;
+        if (StringUtils.isEmpty(userLogin.getAuthority())) {
+            throw new ServiceException(ApplicationErrorMessage.NO_AUTH);
         }
         Duration between = Duration.between(userLogin.getLoginTime(), LocalDateTime.now());
         long diffMinute = between.toMinutes();

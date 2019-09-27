@@ -90,7 +90,7 @@ public class TradeController {
      */
     @GetMapping(path = "/find_gain")
     public ResultEntity findProfit(@RequestParam(defaultValue = "") String data) {
-       String userCode = getUserCode();
+        String userCode = getUserCode();
         Asset lately = assetService.getLately(userCode);
         LocalDate temp = lately.getDate();
         Integer diff = -1;
@@ -234,6 +234,8 @@ public class TradeController {
                 holdNowVo.setEarning(holdNowVo.getValue().subtract(holdNowVo.getCost()));
                 holdNowVo.setStockName(companyService.getNameByCode(holdNowVo.getName()));
                 holdNowVo.setGain(holdNowVo.getGain().multiply(new BigDecimal(100)));
+                holdNowVo.setUrl(String.format("https://xueqiu.com/S/%s",
+                        holdNowVo.getName().startsWith("6") ? "SH" + holdNowVo.getName() : "SZ" + holdNowVo.getName()));
             }
             return Results.newListResultEntity(holdNowVos);
         }

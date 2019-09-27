@@ -13,8 +13,10 @@ import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.Company;
+import com.i000.stock.user.dao.model.StockFocus;
 import com.i000.stock.user.dao.model.UserStock;
 import com.i000.stock.user.service.impl.*;
+import com.i000.stock.user.web.service.StockFocusService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,20 @@ public class DiagnosisController {
 
     @Autowired
     private RankService rankService;
+
+    @Autowired
+    private StockFocusService stockFocusService;
+
+    /**
+     * 查找小股池的技术面得分
+     *
+     * @return
+     */
+    @GetMapping(path = "/find_focus")
+    public ResultEntity find_focus() {
+        List<StockFocus> stockFoci = stockFocusService.find();
+        return Results.newSingleResultEntity(stockFoci);
+    }
 
 
     /**
@@ -133,7 +149,7 @@ public class DiagnosisController {
     public ResultEntity findUserStock() {
         String user = getAccountCode();
         String accessCode = getAccessCode();
-        List<RankVo> stockUser = userStockService.findStockByUser(user,accessCode);
+        List<RankVo> stockUser = userStockService.findStockByUser(user, accessCode);
         return Results.newListResultEntity(stockUser);
     }
 
@@ -142,8 +158,9 @@ public class DiagnosisController {
         String code = getCodeByName(stock);
         ValidationUtils.validateStringParameter(code, "股票代码不能为空");
         String user = getAccountCode();
+        String accessCode = getAccessCode();
         UserStock userStock = UserStock.builder().user(user).code(code).build();
-        userStockService.saveStock(userStock);
+        userStockService.saveStock(userStock, accessCode);
         return Results.newEmptyResultEntity();
     }
 
@@ -196,7 +213,12 @@ public class DiagnosisController {
             if (CollectionUtils.isEmpty(company)) {
                 return null;
             }
-            code = company.get(0).getCode();
+            for (Company company1 : company) {
+                if (code.equals(company1.getName())) {
+                    return company1.getCode();
+                }
+            }
+
         }
         return code;
     }

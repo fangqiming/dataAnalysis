@@ -19,8 +19,8 @@
     </resultMap>
 
     <select id="search" parameterType="com.i000.stock.user.dao.bo.BaseSearchVo" resultMap="Reply">
-        select sql_calc_found_rows * from reply where topic_id=${id} and  ISNULL(reply_id)
-		ORDER BY created_time DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
+        select sql_calc_found_rows * from reply where topic_id=${id} and ISNULL(reply_id)
+        ORDER BY created_time DESC limit ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
     <select id="count" resultType="java.lang.Long">

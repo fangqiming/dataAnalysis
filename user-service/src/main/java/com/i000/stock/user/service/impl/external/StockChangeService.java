@@ -2,10 +2,11 @@ package com.i000.stock.user.service.impl.external;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.i000.stock.user.api.entity.bo.StockChangeDataBO;
 import com.i000.stock.user.api.entity.util.Cache;
 import com.i000.stock.user.dao.mapper.StockChangeMapper;
-import com.i000.stock.user.dao.model.Rank;
+import com.i000.stock.user.dao.model.StockRank;
 import com.i000.stock.user.dao.model.StockChange;
 import com.i000.stock.user.service.impl.RankService;
 import lombok.extern.log4j.Log4j;
@@ -24,6 +25,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.swing.text.html.parser.Entity;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -116,6 +118,19 @@ public class StockChangeService {
         return result;
     }
 
+    /**
+     * 获取指定股票近一年的增减持信息
+     *
+     * @param code
+     * @return
+     */
+    public List<StockChange> findNearYear(String code) {
+        LocalDate yearAgo = LocalDate.now().minusYears(1L);
+        EntityWrapper<StockChange> ew = new EntityWrapper<>();
+        ew.where(" `code`={0}", code).between("date", yearAgo, LocalDate.now());
+        return stockChangeMapper.selectList(ew);
+    }
+
     public BigDecimal getChangeNumber(String code) {
         Long changeNumber = stockChangeMapper.getChangeNumber(code);
         Long haveNumber = stockChangeMapper.gethaveNumber(code);
@@ -129,11 +144,11 @@ public class StockChangeService {
     }
 
     public void updateStockChange() {
-        List<Rank> ranks = rankService.finaAll();
-        for (Rank rank : ranks) {
-            List<StockChange> stockChanges = getFromNet(rank.getCode());
+        List<StockRank> stockRanks = rankService.finaAll();
+        for (StockRank stockRank : stockRanks) {
+            List<StockChange> stockChanges = getFromNet(stockRank.getCode());
             if (!CollectionUtils.isEmpty(stockChanges)) {
-                LocalDate date = stockChangeMapper.getMaxDateByCode(rank.getCode());
+                LocalDate date = stockChangeMapper.getMaxDateByCode(stockRank.getCode());
                 List<StockChange> newChange = stockChanges.stream().filter(a -> Objects.isNull(date) || a.getDate().compareTo(date) > 0).collect(Collectors.toList());
                 for (StockChange stockChange : newChange) {
                     stockChangeMapper.insert(stockChange);

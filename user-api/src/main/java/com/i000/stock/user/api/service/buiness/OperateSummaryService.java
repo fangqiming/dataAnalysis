@@ -14,7 +14,7 @@ public interface OperateSummaryService {
     /**
      * 更新卖出次数 和 累计持有天数 , 亏本数  , 获利数
      */
-    void updateSell(Integer holdDay, Integer profit, Integer loss,String userCode);
+    void updateSell(Integer holdDay, Integer profit, Integer loss, String userCode);
 
     /**
      * 更新买入次数

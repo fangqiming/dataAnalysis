@@ -5,11 +5,14 @@ import com.i000.stock.user.api.service.external.StockPledgeService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.dao.model.IndexPrice;
 import com.i000.stock.user.dao.model.IndexUs;
+import com.i000.stock.user.dao.model.StockPrice;
+import com.i000.stock.user.service.impl.StockPriceService;
 import com.i000.stock.user.service.impl.external.NoticeService;
 import com.i000.stock.user.service.impl.external.StockChangeService;
 import com.i000.stock.user.service.impl.external.macro.MacroService;
 import com.i000.stock.user.service.impl.external.material.MaterialPriceService;
 import com.i000.stock.user.service.impl.us.service.IndexUSService;
+import com.i000.stock.user.web.service.StockFocusService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * @Author:qmfang
@@ -51,6 +55,12 @@ public class IndexPriceSchedule {
     @Autowired
     private MacroService macroService;
 
+    @Autowired
+    private StockPriceService stockPriceService;
+
+    @Autowired
+    private StockFocusService stockFocusService;
+
     /**
      * 保存指数价格信息到数据库中
      */
@@ -58,7 +68,9 @@ public class IndexPriceSchedule {
     public void saveIndexPrice() {
         try {
             StringBuffer stringBuffer = indexPriceService.get();
-            if (isStockDay(stringBuffer)) {
+            if (true) {
+                List<StockPrice> stockPrice = indexPriceService.findStockPrice();
+                stockPriceService.batchSave(stockPrice);
                 IndexPrice indexPrice = IndexPrice.builder().date(LocalDate.now()).content(stringBuffer.toString()).build();
                 indexPriceService.save(indexPrice);
             }
@@ -75,6 +87,8 @@ public class IndexPriceSchedule {
         log.warn("定时器触发更新A股股市数据");
         indexPriceCacheService.putIndexToCache(101);
         indexPriceCacheService.putPriceToCache(101);
+        stockFocusService.save("毕达哥拉斯");
+
     }
 
 
@@ -106,20 +120,6 @@ public class IndexPriceSchedule {
         }
     }
 
-    /**
-     * 判断当天是否是股市交易日
-     *
-     * @param stringBuffer
-     * @return
-     */
-    private boolean isStockDay(StringBuffer stringBuffer) {
-        CharSequence charSequence = stringBuffer.subSequence(0, 20);
-        String str = charSequence.toString();
-        String[] split = str.split(",");
-        LocalDate localDates = LocalDate.parse(split[1], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        return LocalDate.now().compareTo(localDates) == 0;
-    }
-
 
     @Scheduled(cron = "0 30 16 * * ?")
     public void saveUsIndex() {
@@ -145,6 +145,7 @@ public class IndexPriceSchedule {
 
     @Scheduled(cron = "0 00 04 * * ?")
     public void updateStockChange() {
+        log.info("更新增减持信息");
         stockChangeService.updateStockChange();
     }
 

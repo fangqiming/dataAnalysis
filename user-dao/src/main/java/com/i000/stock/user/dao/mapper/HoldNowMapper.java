@@ -62,6 +62,7 @@ public interface HoldNowMapper extends BaseMapper<HoldNow> {
     @Select("select count(*) from hold_now where user_code = #{name};")
     Integer getCount(String name);
 
-    @Update("update hold_now set old_price =#{price} ,amount =#{amount} where `name`=#{name} and user_code=#{userCode}")
-    void updateAmountPriceByName(@Param("amount") BigDecimal amount, @Param("price") BigDecimal price, @Param("name") String name, @Param("userCode") String userCode);
+    @Update("update hold_now set old_price =#{price} ,amount =#{amount} where `name`=#{name} and user_code=#{userCode} and old_date=#{oldDate}")
+    void updateAmountPriceByName(@Param("amount") BigDecimal amount, @Param("price") BigDecimal price
+            , @Param("name") String name, @Param("userCode") String userCode, @Param("oldDate") LocalDate oldDate);
 }

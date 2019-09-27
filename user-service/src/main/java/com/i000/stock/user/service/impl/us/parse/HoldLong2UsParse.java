@@ -18,13 +18,13 @@ public class HoldLong2UsParse implements ParseHold {
     private HoldUsMapper holdUsMapper;
 
     @Override
-    public void save(String[] content,LocalDate date) {
+    public void save(String[] content, LocalDate date) {
         List<HoldUs> holdUses = parseToBean(content, TYPE);
-        if(!CollectionUtils.isEmpty(holdUses)){
+        if (!CollectionUtils.isEmpty(holdUses)) {
             for (HoldUs holdUs : holdUses) {
                 holdUsMapper.insert(holdUs);
             }
-        }else{
+        } else {
             HoldUs holdUs = HoldUs.builder().type(TYPE)
                     .newDate(date).build();
             holdUsMapper.insert(holdUs);

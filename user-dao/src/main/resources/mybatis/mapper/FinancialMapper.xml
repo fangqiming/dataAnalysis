@@ -43,8 +43,8 @@
     </resultMap>
 
     <select id="findBySingleSql" resultMap="Financial">
-      select *, ${expression} as total
-      from financial where `day`=#{day}
+        select *, ${expression} as total
+        from financial where `day`=#{day}
         <foreach collection="code" item="item" open="and `code` IN(" close=")" separator=",">
             #{item}
         </foreach>
@@ -58,6 +58,6 @@
         <foreach collection="days" item="item" open="and `day` IN(" close=")" separator=",">
             #{item}
         </foreach>
-</select>
+    </select>
 
 </mapper>

@@ -14,12 +14,12 @@ import com.i000.stock.user.service.impl.external.StockChangeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 
 @Service
@@ -43,6 +43,9 @@ public class RankExplainService {
     @Autowired
     private StockChangeService stockChangeService;
 
+    @Autowired
+    private StockPriceService stockPriceService;
+
 
     public BigDecimal getBeatRateByScore(BigDecimal score) {
         BigDecimal gtCount = rankMapper.getGtCount(score);
@@ -53,8 +56,8 @@ public class RankExplainService {
         return null;
     }
 
-    public Rank getRankByCode(String code) {
-        EntityWrapper<Rank> ew = new EntityWrapper<>();
+    public StockRank getRankByCode(String code) {
+        EntityWrapper<StockRank> ew = new EntityWrapper<>();
         ew.where("code = {0}", code);
         return getRankByEw(ew);
     }
@@ -67,24 +70,24 @@ public class RankExplainService {
 
     public PageResult<RankVo> searchRankVo(BaseSearchVo baseSearchVo, String filed, Boolean isAsc) {
         PageResult<RankVo> result = new PageResult<>();
-        EntityWrapper<Rank> ew = new EntityWrapper();
+        EntityWrapper<StockRank> ew = new EntityWrapper();
         ew.orderBy(filed, isAsc);
         Page page = new Page(baseSearchVo.getPageNo(), baseSearchVo.getPageSize());
-        List<Rank> ranks = rankMapper.selectPage(page, ew);
-        List<RankVo> rankVos = new ArrayList<>(ranks.size());
-        for (Rank rank : ranks) {
+        List<StockRank> stockRanks = rankMapper.selectPage(page, ew);
+        List<RankVo> rankVos = new ArrayList<>(stockRanks.size());
+        for (StockRank stockRank : stockRanks) {
             RankVo rankVo = new RankVo();
-            RankVo rankVo1 = ConvertUtils.beanConvert(rank, rankVo);
-            rankVo1.setAiScore(new BigDecimal(100).subtract(rank.getScore()));
-            String url = String.format("https://xueqiu.com/S/%s", rank.getCode().startsWith("6")
-                    ? "SH" + rank.getCode() : "SZ" + rank.getCode());
+            RankVo rankVo1 = ConvertUtils.beanConvert(stockRank, rankVo);
+            rankVo1.setAiScore(new BigDecimal(100).subtract(stockRank.getScore()));
+            String url = String.format("https://xueqiu.com/S/%s", stockRank.getCode().startsWith("6")
+                    ? "SH" + stockRank.getCode() : "SZ" + stockRank.getCode());
 
             String changeStockUrl = String.format("https://xueqiu.com/snowman/S/%s/detail#/INSIDER",
-                    rank.getCode().startsWith("6") ? "SH" + rank.getCode() : "SZ" + rank.getCode());
+                    stockRank.getCode().startsWith("6") ? "SH" + stockRank.getCode() : "SZ" + stockRank.getCode());
             rankVo1.setUrl(url);
-            rankVo1.setChangeStock(stockChangeService.getChangeNumber(rank.getCode()));
+            rankVo1.setChangeStock(stockChangeService.getChangeNumber(stockRank.getCode()));
             rankVo1.setChangeStockUrl(changeStockUrl);
-            Fundamentals fun = fundamentalsService.getByCode(rank.getCode());
+            Fundamentals fun = fundamentalsService.getByCode(stockRank.getCode());
             if (Objects.nonNull(fun)) {
                 rankVo1.setAvgPe(fun.getAvgPe());
                 rankVo1.setPe(fun.getPe());
@@ -92,12 +95,43 @@ public class RankExplainService {
                 rankVo1.setPeg(fun.getPeg());
                 rankVo1.setName(fun.getName());
             }
+            //添加增减持信息
+            addStockChangeInfo(rankVo1);
             rankVos.add(rankVo1);
         }
         BigDecimal count = rankMapper.getCount();
         result.setList(rankVos);
         result.setTotal(count.longValue());
         return result;
+    }
+
+    /**
+     * 追加股票的增减持信息
+     *
+     * @param rankVo
+     * @return
+     */
+    public void addStockChangeInfo(RankVo rankVo) {
+        List<StockChange> nearYear = stockChangeService.findNearYear(rankVo.getCode());
+        if (!CollectionUtils.isEmpty(nearYear)) {
+            StockPrice stockPrice = stockPriceService.getByCode(rankVo.getCode());
+            //总金额
+            double amount = nearYear.stream().map(a -> a.getChangeNumber().multiply(a.getTradePrice())).mapToDouble(a -> a.doubleValue()).sum();
+            //总股份数
+            int share = nearYear.stream().mapToInt(a -> a.getChangeNumber().intValue()).sum();
+            BigDecimal avgCost;
+            if (share != 0) {
+                avgCost = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(share), 2, BigDecimal.ROUND_UP);
+            } else {
+                avgCost = BigDecimal.valueOf(amount);
+            }
+            rankVo.setAvgCost(avgCost);
+            BigDecimal totalAmount = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(10000), 1, BigDecimal.ROUND_UP);
+            rankVo.setAmount(totalAmount);
+            if (Objects.nonNull(stockPrice)) {
+                rankVo.setClose(stockPrice.getClose());
+            }
+        }
     }
 
 
@@ -109,10 +143,10 @@ public class RankExplainService {
         return null;
     }
 
-    private Rank getRankByEw(EntityWrapper<Rank> ew) {
-        List<Rank> rankExplains = rankMapper.selectList(ew);
-        if (!CollectionUtils.isEmpty(rankExplains)) {
-            return rankExplains.get(0);
+    private StockRank getRankByEw(EntityWrapper<StockRank> ew) {
+        List<StockRank> stockRankExplains = rankMapper.selectList(ew);
+        if (!CollectionUtils.isEmpty(stockRankExplains)) {
+            return stockRankExplains.get(0);
         }
         return null;
     }

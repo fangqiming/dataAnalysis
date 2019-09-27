@@ -17,6 +17,7 @@ public interface IndexPriceMapper extends BaseMapper<IndexPrice> {
 
     /**
      * 根据日期获取股市价格
+     *
      * @param date
      * @return
      */

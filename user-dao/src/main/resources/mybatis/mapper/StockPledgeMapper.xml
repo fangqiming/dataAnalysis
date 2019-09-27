@@ -17,14 +17,14 @@
     </resultMap>
 
     <select id="search" resultMap="StockPledge">
-          select sql_calc_found_rows * from stock_pledge where 1=1
-            <if test="code != ''">
-                and `code` like '%${code}%'
-            </if>
-            <if test="name != ''">
-                and `name` like '%${name}%'
-            </if>
-           limit ${baseSearchVo.start},${baseSearchVo.pageSize}
+        select sql_calc_found_rows * from stock_pledge where 1=1
+        <if test="code != ''">
+            and `code` like '%${code}%'
+        </if>
+        <if test="name != ''">
+            and `name` like '%${name}%'
+        </if>
+        limit ${baseSearchVo.start},${baseSearchVo.pageSize}
     </select>
 
 </mapper>

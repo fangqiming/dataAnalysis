@@ -30,7 +30,8 @@
     </select>
 
     <update id="updatePrice">
-        update hold_now set new_price=#{price},new_date=#{date} ,gain=(new_price-old_price)/old_price where `name`=#{name}
+        update hold_now set new_price=#{price},new_date=#{date} ,gain=(new_price-old_price)/old_price where
+        `name`=#{name}
     </update>
 
 </mapper>

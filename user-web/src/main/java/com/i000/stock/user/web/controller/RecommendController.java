@@ -19,7 +19,7 @@ import com.i000.stock.user.dao.model.UserInfo;
 import com.i000.stock.user.service.impl.ReverseRepoService;
 import com.i000.stock.user.service.impl.operate.BuyAssetImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -122,7 +122,7 @@ public class RecommendController {
         List<Plan> plans = planService.findByDate(date);
         List<PlanInfoVo> result = new ArrayList<>(plans.size());
         for (Plan plan : plans) {
-            if (StringUtils.isNoneBlank(plan.getName())) {
+            if (StringUtils.isNotBlank(plan.getName())) {
                 PlanInfoVo tmp = create(plan.getName(), true);
                 tmp.setInfo(companyInfoCrawlerService.getInfo(plan.getName()));
                 result.add(tmp);
@@ -157,6 +157,8 @@ public class RecommendController {
             for (PlanVo planVo : planVos) {
                 String stockName = companyService.getNameByCode(planVo.getName());
                 planVo.setStockName(stockName);
+                planVo.setUrl(String.format("https://xueqiu.com/S/%s",
+                        planVo.getName().startsWith("6") ? "SH" + planVo.getName() : "SZ" + planVo.getName()));
                 if ("SELL".equals(planVo.getAction())) {
                     planVo.setInvestmentRatio(new BigDecimal("1"));
                 } else {

@@ -33,7 +33,8 @@ public enum ApplicationErrorMessage implements BaseEnum {
     NO_AI_SCORE(11090015L, "AI未对该股票进行评分"),
 
     NO_LOGIN(11090016L, "未登录"),
-    ACTUAL_DISC_DATA_ERROR(11090017L, "实盘数据错误"),;
+    ACTUAL_DISC_DATA_ERROR(11090017L, "实盘数据错误"),
+    ;
 
     @Getter
     private Long code;

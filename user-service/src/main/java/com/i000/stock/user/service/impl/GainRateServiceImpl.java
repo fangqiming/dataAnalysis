@@ -179,9 +179,14 @@ public class GainRateServiceImpl implements GainRateService {
     public RelativeProfitBO getTotalBeatByUserCode(String userCode) {
         IndexValue after = indexValueService.getLastOne();
         IndexValue now = indexValueService.getLately();
+        System.out.println("after = " + after);
+        System.out.println("now = " + now);
         BigDecimal sz = getRelativeProfitRate(now.getSh(), after.getSh());
         Asset nowAsset = assetService.getLately(userCode);
         Asset afterAsset = assetService.getByUserCodeAndDate(userCode, after.getDate());
+
+        System.out.println("nowAsset = " + nowAsset);
+        System.out.println("afterAsset = " + afterAsset);
         BigDecimal bd = getRelativeProfitRate(nowAsset, afterAsset);
 
         RelativeProfitBO relativeProfitBO = RelativeProfitBO.builder()

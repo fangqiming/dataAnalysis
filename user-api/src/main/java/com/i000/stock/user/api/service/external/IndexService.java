@@ -20,8 +20,4 @@ public interface IndexService {
     List<IndexInfo> get();
 
 
-
-
-
-
 }
