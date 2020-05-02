@@ -100,7 +100,8 @@ public class CommonConfig {
 
     @Bean
     public OcrClient ocrClient() {
-        Credential cred = new Credential("AKIDmMhZAaOSOZeS1vgjYEI5MMCQMlulbdeP", "cxZuyYtiGXXGjvqVS9suLQFAGAf28zxf");
+        TokenBo tokenBo = tokenBo();
+        Credential cred = new Credential(tokenBo.getSd(), tokenBo.getSk());
         ClientProfile clientProfile = new ClientProfile();
         clientProfile.setSignMethod(ClientProfile.SIGN_TC3_256);
         return new OcrClient(cred, "ap-guangzhou");

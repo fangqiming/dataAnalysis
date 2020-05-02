@@ -13,4 +13,6 @@ public class TokenBo {
     private String method;
     private String mob;
     private String pwd;
+    private String sk;
+    private String sd;
 }
