@@ -1,6 +1,7 @@
 package com.i000.stock.user.service.impl.us.service;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.i000.stock.user.core.util.TimeUtil;
 import com.i000.stock.user.dao.mapper.AssetUsMapper;
 import com.i000.stock.user.dao.model.AssetUs;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,10 @@ public class AssetUsService {
         return getOne(ew);
     }
 
+    public LocalDate getLDate(LocalDate date) {
+        return assetUsMapper.getLD(date);
+    }
+
     public List<AssetUs> findNewestTwoByUser(String user) {
         EntityWrapper<AssetUs> ew = new EntityWrapper<>();
         ew.where("user={0}", user)
@@ -32,6 +37,10 @@ public class AssetUsService {
 
 
     public AssetUs getByUserAndDate(String user, LocalDate date) {
+        LocalDate before = LocalDate.parse("2019-02-01", TimeUtil.DF);
+        if (date.compareTo(before) < 0) {
+            date = before;
+        }
         EntityWrapper<AssetUs> ew = new EntityWrapper<>();
         ew.where("user={0}", user)
                 .and("date={0}", date);

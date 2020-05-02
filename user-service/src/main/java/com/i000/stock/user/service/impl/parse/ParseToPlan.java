@@ -33,14 +33,13 @@ public class ParseToPlan implements ParseService {
 
     private String start = "------ Tomorrows Plan ------";
 
-    public boolean needSave(String part) {
+    public boolean needSave(String part,LocalDate date) {
         List<String> parts = fetchLines(part);
         LocalDate maxDate = planMapper.getMaxDate();
 
         if (CollectionUtils.isEmpty(parts)) {
-            //如果时空就保存
-            LocalDate nowDate = LocalDate.parse(part.split("plan_desc_")[1].split("\\.txt")[0],
-                    DateTimeFormatter.ofPattern("yyyyMMdd"));
+            //此处日期获取的有问题
+            LocalDate nowDate = date;
             if (Objects.isNull(maxDate) || maxDate.compareTo(nowDate) < 0) {
                 planMapper.insert(Plan.builder().newDate(nowDate).build());
             }
@@ -62,10 +61,10 @@ public class ParseToPlan implements ParseService {
     }
 
     @Override
-    public LocalDate save(String original) {
+    public LocalDate save(String original,LocalDate date) {
         String part = getPart(original);
         LocalDate parse = null;
-        if (needSave(part)) {
+        if (needSave(part,date)) {
             companyInfoCrawlerService.clear();
             for (String line : fetchLines(part)) {
                 String[] split = line.split("\t");

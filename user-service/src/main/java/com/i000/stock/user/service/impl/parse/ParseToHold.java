@@ -28,7 +28,7 @@ public class ParseToHold implements ParseService {
 
 
     @Override
-    public LocalDate save(String original) {
+    public LocalDate save(String original,LocalDate date) {
         List<String> parts = getPart(original);
         LocalDate maxDate = holdMapper.getMaxDate();
         LocalDate parse = null;

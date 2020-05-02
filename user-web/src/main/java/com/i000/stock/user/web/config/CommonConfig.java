@@ -4,6 +4,9 @@ import com.i000.stock.user.api.entity.bo.AssetInitBo;
 import com.i000.stock.user.api.entity.bo.TokenBo;
 import com.i000.stock.user.core.file.oss.OSSFileUpload;
 import com.i000.stock.user.core.file.oss.OSSUtil;
+import com.tencentcloudapi.common.Credential;
+import com.tencentcloudapi.common.profile.ClientProfile;
+import com.tencentcloudapi.ocr.v20181119.OcrClient;
 import com.tictactec.ta.lib.Core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -94,4 +97,14 @@ public class CommonConfig {
     public Core core() {
         return new Core();
     }
+
+    @Bean
+    public OcrClient ocrClient() {
+        Credential cred = new Credential("AKIDmMhZAaOSOZeS1vgjYEI5MMCQMlulbdeP", "cxZuyYtiGXXGjvqVS9suLQFAGAf28zxf");
+        ClientProfile clientProfile = new ClientProfile();
+        clientProfile.setSignMethod(ClientProfile.SIGN_TC3_256);
+        return new OcrClient(cred, "ap-guangzhou");
+    }
+
+
 }

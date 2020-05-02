@@ -1,6 +1,7 @@
 package com.i000.stock.user.api.service.external;
 
 import com.i000.stock.user.api.entity.bo.JQKlineBo;
+import com.i000.stock.user.api.entity.bo.Price;
 import com.i000.stock.user.api.entity.constant.PeriodEnum;
 
 import java.io.IOException;
@@ -38,7 +39,13 @@ public interface CompanyCrawlerService {
      * @param periodEnum
      * @return
      */
-    List<JQKlineBo> findKLine(String code, PeriodEnum periodEnum,Integer count);
+    List<JQKlineBo> findKLine(String code, PeriodEnum periodEnum, Integer count);
 
-
+    /**
+     * 获取股票数据
+     *
+     * @param code
+     * @return
+     */
+    Price getPrice(String code);
 }

@@ -1,6 +1,7 @@
 package com.i000.stock.user.api.service.buiness;
 
 import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
+import com.i000.stock.user.api.entity.vo.HistoryProfitVO;
 import com.i000.stock.user.api.entity.vo.PageGainVo;
 import com.i000.stock.user.api.entity.vo.YieldRateVo;
 
@@ -81,4 +82,23 @@ public interface GainRateService {
      * @return
      */
     BigDecimal getWithdrawal(String user, Integer diff);
+
+    /**
+     * 计算指定日期之间的收益率,包含跑赢上证的收益率
+     * 注意比如传递 start 2012-01-01  end 2012-02-01 则实际的开始日期日2012-01-01前的第一个交易日期
+     *
+     * @param start
+     * @param end
+     * @return
+     */
+    HistoryProfitVO getHistory(LocalDate start, LocalDate end, String title);
+
+    /**
+     * 计算年化收益
+     *
+     * @return
+     */
+    HistoryProfitVO getYearRate(LocalDate end);
+
+
 }

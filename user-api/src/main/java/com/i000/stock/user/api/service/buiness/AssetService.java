@@ -26,6 +26,14 @@ public interface AssetService {
      */
     Asset getLately(String userCode);
 
+    /**
+     * 获取指定日期的资产信息
+     *
+     * @param date
+     * @return
+     */
+    Asset get(LocalDate date);
+
 
     /**
      * 获取到指定日期之前的前几天的资产信息

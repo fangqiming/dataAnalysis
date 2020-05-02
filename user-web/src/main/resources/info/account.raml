@@ -1,0 +1,184 @@
+﻿#%RAML 1.0
+title: 账户API
+version: v1
+documentation:
+ - title: 账户展示
+   content: |
+     baseUri如下:
+     - dev: 未定义
+     - clone: 未定
+     - online: 未定
+
+mediaType:  application/json
+
+/account/get_cn:
+  description: 获取A股最新的账户对比,注意,收益差正数为红色,负数为绿色
+  get:
+    responses:
+          200:
+              body:
+                  application/json:
+                    example: |
+                       {
+                          "code": 0,    //错误码
+                          "data": {
+                            "date":"20-04-28", //时间
+                            "entities": [
+                              {
+                                "name":"勾A股",
+                                "asset":14000000, //净资产
+                                "gain":0.0123,  //收益率 需前端转化为 1.23%
+                                "gainDiff":0.0001, //收益差 需转化为 0.01%
+                                "position":0.75,//仓位 需转化为 75%
+                                "beta":0.0123 //等仓位跑赢 需转化为 1.23%
+                              }
+                            ]
+                          }
+                        }
+
+
+/account/get_us:
+  description:  获取美股最新的账户对比,注意,收益差正数为红色,负数为绿色
+  get:
+    queryParameters:
+        pageSize:
+          required: true
+          type: integer
+          description: 页大小
+        pageNo:
+          required: true
+          type: integer
+          description: 第几页
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                        {
+                           "code": 0,    //错误码
+                           "data": {
+                             "date":"20-04-28", //时间
+                             "entities": [
+                               {
+                                 "name":"勾美股",
+                                 "asset":14000000, //净资产
+                                 "gain":0.0123,  //收益率 需前端转化为 1.23%
+                                 "gainDiff":0.0001, //收益差 需转化为 0.01%
+                                 "position":0.75,//仓位 需转化为 75%
+                                 "beta":0.0123 //等仓位跑赢 需转化为 1.23%
+                               }
+                             ]
+                           }
+                         }
+
+/account/get_trade:
+  description: 获取交易对比
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                 "code": 0,    //错误码
+                 "data": {
+                   "entities": [
+                     {
+                       "account":"刘桥基金",
+                       "name":"万华化学", //股票名称
+                       "date":"2019-07-21", //交易日期
+                       "price":14.51, //交易均价
+                       "betaOpen":0.0123,  //跑赢开盘 需前端转化为 1.23%
+                       "betaClose":0.0001, //跑赢收盘 需转化为 0.01%
+                       "diff":0.013,//交易误差 需转化为 1.3%
+                       "type":"买入" //交易类型
+                     }
+                   ]
+                 }
+               }
+
+
+
+/account/get_diff_by_date:
+  description: 由时间范围获取账户的跟踪误差
+  get:
+    queryParameters:
+      start:
+        required: true
+        type: string
+        description: 开始时间
+      end:
+         required: true
+         type: string
+         description: 结束时间
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "accounts": [ //此部分为账户跟踪误差
+                              {
+                                "account":"刘桥基金", //账户名
+                                "gain":0.0123, // 收益率 1.23%
+                                "gainDiff":0.001, //收益差 0.1%
+                                "position":0.75, //平均仓位 75%
+                                "beta":0.001, //等仓位跑赢
+                                "drawdown":0.012,//最大回撤 1.2%
+                                "drawdownDiff":0.0001 // 最大回撤差
+                              }
+                            ],
+                            "statistical":[ //此部分为账户统计
+                              {
+                                "account":"刘桥基金",//账户名
+                                "name":"万户化学",
+                                "type":"最大亏损" ,
+                                "gainDiff":0.0123, //收益差 需转化为 1.23%
+                                "money":10000, //盈利金额,红正绿负
+                                "positionDiff":0.0123 //仓位差 1.23%
+                              }
+                            ]
+                          }
+                        }
+
+/account/get_diff_by_range:
+  description: 由下拉选择获取账户的跟踪误差
+  get:
+    queryParameters:
+      diff :
+        required: true
+        type: string
+        description: 取值为 w m q y 分别代表,近一周,近一月近一季,近一年
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                       {
+                          "code": 0,
+                          "data": {
+                            "accounts": [  //此部分为账户跟踪误差
+                              {
+                                "account":"刘桥基金", //账户名
+                                "gain":0.0123, // 收益率 1.23%
+                                "gainDiff":0.001, //收益差 0.1%
+                                "position":0.75, //平均仓位 75%
+                                "beta":0.001, //等仓位跑赢
+                                "drawdown":0.012,//最大回撤 1.2%
+                                "drawdownDiff":0.0001 // 最大回撤差
+                              }
+                            ],
+                            "statistical":[ //此部分为账户统计
+                              {
+                                "account":"刘桥基金",//账户名
+                                "name":"万户化学",
+                                "type":"最大亏损" ,
+                                "gainDiff":0.0123, //收益差 需转化为 1.23%
+                                "money":10000, //盈利金额,红正绿负
+                                "positionDiff":0.0123 //仓位差 1.23%
+                              }
+                            ]
+                          }
+                        }

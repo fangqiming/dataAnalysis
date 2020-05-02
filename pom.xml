@@ -29,7 +29,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <mysql.driver.version>5.1.41</mysql.driver.version>
-        <!-- <mysql.driver.version>8.0.11</mysql.driver.version>-->
+        <!--<mysql.driver.version>8.0.11</mysql.driver.version>-->
         <apache.common.lang3.version>3.6</apache.common.lang3.version>
         <apache.common.io.version>2.5</apache.common.io.version>
         <apache.common.configuration.version>1.10</apache.common.configuration.version>
@@ -213,10 +213,20 @@
             </dependency>
 
             <dependency>
-                <groupId>com.tictactec</groupId>
-                <artifactId>ta-lib</artifactId>
-                <version>0.4.0</version>
+            <groupId>com.tictactec</groupId>
+            <artifactId>ta-lib</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+
+            <dependency>
+                <groupId>com.tencentcloudapi</groupId>
+                <artifactId>tencentcloud-sdk-java</artifactId>
+                <!-- go to https://search.maven.org/search?q=tencentcloud-sdk-java and get the latest version. -->
+                <!-- 请到https://search.maven.org/search?q=tencentcloud-sdk-java查询最新版本 -->
+                <version>3.0.93</version>
             </dependency>
+
+
 
 
         </dependencies>

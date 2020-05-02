@@ -1,0 +1,46 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.i000.stock.user.dao.mapper.AccountAssetMapper">
+
+    <resultMap id="AccountAssetBO" type="com.i000.stock.user.dao.bo.AccountAssetBO">
+        <result column="account_Name" property="accountName"/>
+        <result column="date" property="date"/>
+        <result column="share" property="share"/>
+        <result column="total" property="total"/>
+        <result column="country" property="country"/>
+    </resultMap>
+
+    <select id="find" resultMap="AccountAssetBO">
+        select account_name,sum(total) total,date,sum(share) share,country,sum(position) position from account_asset
+        where country =#{country} and date=#{date} GROUP BY account_name,date
+    </select>
+
+    <select id="findBetween" resultMap="AccountAssetBO">
+        select account_name,sum(total) total,date,sum(share) share ,country,sum(position) position from account_asset
+        where country=#{country} and date between #{start} and #{end} GROUP BY account_name,date
+
+    </select>
+
+
+    <!--当周 当月按天划分-->
+    <!--<select id="findByStepDay" resultMap="LineGroup">
+        select date as groupCondition,base_market,ai_market,gain from line where   DATE_SUB(CURDATE(), INTERVAL #{step.step} DAY) &lt;= date(date)
+
+    </select>-->
+
+    <!--当季 当年按 周/月划分-->
+    <!--  <select id="findByStepGroup" resultMap="LineGroup">
+          select DATE_FORMAT(o.date,#{step.groupCondition}) groupCondition,
+          AVG(o.ai_market) ai_market,
+          AVG(o.base_market)base_market ,
+          AVG(o.gain)gain
+          from (
+          select * from line where DATE_SUB(CURDATE(), INTERVAL #{step.step} DAY) &lt;= date(date)
+          ) o
+          group by groupCondition;
+      </select>-->
+
+
+</mapper>

@@ -117,5 +117,20 @@ public class IndexUSService {
         return indexUsMapper.selectList(ew);
     }
 
+    public IndexUs getByDate(LocalDate date, String operate) {
+        LocalDate before = LocalDate.parse("2019-02-01", TimeUtil.DF);
+        if (date.compareTo(before) < 0) {
+            date = before;
+        }
+        EntityWrapper<IndexUs> ew = new EntityWrapper<>();
+        String param = String.format("date%s{0}", operate);
+        ew.where(param, date).orderBy("date", false).last("limit 1");
+        List<IndexUs> indexUses = indexUsMapper.selectList(ew);
+        if (CollectionUtils.isEmpty(indexUses)) {
+            return null;
+        }
+        return indexUses.get(0);
+    }
+
 
 }

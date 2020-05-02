@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -65,13 +66,30 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
     @Override
     public List<IndexInfo> putIndexToCache(Integer tryNumber) {
         INDEX.clear();
+        List<IndexInfo> result = new ArrayList<>();
         for (int i = 0; i < tryNumber; i++) {
             try {
-                List<IndexInfo> indexInfo = indexService.get();
-                if (!CollectionUtils.isEmpty(indexInfo)) {
-                    INDEX = indexInfo;
-                    return indexInfo;
+                List<String> indexs = Arrays.asList("000001.XSHG", "000016.XSHG", "000300.XSHG", "399001.XSHE", "399005.XSHE", "399006.XSHE");
+                for (String index : indexs) {
+                    Price price = companyCrawlerService.getPrice(index);
+                    String code = price.getCode().startsWith("0") ? "sh" + price.getCode() : "sz" + price.getCode();
+                    IndexInfo tmp = IndexInfo.builder()
+                            .code(code)
+                            .date(price.getDate())
+                            .amount(price.getAmount())
+                            .close(price.getPrice())
+                            .preClose(price.getClose())
+                            .volume(price.getVolume())
+                            .open(price.getOpen())
+                            .high(price.getHigh())
+                            .low(price.getLow())
+                            .build();
+                    if (Objects.nonNull(tmp)) {
+                        result.add(tmp);
+                    }
                 }
+                INDEX = result;
+                return result;
             } catch (Exception e) {
                 sleep(2000L);
             }
@@ -88,29 +106,27 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
         for (int i = 0; i < tryNumber; i++) {
             try {
                 List<Price> result = new ArrayList<>(4000);
-                //获取了全部的公司码
-                List<String> codes;
-                try {
-                    codes = companyCrawlerService.getCode();
-                } catch (Exception e) {
-                    log.warn("从聚宽获取数据失败，请仔细查看错误");
-                    e.printStackTrace();
-                    codes = companyService.findAll().stream().map(a -> a.getCode()).collect(Collectors.toList());
+                //获取全部公司代码
+                List<String> codes = companyCrawlerService.getCode();
+//                for (String code : codes) {
+//                    Price price = companyCrawlerService.getPrice(code);
+//                    if (Objects.nonNull(price)) {
+//                        result.add(price);
+//                    }
+//                }
+                for (int c = 0; c < codes.size(); c++) {
+                    String code = codes.get(c);
+                    Price price = companyCrawlerService.getPrice(code);
+                    log.warn("c=" + c + " code=" + code);
+                    if (Objects.nonNull(price)) {
+                        result.add(price);
+                    }
+                    System.out.println(c);
                 }
 
 
-                //将公司码拼接成参数
-                List<List<String>> cutList = cutting(codes, 100.0);
-                //遍历
-                for (List<String> list : cutList) {
-                    //将代码拼接到结果中
-                    result.addAll(externalService.getPrice(list));
-                }
-                //一旦出错就全部重试
-                if (!CollectionUtils.isEmpty(result)) {
-                    PRICE = result;
-                    return result;
-                }
+                PRICE = result;
+                return result;
             } catch (Exception e) {
                 sleep(2000L);
             }

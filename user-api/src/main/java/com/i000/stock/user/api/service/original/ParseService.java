@@ -26,6 +26,6 @@ public interface ParseService {
      * @param original
      * @return
      */
-    LocalDate save(String original);
+    LocalDate save(String original,LocalDate date);
 
 }

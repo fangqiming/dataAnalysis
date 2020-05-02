@@ -8,6 +8,7 @@ import com.i000.stock.user.api.entity.constant.AuthEnum;
 import com.i000.stock.user.api.entity.vo.*;
 import com.i000.stock.user.api.service.buiness.*;
 import com.i000.stock.user.api.service.external.CompanyService;
+import com.i000.stock.user.api.service.original.IndexValueService;
 import com.i000.stock.user.api.service.original.LineService;
 import com.i000.stock.user.core.context.RequestContext;
 import com.i000.stock.user.core.result.Results;
@@ -81,6 +82,8 @@ public class TradeController {
     @Autowired
     private UserLoginService userLoginService;
 
+    private DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     /**
      * 127.0.0.1:8081/trade/find_gain
      * 获取首页的最近获利情况描述
@@ -101,6 +104,40 @@ public class TradeController {
         result.add(gainRateService.getRecentlyGain(userCode, temp.minusMonths(12).minusDays(diff), "近一年"));
         return Results.newListResultEntity(result);
     }
+
+
+    @GetMapping(path = "/find_history_gain")
+    public Object findHistoryProfit() {
+        String userCode = getUserCode();
+        Asset lately = assetService.getLately(userCode);
+        LocalDate endDate = lately.getDate();
+        List<HistoryProfitVO> result = new ArrayList<>(12);
+        LocalDate week = endDate.minusDays(7).minusDays(-1);
+        LocalDate month = endDate.minusMonths(1).minusDays(-1);
+        LocalDate month3 = endDate.minusMonths(3).minusDays(-1);
+        LocalDate month6 = endDate.minusMonths(6).minusDays(-1);
+        //成立以来
+        LocalDate init = LocalDate.parse("2018-01-01");
+        //今年
+        LocalDate year0 = LocalDate.parse(endDate.getYear() + "-01-01");
+        //去年
+        LocalDate year_1 = LocalDate.parse(endDate.getYear() - 1 + "-01-01");
+        LocalDate year_1_end = LocalDate.parse(endDate.getYear() - 1 + "-12-31");
+        //前年
+        LocalDate year_2 = LocalDate.parse(endDate.getYear() - 2 + "-01-01");
+        LocalDate year_2_end = LocalDate.parse(endDate.getYear() - 2 + "-12-31");
+        result.add(gainRateService.getHistory(year0, endDate, "今年以来"));
+        result.add(gainRateService.getHistory(week, endDate, "近一周"));
+        result.add(gainRateService.getHistory(month, endDate, "近一月"));
+        result.add(gainRateService.getHistory(month3, endDate, "近一季"));
+        result.add(gainRateService.getHistory(month6, endDate, "近半年"));
+        result.add(gainRateService.getHistory(init, endDate, "2018至今"));
+        result.add(gainRateService.getHistory(year_1, year_1_end, endDate.getYear() - 1 + "年"));
+        result.add(gainRateService.getHistory(year_2, year_2_end, endDate.getYear() - 2 + "年"));
+        result.add(gainRateService.getYearRate(endDate));
+        return Results.newListResultEntity(result);
+    }
+
 
     /**
      * 127.0.0.1:8081/trade/get_gain_contrast

@@ -28,14 +28,13 @@ public class ParseToTrade implements ParseService {
 
     private String start = "------ Todays Trades ------";
 
-    public boolean needSave(String part) {
+    public boolean needSave(String part, LocalDate date) {
         List<String> parts = fetchLines(part);
         LocalDate maxDate = tradeMapper.getMaxDate();
 
         if (CollectionUtils.isEmpty(parts)) {
             //如果时空就保存
-            LocalDate nowDate = LocalDate.parse(part.split("trade_desc_")[1].split("\\.txt")[0],
-                    DateTimeFormatter.ofPattern("yyyyMMdd"));
+            LocalDate nowDate = date;
             if (Objects.isNull(maxDate) || maxDate.compareTo(nowDate) < 0) {
                 tradeMapper.insert(Trade.builder().date(nowDate).build());
             }
@@ -54,10 +53,10 @@ public class ParseToTrade implements ParseService {
     }
 
     @Override
-    public LocalDate save(String original) {
+    public LocalDate save(String original, LocalDate date) {
         String part = getPart(original);
         LocalDate parse = null;
-        if (needSave(part)) {
+        if (needSave(part, date)) {
             List<String> parts = fetchLines(part);
             for (String line : parts) {
                 String[] split = line.split("\t");

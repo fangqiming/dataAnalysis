@@ -6,9 +6,13 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public interface AssetUsMapper extends BaseMapper<AssetUs> {
 
     @Select("select avg((stock - cover)/(balance + cover + stock)*100) from asset_us where `user`=#{user}")
     BigDecimal getAvgPositionByUser(@Param("user") String user);
+
+    @Select("select max(date) from asset_us where date<#{date} ")
+    LocalDate getLD(@Param("date") LocalDate date);
 }

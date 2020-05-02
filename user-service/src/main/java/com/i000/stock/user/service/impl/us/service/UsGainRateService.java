@@ -3,10 +3,13 @@ package com.i000.stock.user.service.impl.us.service;
 import com.i000.stock.user.api.entity.bo.IndexUsBo;
 import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
 import com.i000.stock.user.api.entity.vo.GainVo;
+import com.i000.stock.user.api.entity.vo.HistoryProfitVO;
 import com.i000.stock.user.api.entity.vo.PageGainVo;
 import com.i000.stock.user.api.entity.vo.UsYieldRateVo;
+import com.i000.stock.user.dao.model.Asset;
 import com.i000.stock.user.dao.model.AssetUs;
 import com.i000.stock.user.dao.model.IndexUs;
+import com.i000.stock.user.dao.model.IndexValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -27,6 +30,7 @@ public class UsGainRateService {
 
     @Autowired
     private IndexUSService indexUSService;
+
 
     /**
      * 计算当天的收益率以及累计与指数的对比
@@ -84,6 +88,62 @@ public class UsGainRateService {
                 .beatStandardRate(getBeatStandardRate(bd, sz)).build();
         return relativeProfitBO;
     }
+
+
+    public HistoryProfitVO getHistory(LocalDate start, LocalDate end, String title) {
+        IndexUs startIndex = indexUSService.getByDate(start, "<");
+        IndexUs endIndex = indexUSService.getByDate(end, "<=");
+        AssetUs startAsset = assetUsService.getByUserAndDate("10000000", startIndex.getDate());
+        AssetUs endAsset = assetUsService.getByUserAndDate("10000000", endIndex.getDate());
+        BigDecimal szRate = (endIndex.getSp500().subtract(startIndex.getSp500()))
+                .divide(startIndex.getSp500(), 4, BigDecimal.ROUND_HALF_UP);
+        BigDecimal startV = startAsset.getBalance().add(startAsset.getStock()).add(startAsset.getCover());
+        BigDecimal endV = endAsset.getBalance().add(endAsset.getStock()).add(endAsset.getCover());
+        BigDecimal assetRate = (endV.subtract(startV)).divide(startV, 4, BigDecimal.ROUND_HALF_UP);
+        BigDecimal beta = getBeatStandardRate(assetRate, szRate);
+        return HistoryProfitVO.builder().gain(assetRate.multiply(BigDecimal.valueOf(100)))
+                .szGain(szRate.multiply(BigDecimal.valueOf(100)))
+                .beta(beta).title(title).build();
+    }
+
+    public HistoryProfitVO getYearRate(LocalDate end) {
+        LocalDate init = LocalDate.parse("2019-02-01");
+        LocalDate now = LocalDate.now();
+        IndexUs startIndex = indexUSService.getByDate(init, "<");
+        IndexUs endIndex = indexUSService.getByDate(now, "<=");
+        Double szYearRate = getYearRate(startIndex.getSp500().doubleValue(),
+                endIndex.getSp500().doubleValue(), startIndex.getDate(), endIndex.getDate());
+        AssetUs startAsset = assetUsService.getByUserAndDate("10000000", startIndex.getDate());
+        AssetUs endAsset = assetUsService.getByUserAndDate("10000000", endIndex.getDate());
+        BigDecimal startV = startAsset.getBalance().add(startAsset.getStock()).add(startAsset.getCover());
+        BigDecimal endV = endAsset.getBalance().add(endAsset.getStock()).add(endAsset.getCover());
+        Double ggYearRate = getYearRate(startV.doubleValue(), endV.doubleValue(), startIndex.getDate(), endIndex.getDate());
+        BigDecimal beta = getBeatStandardRate(BigDecimal.valueOf(ggYearRate / 100.0), BigDecimal.valueOf(szYearRate / 100.0));
+        return HistoryProfitVO.builder()
+                .gain(BigDecimal.valueOf(ggYearRate)).szGain(BigDecimal.valueOf(szYearRate))
+                .beta(beta).title("平均年化").build();
+
+    }
+
+    /**
+     * 计算年化收益率
+     *
+     * @param start
+     * @param end
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    private Double getYearRate(double start, double end, LocalDate startDate, LocalDate endDate) {
+        //首先计算隔了多少年
+        long diffDay = endDate.toEpochDay() - startDate.toEpochDay();
+        double years = diffDay / 365.0;
+        //收益率
+        double gain = (end - start) / start;
+        return (Math.pow(gain + 1, 1 / (years)) - 1) * 100;
+    }
+
+
 
     /**
      * todo 时间问题需要注意一下。美国时间，这样拿应该会出问题。

@@ -6,6 +6,7 @@ import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.dao.model.IndexPrice;
 import com.i000.stock.user.dao.model.IndexUs;
 import com.i000.stock.user.dao.model.StockPrice;
+import com.i000.stock.user.service.impl.FinancialDateService;
 import com.i000.stock.user.service.impl.StockPriceService;
 import com.i000.stock.user.service.impl.external.NoticeService;
 import com.i000.stock.user.service.impl.external.StockChangeService;
@@ -48,7 +49,6 @@ public class IndexPriceSchedule {
     @Autowired
     private IndexUSService indexUSService;
 
-
     @Autowired
     private MaterialPriceService materialPriceService;
 
@@ -60,6 +60,9 @@ public class IndexPriceSchedule {
 
     @Autowired
     private StockFocusService stockFocusService;
+
+    @Autowired
+    private FinancialDateService financialDateService;
 
     /**
      * 保存指数价格信息到数据库中
@@ -113,6 +116,9 @@ public class IndexPriceSchedule {
     @Scheduled(cron = "0 00 01 * * ?")
     public void updateStockPledge() {
         try {
+            //更新美股财报信息
+            financialDateService.save();
+            //股权质押信息
             stockPledgeService.save();
         } catch (Exception e) {
             log.warn("股权质押信息获取失败", e);

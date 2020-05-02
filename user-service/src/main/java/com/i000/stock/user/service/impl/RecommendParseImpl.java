@@ -39,14 +39,16 @@ public class RecommendParseImpl {
 
     @PostConstruct
     public void init() {
-        parseServiceList = Arrays.asList(parseToHold, parseToLine, parseToPlan, parseToTrade);
+        parseServiceList = Arrays.asList(parseToHold, parseToPlan, parseToTrade);
     }
 
     public LocalDate parse(String content) {
         log.debug(new Date() + "得到了推送的推荐信息");
         List<LocalDate> result = new ArrayList<>(4);
+        LocalDate date = parseToLine.save(content,null);
+
         for (ParseService parseService : parseServiceList) {
-            result.add(parseService.save(content));
+            result.add(parseService.save(content, date));
         }
         List<LocalDate> collect = result.stream().filter(Objects::nonNull).collect(Collectors.toList());
         return CollectionUtils.isEmpty(collect) ? null : collect.get(0);

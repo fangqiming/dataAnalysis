@@ -23,6 +23,11 @@ public final class Results {
         return new PageResult<>(total, entities);
     }
 
+    public static <T> TimeResult<T> newTimeList(String date, List<T> entities) {
+        return new TimeResult<>(date, entities);
+    }
+
+
     public static <T> ResultEntity newListResultEntity(List<T> entities) {
         return newListResult(entities).toResultEntity();
     }
@@ -33,6 +38,10 @@ public final class Results {
 
     public static <T> ResultEntity newPageResultEntity(Long total, List<T> entities) {
         return newPageResult(total, entities).toResultEntity();
+    }
+
+    public static <T> ResultEntity newTimeResultEntity(String date, List<T> entities) {
+        return newTimeList(date, entities).toResultEntity();
     }
 
     public static ResultEntity newNormalResultEntity(String key, Object value) {
@@ -56,6 +65,7 @@ public final class Results {
 
         return resultEntity;
     }
+
 
     public static ResultEntity newErrorResultEntity(long code, String message, Object data) {
         ResultEntity resultEntity = new ResultEntity();

@@ -1,6 +1,7 @@
 package com.i000.stock.user.api.service.original;
 
 import com.i000.stock.user.dao.model.IndexValue;
+import net.sf.jsqlparser.statement.create.table.Index;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,6 +46,22 @@ public interface IndexValueService {
      * @return
      */
     IndexValue getRecentlyByGt(LocalDate date);
+
+    /**
+     * 比如传递 2018-01-01 则获取到大于 2018-01-01的第一个交易日期指数信息
+     *
+     * @param date
+     * @return
+     */
+    IndexValue getRecentlyByG(LocalDate date);
+
+    /**
+     * 比如传递 2018-01-01 则获取到小于 2018-01-01的第一个交易日期的指数信息
+     *
+     * @param date
+     * @return
+     */
+    IndexValue getRecentlyByL(LocalDate date);
 
     IndexValue getRecentlyByLt(LocalDate date);
 

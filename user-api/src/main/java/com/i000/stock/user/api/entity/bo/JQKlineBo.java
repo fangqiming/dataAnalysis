@@ -18,4 +18,6 @@ public class JQKlineBo {
     private Double low;
     private Double volume;
     private Double money;
+    private String code;
+    private Double preClose;
 }

@@ -61,6 +61,7 @@ public class PriceServiceImpl implements PriceService {
         return result;
     }
 
+
     private StringBuffer createPrice(List<Price> prices) {
         StringBuffer result = new StringBuffer();
         if (!CollectionUtils.isEmpty(prices)) {

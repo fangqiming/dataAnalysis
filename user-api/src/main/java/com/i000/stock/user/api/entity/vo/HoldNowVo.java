@@ -33,7 +33,6 @@ public class HoldNowVo {
     @JsonSerialize(using = TypeSerializer.class)
     private String type;
     private Integer amount;
-
     //成本
     private BigDecimal cost;
     //目前价值
@@ -42,7 +41,8 @@ public class HoldNowVo {
     private BigDecimal earning;
     //股票名称
     private String stockName;
-
+    //预测每股收益
+    private String eps;
     //链接到雪球
     private String url;
 

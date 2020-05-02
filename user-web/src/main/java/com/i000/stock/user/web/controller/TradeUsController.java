@@ -18,6 +18,7 @@ import com.i000.stock.user.dao.bo.BaseSearchVo;
 import com.i000.stock.user.dao.bo.PageResult;
 import com.i000.stock.user.dao.model.*;
 import com.i000.stock.user.service.impl.ActualDiscService;
+import com.i000.stock.user.service.impl.FinancialDateService;
 import com.i000.stock.user.service.impl.us.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -41,7 +43,7 @@ import static java.util.stream.Collectors.toList;
 public class TradeUsController {
 
 
-    @Autowired
+    @Resource
     private UserInfoUsService userInfoUsService;
 
     @Autowired
@@ -64,6 +66,9 @@ public class TradeUsController {
 
     @Autowired
     private UserLoginService userLoginService;
+
+    @Autowired
+    private FinancialDateService financialDateService;
 
     /**
      * 127.0.0.1:8081//trade/get_asset_summary
@@ -158,6 +163,41 @@ public class TradeUsController {
         return Results.newListResultEntity(result);
     }
 
+    @GetMapping(path = "/find_history_gain")
+    public Object findHistoryProfit() {
+        String userCode = getUserCode();
+        AssetUs lately = assetUsService.getNewest(userCode);
+
+        LocalDate endDate = lately.getDate();
+        List<HistoryProfitVO> result = new ArrayList<>(12);
+        LocalDate week = endDate.minusDays(7).minusDays(-1);
+        LocalDate month = endDate.minusMonths(1).minusDays(-1);
+        LocalDate month3 = endDate.minusMonths(3).minusDays(-1);
+        LocalDate month6 = endDate.minusMonths(6).minusDays(-1);
+        //成立以来
+        LocalDate init = LocalDate.parse("2019-02-01");
+        //今年
+        LocalDate year0 = LocalDate.parse(endDate.getYear() + "-01-01");
+        //去年
+        LocalDate year_1 = LocalDate.parse(endDate.getYear() - 1 + "-01-01");
+        LocalDate year_1_end = LocalDate.parse(endDate.getYear() - 1 + "-12-31");
+        //前年
+        LocalDate year_2 = LocalDate.parse(endDate.getYear() - 2 + "-01-01");
+        LocalDate year_2_end = LocalDate.parse(endDate.getYear() - 2 + "-12-31");
+        result.add(usGainRateService.getHistory(year0, endDate, "今年以来"));
+        result.add(usGainRateService.getHistory(week, endDate, "近一周"));
+        result.add(usGainRateService.getHistory(month, endDate, "近一月"));
+        result.add(usGainRateService.getHistory(month3, endDate, "近一季"));
+        result.add(usGainRateService.getHistory(month6, endDate, "近半年"));
+        result.add(usGainRateService.getHistory(init, endDate, "19.02至今"));
+        if (endDate.getYear() >= 2021) {
+            result.add(usGainRateService.getHistory(year_1, year_1_end, endDate.getYear() - 1 + "年"));
+            result.add(usGainRateService.getHistory(year_2, year_2_end, endDate.getYear() - 2 + "年"));
+        }
+        result.add(usGainRateService.getYearRate(endDate));
+        return Results.newListResultEntity(result);
+    }
+
     /**
      * 美股折线图
      *
@@ -235,6 +275,8 @@ public class TradeUsController {
                 d.setGain((s.getNewPrice().subtract(s.getOldPrice())).divide(s.getOldPrice(), 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
             });
             for (HoldNowVo holdNowVo : holdNowVos) {
+                String eps = financialDateService.getEps(holdNowVo.getName());
+                holdNowVo.setEps(eps);
                 //成本
                 holdNowVo.setCost(holdNowVo.getOldPrice().multiply(new BigDecimal(holdNowVo.getAmount())));
                 //目前的市值

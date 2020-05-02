@@ -3,6 +3,7 @@ package com.i000.stock.user.service.impl;
 import com.i000.stock.user.api.entity.bo.IndexValueBo;
 import com.i000.stock.user.api.entity.bo.RelativeProfitBO;
 import com.i000.stock.user.api.entity.vo.GainVo;
+import com.i000.stock.user.api.entity.vo.HistoryProfitVO;
 import com.i000.stock.user.api.entity.vo.PageGainVo;
 import com.i000.stock.user.api.entity.vo.YieldRateVo;
 import com.i000.stock.user.api.service.buiness.AssetService;
@@ -203,6 +204,65 @@ public class GainRateServiceImpl implements GainRateService {
         LocalDate before = now.minusMonths(month);
         return getWithdrawal(before, now, user);
     }
+
+
+    @Override
+    public HistoryProfitVO getHistory(LocalDate start, LocalDate end, String title) {
+        //找到传入时间的前一天
+        IndexValue startIndex = indexValueService.getRecentlyByL(start);
+        IndexValue endIndex = indexValueService.getRecentlyByLt(end);
+        //账户信息
+        Asset startAsset = assetService.get(startIndex.getDate());
+        Asset endAsset = assetService.get(endIndex.getDate());
+        BigDecimal szRate = (endIndex.getSh().subtract(startIndex.getSh()))
+                .divide(startIndex.getSh(), 4, BigDecimal.ROUND_HALF_UP);
+        BigDecimal startV = startAsset.getBalance().add(startAsset.getStock()).add(startAsset.getCover());
+        BigDecimal endV = endAsset.getBalance().add(endAsset.getStock()).add(endAsset.getCover());
+        BigDecimal assetRate = (endV.subtract(startV)).divide(startV, 4, BigDecimal.ROUND_HALF_UP);
+        BigDecimal beta = getBeatStandardRate(assetRate, szRate);
+        return HistoryProfitVO.builder().gain(assetRate.multiply(BigDecimal.valueOf(100)))
+                .szGain(szRate.multiply(BigDecimal.valueOf(100)))
+                .beta(beta).title(title).build();
+    }
+
+    @Override
+    public HistoryProfitVO getYearRate(LocalDate end) {
+        LocalDate init = LocalDate.parse("2018-01-01");
+        LocalDate now = LocalDate.now();
+        IndexValue startIndex = indexValueService.getRecentlyByL(init);
+        IndexValue endIndex = indexValueService.getRecentlyByLt(now);
+        Double szYearRate = getYearRate(startIndex.getSh().doubleValue(),
+                endIndex.getSh().doubleValue(), startIndex.getDate(), endIndex.getDate());
+        Asset startAsset = assetService.get(startIndex.getDate());
+        Asset endAsset = assetService.get(endIndex.getDate());
+        BigDecimal startV = startAsset.getBalance().add(startAsset.getStock()).add(startAsset.getCover());
+        BigDecimal endV = endAsset.getBalance().add(endAsset.getStock()).add(endAsset.getCover());
+        Double ggYearRate = getYearRate(startV.doubleValue(), endV.doubleValue(), startIndex.getDate(), endIndex.getDate());
+        BigDecimal beta = getBeatStandardRate(BigDecimal.valueOf(ggYearRate / 100.0), BigDecimal.valueOf(szYearRate / 100.0));
+        return HistoryProfitVO.builder()
+                .gain(BigDecimal.valueOf(ggYearRate)).szGain(BigDecimal.valueOf(szYearRate))
+                .beta(beta).title("平均年化").build();
+
+    }
+
+    /**
+     * 计算年化收益率
+     *
+     * @param start
+     * @param end
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    private Double getYearRate(double start, double end, LocalDate startDate, LocalDate endDate) {
+        //首先计算隔了多少年
+        long diffDay = endDate.toEpochDay() - startDate.toEpochDay();
+        double years = diffDay / 365.0;
+        //收益率
+        double gain = (end - start) / start;
+        return (Math.pow(gain + 1, 1 / (years)) - 1) * 100;
+    }
+
 
     private BigDecimal getWithdrawal(LocalDate start, LocalDate end, String user) {
         Asset ltDateAsset = assetService.getLtDateByDateAndUser(start, user);

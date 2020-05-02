@@ -69,6 +69,17 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
+    public Asset get(LocalDate date) {
+        EntityWrapper<Asset> ew = new EntityWrapper<>();
+        ew.where("date={0}", date);
+        List<Asset> assets = assetMapper.selectList(ew);
+        if (CollectionUtils.isEmpty(assets)) {
+            return null;
+        }
+        return assets.get(0);
+    }
+
+    @Override
     public Asset getDiff(LocalDate date, Integer day, String userCode) {
         return assetMapper.getDiff(date, day, userCode);
     }

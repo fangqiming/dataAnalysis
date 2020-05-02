@@ -1,5 +1,6 @@
 package com.i000.stock.user.api.service.buiness;
 
+import com.i000.stock.user.api.entity.bo.Price;
 import com.i000.stock.user.dao.model.StockPrice;
 
 import java.io.IOException;
@@ -27,6 +28,5 @@ public interface PriceService {
      * @return
      */
     List<StockPrice> findStockPrice();
-
 
 }
