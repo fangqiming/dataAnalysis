@@ -30,7 +30,7 @@
         <java.version>1.8</java.version>
         <mysql.driver.version>8.0.11</mysql.driver.version>
         <apache.common.lang3.version>3.6</apache.common.lang3.version>
-        <apache.common.io.version>2.5</apache.common.io.version>
+        <apache.common.io.version>2.7</apache.common.io.version>
         <apache.common.configuration.version>1.10</apache.common.configuration.version>
         <mybatisplus-spring-boot-starter.version>1.0.4</mybatisplus-spring-boot-starter.version>
         <mybatisplus.version>2.1.1</mybatisplus.version>
