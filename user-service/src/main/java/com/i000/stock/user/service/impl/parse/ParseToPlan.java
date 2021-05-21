@@ -33,7 +33,7 @@ public class ParseToPlan implements ParseService {
 
     private String start = "------ Tomorrows Plan ------";
 
-    public boolean needSave(String part,LocalDate date) {
+    public boolean needSave(String part, LocalDate date) {
         List<String> parts = fetchLines(part);
         LocalDate maxDate = planMapper.getMaxDate();
 
@@ -61,10 +61,10 @@ public class ParseToPlan implements ParseService {
     }
 
     @Override
-    public LocalDate save(String original,LocalDate date) {
+    public LocalDate save(String original, LocalDate date) {
         String part = getPart(original);
         LocalDate parse = null;
-        if (needSave(part,date)) {
+        if (needSave(part, date)) {
             companyInfoCrawlerService.clear();
             for (String line : fetchLines(part)) {
                 String[] split = line.split("\t");

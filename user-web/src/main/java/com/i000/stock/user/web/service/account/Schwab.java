@@ -22,11 +22,12 @@ public class Schwab implements IPicture {
         AccountBO result = new AccountBO();
         String context = getContext(url, ocrClient);
         AccountAsset asset = getAsset(url);
+        asset.setCountry("US");
         context = context.replaceAll("\\$", "")
                 .replaceAll(",", "").replaceAll("\\+", "");
         String[] split = context.split("Account Value\t");
-        Double total = Double.valueOf(split[1].split(TAB)[0]);
-        String[] split1 = context.split("Mkt ValueG.*L\t");
+        Double total = getDouble(split[1].split(TAB)[0]);
+        String[] split1 = context.split("Mkt ValueG.L\t");
         List<AccountHold> accountHolds = new ArrayList<>();
         asset.setTotal(total);
         if (split1.length > 1) {
@@ -58,7 +59,9 @@ public class Schwab implements IPicture {
             holdSymbol = removeStart(holdSymbol);
             String[] securityStr = holdSymbol.split("\\)\t");
             for (String sec : securityStr) {
-                addSchPosition(asset, sec, accountHolds);
+                if (sec.length() > 10) {
+                    addSchPosition(asset, sec, accountHolds);
+                }
             }
         }
 
@@ -68,13 +71,14 @@ public class Schwab implements IPicture {
     }
 
     private void addSchPosition(AccountAsset asset, String sec, List<AccountHold> accountHolds) {
+        sec = sec.replaceAll("ETFs\t", "");
         AccountHold hold = new AccountHold();
         String[] holdItem = sec.split(TAB);
         hold.setAccountName(asset.getAccountName());
         hold.setDate(asset.getDate());
-        hold.setPrice(Double.valueOf(holdItem[1]));
+        hold.setPrice(getDouble(holdItem[1]));
         hold.setCode(holdItem[0]);
-        hold.setQuantity(Integer.valueOf(holdItem[holdItem.length - 2].replaceAll("\\.", "")));
+        hold.setQuantity(getInt(holdItem[holdItem.length - 2]));
         accountHolds.add(hold);
     }
 

@@ -26,6 +26,7 @@ public class TimeUtil {
 
     public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final DateTimeFormatter DF2 = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     public static LocalDate max(LocalDate l1, LocalDate l2) {
         return l1.compareTo(l2) > 0 ? l1 : l2;

@@ -3,9 +3,11 @@ package com.i000.stock.user.web.controller;
 import com.i000.stock.user.api.entity.bo.AccountBO;
 import com.i000.stock.user.api.service.external.CompanyCrawlerService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
+import com.i000.stock.user.dao.model.IndexUs;
 import com.i000.stock.user.service.impl.AccountAssetService;
 import com.i000.stock.user.service.impl.CompanyCrawlerServiceImpl;
 import com.i000.stock.user.service.impl.FinancialDateService;
+import com.i000.stock.user.service.impl.us.service.IndexUSService;
 import com.i000.stock.user.web.schedule.IndexPriceSchedule;
 import com.i000.stock.user.web.service.StockFocusService;
 import com.i000.stock.user.web.service.TencentService;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 @Slf4j
 @RestController
@@ -38,18 +41,23 @@ public class TestController {
     private AccountAssetService accountAssetService;
 
     @Resource
+    private IndexUSService indexUSService;
+
+    @Resource
     private TencentService tencentService;
 
     @GetMapping("/search")
-    public Object a(@RequestParam String url) throws Exception {
-//        return tencentService.getIBResult(url);
-        return tencentService.getContext(url);
+    public Object a() throws Exception {
+        IndexUs newestFromNet = indexUSService.getNewestFromNet();
+        indexUSService.insert(newestFromNet);
+        return "OK";
     }
 
     @GetMapping("/index")
     public Object object() throws Exception {
-//        return accountAssetService.getCurrent("CN");
+        indexPriceCacheService.saveIndexValue();
         return "OK";
     }
+
 
 }

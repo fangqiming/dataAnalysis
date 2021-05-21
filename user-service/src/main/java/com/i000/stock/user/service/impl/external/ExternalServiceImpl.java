@@ -67,6 +67,11 @@ public class ExternalServiceImpl {
         return getPrice(param);
     }
 
+    public String getIndexUs() {
+        Call<String> indexUs = service.getIndexUs();
+        return execute(indexUs);
+    }
+
 
     private String getPrice(String param) {
         for (int i = 0; i < 10; i++) {

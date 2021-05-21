@@ -5,11 +5,13 @@ import com.i000.stock.user.api.service.util.FileService;
 import com.i000.stock.user.api.service.util.IndexPriceCacheService;
 import com.i000.stock.user.core.result.Results;
 import com.i000.stock.user.core.result.base.ResultEntity;
+import com.i000.stock.user.core.util.TimeUtil;
 import com.i000.stock.user.core.util.ValidationUtils;
 import com.i000.stock.user.dao.model.IndexUs;
 import com.i000.stock.user.service.impl.EverydayStockService;
 import com.i000.stock.user.service.impl.RankService;
 import com.i000.stock.user.service.impl.us.ParseReportService;
+import com.i000.stock.user.service.impl.us.service.AssetUsService;
 import com.i000.stock.user.service.impl.us.service.IndexUSService;
 import com.i000.stock.user.web.task.DataHandleTask;
 import com.i000.stock.user.web.thread.ReceiveRecommendThread;
@@ -18,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.io.IOException;
+import java.time.LocalDate;
 
 /**
  * @Author:qmfang
@@ -53,6 +57,7 @@ public class EngineController {
     @Autowired
     private RankService rankService;
 
+
     @Autowired
     private EverydayStockService everydayStockService;
 
@@ -78,8 +83,12 @@ public class EngineController {
         ValidationUtils.validateParameter(content, "内容不能为空");
         fileService.saveFile(content, "recommend/us");
         receiveRecommendThread.execute(() -> parseReportService.parse(content));
+        //简单的处理一下文档,获取到最新的日期
         try {
+            String dateStr = content.split("Portfolio for")[1].split(",")[0].replaceAll(" ", "");
+            LocalDate date = LocalDate.parse(dateStr, TimeUtil.DF2);
             IndexUs newestFromNet = indexUSService.getNewestFromNet();
+            newestFromNet.setDate(date);
             indexUSService.insert(newestFromNet);
         } catch (Exception e) {
             log.warn("美股指数价格信息已经被保存");

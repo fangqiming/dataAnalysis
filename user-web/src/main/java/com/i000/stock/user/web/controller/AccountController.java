@@ -322,6 +322,8 @@ public class AccountController {
                             .filter(h -> !h.getCode().contains("标准券"))
                             .mapToDouble(h -> Math.abs(h.getQuantity()) * h.getPrice()).sum();
                     a.setPosition(securityValue / a.getTotal());
+                } else {
+                    a.setPosition(0.0);
                 }
             }
         }
@@ -344,6 +346,8 @@ public class AccountController {
             }
         }
         //按照市值的大小进行排序
+        AccountVO ai = getAI(country, date);
+        accountVOS.add(ai);
         accountVOS.sort((a, b) -> b.getAsset().compareTo(a.getAsset()));
 
         AccountVO baseVo = getBase(country, date);
@@ -400,6 +404,48 @@ public class AccountController {
      */
     private AccountVO getBase(String country, LocalDate date) {
         if ("CN".equals(country)) {
+//            Asset current = assetService.get(date);
+//            Asset before = assetService.getBeforeDate(date, "10000000");
+//            double balance = current.getBalance().doubleValue();
+//            double stock = current.getStock().doubleValue();
+//            double position = stock / (stock + balance);
+//            double beforeAsset = before.getBalance().add(before.getStock()).doubleValue();
+//            double currentAsset = current.getBalance().add(current.getStock()).doubleValue();
+//            return AccountVO.builder().position(position).net(currentAsset / 10000000).name("勾A股").asset(currentAsset)
+//                    .beta(0.0).gainDiff(0.0)
+//                    .gain((currentAsset - beforeAsset) / beforeAsset).build();
+            IndexValue current = indexValueService.getByDate(date);
+            IndexValue before = indexValueService.getRecentlyByL(current.getDate());
+            double currentCash = current.getHs().doubleValue();
+            double beforeCash = before.getHs().doubleValue();
+            double gain = currentCash / beforeCash - 1;
+            return AccountVO.builder().position(1.0).net(1.0).name("沪深300").asset(currentCash)
+                    .beta(0.0).gainDiff(0.0).gain(gain).build();
+        } else {
+//            AssetUs current = assetUsService.getByUserAndDate("10000000", date);
+//            LocalDate beforeDate = assetUsService.getLDate(current.getDate());
+//            AssetUs Before = assetUsService.getByUserAndDate("10000000", beforeDate);
+//            double securityValue = current.getCover().abs().add(current.getStock()).doubleValue();
+//            double total = current.getCover().add(current.getBalance()).add(current.getStock()).doubleValue();
+//            double position = securityValue / total;
+//            double totalBefore = Before.getCover().add(Before.getBalance()).add(Before.getStock()).doubleValue();
+//            return AccountVO.builder().position(position).net(total / 10000000).name("勾美股").asset(total).beta(0.0).gainDiff(0.0)
+//                    .gain((total - totalBefore) / totalBefore).build();
+
+            IndexUs current = indexUSService.getByDate(date);
+            IndexUs before = indexUSService.getLtDateOne(current.getDate());
+            double currentCash = current.getNasdaq().doubleValue();
+            double beforeCash = before.getNasdaq().doubleValue();
+            double gain = currentCash / beforeCash - 1;
+            return AccountVO.builder().position(1.0).net(1.0).name("纳斯达克").asset(currentCash)
+                    .beta(0.0).gainDiff(0.0).gain(gain).build();
+
+        }
+    }
+
+
+    private AccountVO getAI(String country, LocalDate date){
+        if ("CN".equals(country)) {
             Asset current = assetService.get(date);
             Asset before = assetService.getBeforeDate(date, "10000000");
             double balance = current.getBalance().doubleValue();
@@ -410,6 +456,7 @@ public class AccountController {
             return AccountVO.builder().position(position).net(currentAsset / 10000000).name("勾A股").asset(currentAsset)
                     .beta(0.0).gainDiff(0.0)
                     .gain((currentAsset - beforeAsset) / beforeAsset).build();
+
         } else {
             AssetUs current = assetUsService.getByUserAndDate("10000000", date);
             LocalDate beforeDate = assetUsService.getLDate(current.getDate());
@@ -419,7 +466,7 @@ public class AccountController {
             double position = securityValue / total;
             double totalBefore = Before.getCover().add(Before.getBalance()).add(Before.getStock()).doubleValue();
             return AccountVO.builder().position(position).net(total / 10000000).name("勾美股").asset(total).beta(0.0).gainDiff(0.0)
-                    .gain((total - totalBefore) / total).build();
+                    .gain((total - totalBefore) / totalBefore).build();
         }
     }
 

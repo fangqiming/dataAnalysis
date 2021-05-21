@@ -71,7 +71,7 @@ public class IndexPriceSchedule {
     public void saveIndexPrice() {
         try {
             StringBuffer stringBuffer = indexPriceService.get();
-            if (true) {
+            if (indexPriceCacheService.isOpenMarket()) {
                 List<StockPrice> stockPrice = indexPriceService.findStockPrice();
                 stockPriceService.batchSave(stockPrice);
                 IndexPrice indexPrice = IndexPrice.builder().date(LocalDate.now()).content(stringBuffer.toString()).build();
@@ -130,6 +130,7 @@ public class IndexPriceSchedule {
     @Scheduled(cron = "0 30 16 * * ?")
     public void saveUsIndex() {
         try {
+            //此时就可以了,因为可以保证日期是正确的
             IndexUs newIndexUs = indexUSService.getNewestFromNet();
             indexUSService.insert(newIndexUs);
         } catch (Exception e) {

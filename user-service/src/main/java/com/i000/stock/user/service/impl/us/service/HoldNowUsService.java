@@ -28,7 +28,7 @@ public class HoldNowUsService {
     }
 
     public void handleShareSplitUp(ShareSplitUpBO shareSplitUpBO) {
-        holdNowUsMapper.handleShareSplitUp(shareSplitUpBO.getNewPrice(), shareSplitUpBO.getCode(),shareSplitUpBO.getOldDate());
+        holdNowUsMapper.handleShareSplitUp(shareSplitUpBO.getNewPrice(), shareSplitUpBO.getCode(), shareSplitUpBO.getOldDate());
     }
 
     public void updateSharePriceAndDate(String code, BigDecimal price, LocalDate date) {

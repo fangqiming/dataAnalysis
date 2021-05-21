@@ -26,5 +26,4 @@ public class ActualDiscDetailBO {
     private BigDecimal weekRate;
 
 
-
 }

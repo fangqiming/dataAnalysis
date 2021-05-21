@@ -45,7 +45,7 @@ public class RecommendParseImpl {
     public LocalDate parse(String content) {
         log.debug(new Date() + "得到了推送的推荐信息");
         List<LocalDate> result = new ArrayList<>(4);
-        LocalDate date = parseToLine.save(content,null);
+        LocalDate date = parseToLine.save(content, null);
 
         for (ParseService parseService : parseServiceList) {
             result.add(parseService.save(content, date));

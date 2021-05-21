@@ -144,7 +144,6 @@ public class UsGainRateService {
     }
 
 
-
     /**
      * todo 时间问题需要注意一下。美国时间，这样拿应该会出问题。
      * 计算最大回撤

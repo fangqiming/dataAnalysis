@@ -7,6 +7,7 @@ import com.tencentcloudapi.ocr.v20181119.OcrClient;
 import com.tencentcloudapi.ocr.v20181119.models.GeneralAccurateOCRRequest;
 import com.tencentcloudapi.ocr.v20181119.models.GeneralAccurateOCRResponse;
 import com.tencentcloudapi.ocr.v20181119.models.TextDetection;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -63,7 +64,7 @@ public interface IPicture {
         String accountName = accountInfo[1];
         String type = accountInfo[2];
         LocalDate date = LocalDate.parse(accountInfo[3], DF);
-        Double share = Double.valueOf(accountInfo[4].split("\\.")[0]);
+        Double share = getDouble(accountInfo[4].split("\\.")[0]);
         result.setAccountName(accountName);
         result.setType(type);
         result.setDate(date);
@@ -104,5 +105,57 @@ public interface IPicture {
             }
         }
         return result;
+    }
+
+    default Double getDouble(String str) {
+        String result = "";
+        char[] c = str.toCharArray();
+        int point = 0;
+        for (char cc : c) {
+            if ((cc >= '0' && cc <= '9') || cc == '-') {
+                result += cc;
+            } else if (cc == '.') {
+                result += cc;
+                point += 1;
+            }
+        }
+        if (point > 1) {
+            //如果小数点的数量大于1时仅仅保留最后一个小数点
+            String[] items = result.split("\\.");
+            for (int i = 0; i < items.length; i++) {
+                if (i < items.length - 1) {
+                    result = result + items[i];
+                } else {
+                    result = result + "." + items[i];
+                }
+            }
+
+//            String[] items = result.split("\\.");
+//            result = items[0] + "." + items[1];
+
+        }
+        if (StringUtils.isEmpty(result)) {
+            return 0.0;
+        }
+        try {
+            return Double.parseDouble(result);
+        } catch (Exception e) {
+            return 0.0;
+        }
+
+    }
+
+    default Integer getInt(String str) {
+        String result = "";
+        char[] c = str.toCharArray();
+        for (char cc : c) {
+            if ((cc >= '0' && cc <= '9') || cc == '-') {
+                result += cc;
+            }
+        }
+        if (StringUtils.isEmpty(result)) {
+            return 0;
+        }
+        return Integer.parseInt(result);
     }
 }

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -108,23 +109,19 @@ public class IndexPriceCacheServiceImpl implements IndexPriceCacheService {
                 List<Price> result = new ArrayList<>(4000);
                 //获取全部公司代码
                 List<String> codes = companyCrawlerService.getCode();
-//                for (String code : codes) {
-//                    Price price = companyCrawlerService.getPrice(code);
-//                    if (Objects.nonNull(price)) {
-//                        result.add(price);
-//                    }
-//                }
                 for (int c = 0; c < codes.size(); c++) {
                     String code = codes.get(c);
-                    Price price = companyCrawlerService.getPrice(code);
-                    log.warn("c=" + c + " code=" + code);
-                    if (Objects.nonNull(price)) {
-                        result.add(price);
+                    try {
+                        Price price = companyCrawlerService.getPrice(code);
+                        log.warn("c=" + c + " code=" + code);
+                        if (Objects.nonNull(price)) {
+                            result.add(price);
+                        }
+                        System.out.println(c);
+                    } catch (Exception e) {
+                        log.warn(e.toString());
                     }
-                    System.out.println(c);
                 }
-
-
                 PRICE = result;
                 return result;
             } catch (Exception e) {

@@ -17,6 +17,9 @@ public interface ExternalService {
     @HTTP(method = "GET", path = "http://hq.sinajs.cn/{list}")
     Call<String> getPrice(@Path("list") String list);
 
+    @HTTP(method = "GET", path = "http://hq.sinajs.cn/list=int_dji,int_nasdaq,int_sp500")
+    Call<String> getIndexUs();
+
     @HTTP(method = "GET", path = "http://api.shenjian.io/?appid=ad4f4de8853f30da0492f27633a81dfd")
     Call<JSONObject> getIndex();
 

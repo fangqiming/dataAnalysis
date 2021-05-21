@@ -3,14 +3,18 @@ package com.i000.stock.user.service.impl.us.service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.i000.stock.user.core.util.TimeUtil;
 import com.i000.stock.user.dao.mapper.IndexUsMapper;
+import com.i000.stock.user.dao.model.AssetUs;
 import com.i000.stock.user.dao.model.IndexUs;
 import com.i000.stock.user.service.impl.external.ExternalServiceImpl;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,26 +33,35 @@ public class IndexUSService {
     @Autowired
     private IndexUsMapper indexUsMapper;
 
-    private final String INDEX_US = "list=gb_$dji,gb_ixic,gb_$inx";
+    @Resource
+    private RestTemplate restTemplate;
+
+    @Resource
+    private AssetUsService assetUsService;
+
+    private final String INDEX_US = "list=int_dji,int_nasdaq,int_sp500";
 
     public IndexUs getNewestFromNet() {
         log.warn("调取美股指数");
-        String origin = externalService.getString(INDEX_US);
+        String origin = restTemplate.getForEntity("http://hq.sinajs.cn/list=int_dji,int_nasdaq,int_sp500", String.class).getBody();
         System.out.println(origin);
         IndexUs result = new IndexUs();
         if (!StringUtils.isEmpty(origin)) {
             String[] split = origin.split(";");
             for (String str : split) {
-                if (str.contains("gb_$dji")) {
+                if (str.contains("int_dji")) {
                     result.setDji(getValue(str));
-                } else if (str.contains("gb_ixic")) {
+                } else if (str.contains("int_nasdaq")) {
                     result.setNasdaq(getValue(str));
-                } else if (str.contains("gb_$inx")) {
+                } else if (str.contains("int_sp500")) {
                     result.setSp500(getValue(str));
-                    result.setDate(getDate(str));
                 }
             }
         }
+        //日期不能够这样获取.因为获取到的最新日期,现在需要获取到美股最新的交易日期才行.
+        //此日期在文档里面有
+        AssetUs newest = assetUsService.getNewest("10000000");
+        result.setDate(newest.getDate());
         return result;
     }
 

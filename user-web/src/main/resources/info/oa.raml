@@ -1,0 +1,339 @@
+﻿#%RAML 1.0
+title: OA账户管理(HTTP请求头存放 access-code,token)
+version: v1
+documentation:
+ - title: OA
+   content: |
+     baseUri如下:
+     - dev: 未定义
+     - clone: 127.0.0.1:8001/
+     - online: 未定
+
+mediaType:  application/json
+
+
+/focus/find_focus:
+  description:  获取关注的股票列表
+  get:
+    responses:
+      200:
+          body:
+              application/json:
+                example: |
+                   {
+                       "code": 0,
+                       "data": {
+                           "entities": [
+                               {
+                                   "id": 38,      //主键,取关时传递此参数
+                                   "symbol": "JD", //股票代码
+                                   "name": "京东", //股票名称,页面展示名称,点击操作时使用symbol
+                                   "financialDate": "", //财报公布日诶
+                                   "holdMoney": 579864.0, //持仓金额,前端显示时保留0位小数
+                                   "maxDown": -0.129,      //最大回撤 前端显示为 -12.9%
+                                   "peg": 0.06, //PEG值 前端显示为 0.06
+                                   "rsi": 32.74, //RIS值 前端显示为 32.74
+                                   "price": 77.49, //现价
+                                   "high": 108.29  //最高价
+                               }
+                           ]
+                       }
+                   }
+
+/focus/add_focus:
+  description:  追加关注股票
+  get:
+    queryParameters:
+      symbol:
+        required: true
+        type: string
+        description: 股票代码
+    responses:
+      200:
+          body:
+              application/json:
+                example: |
+                   {
+                      "code": 0,
+                           "data": {
+                               "entities": [
+                                   {
+                                       "id": 38,      //主键,取关时传递此参数
+                                       "symbol": "JD", //股票代码
+                                       "name": "京东", //股票名称,页面展示名称,点击操作时使用symbol
+                                       "financialDate": "", //财报公布日诶
+                                       "holdMoney": 579864.0, //持仓金额,前端显示时保留0位小数
+                                       "maxDown": -0.129,      //最大回撤 前端显示为 -12.9%
+                                       "peg": 0.06, //PEG值 前端显示为 0.06
+                                       "rsi": 32.74, //RIS值 前端显示为 32.74
+                                       "price": 77.49, //现价
+                                       "high": 108.29  //最高价
+                                   }
+                               ]
+                           }
+                       }
+
+
+
+
+/focus/delete_focus:
+  description:  将股票从关注列表移除
+  get:
+    queryParameters:
+      id:
+        required: true
+        type: integer
+        description: 该列的主键
+    responses:
+      200:
+          body:
+              application/json:
+                example: |
+                   {
+                      "code": 0,
+                           "data": {
+                               "entities": [
+                                   {
+                                       "id": 38,      //主键,取关时传递此参数
+                                       "symbol": "JD", //股票代码
+                                       "name": "京东", //股票名称,页面展示名称,点击操作时使用symbol
+                                       "financialDate": "", //财报公布日诶
+                                       "holdMoney": 579864.0, //持仓金额,前端显示时保留0位小数
+                                       "maxDown": -0.129,      //最大回撤 前端显示为 -12.9%
+                                       "peg": 0.06, //PEG值 前端显示为 0.06
+                                       "rsi": 32.74, //RIS值 前端显示为 32.74
+                                       "price": 77.49, //现价
+                                       "high": 108.29  //最高价
+                                   }
+                               ]
+                           }
+                       }
+
+/focus/update_focus:
+  description:  手动触发更新关注股票列表的数据
+  get:
+    responses:
+      200:
+          body:
+              application/json:
+                example: |
+                   {
+                      "code": 0,
+                           "data": {
+                               "entities": [
+                                   {
+                                       "id": 38,      //主键,取关时传递此参数
+                                       "symbol": "JD", //股票代码
+                                       "name": "京东", //股票名称,页面展示名称,点击操作时使用symbol
+                                       "financialDate": "", //财报公布日诶
+                                       "holdMoney": 579864.0, //持仓金额,前端显示时保留0位小数
+                                       "maxDown": -0.129,      //最大回撤 前端显示为 -12.9%
+                                       "peg": 0.06, //PEG值 前端显示为 0.06
+                                       "rsi": 32.74, //RIS值 前端显示为 32.74
+                                       "price": 77.49, //现价
+                                       "high": 108.29  //最高价
+                                   }
+                               ]
+                           }
+                       }
+
+
+
+/config/get_market_info:
+  description:  获取市场的开收盘时间信息
+  get:
+    responses:
+      200:
+          body:
+              application/json:
+                example: |
+                    {
+                        "code": 0,
+                        "data": {
+                            "entity": {
+                                "id": 1,  //主键,前端页面不需要此字段
+                                "isClose": 0, //0表示开盘,1表示收盘
+                                "openTime": "21:30", //开盘时间
+                                "closeTime": "04:00", //收盘时间
+                                "closeCovering": "03:55", //收盘回补时间
+                                "closeGougu": "03:57" //收盘勾股时间
+                            }
+                        }
+                    }
+
+
+/config/update_market_info:
+  description:  更新市场的开盘收盘时间信息
+  post:
+    body:
+      application/json:
+          example: |
+            {
+                "isClose":0,    //0表示开盘 , 1表示收盘
+                "openTime":"21:30", //开盘时间
+                "closeTime":"04:00", //收盘时间
+                "closeCovering":"58", //注意单端页面显示 :58 但是传递时只传递 58
+                "closeGougu":"58" //注意单端页面显示 :58 但是传递时只传递 58
+            }
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                        {
+                            "code": 0,
+                            "data": {
+                                "entity": {
+                                    "id": 1,
+                                    "isClose": 0,
+                                    "openTime": "21:30",
+                                    "closeTime": "04:00",
+                                    "closeCovering": "03:58",
+                                    "closeGougu": "03:58"
+                                }
+                            }
+                        }
+
+/config/get_gougu_account:
+  description:  获取账户跟随勾股策略执行的资金信息
+  get:
+    queryParameters:
+      broker:
+        required: true
+        type: string
+        description: 账户标识 U10177011 表示tiger U9626351 表示 snowball
+    responses:
+      200:
+          body:
+              application/json:
+                example: |
+                   {
+                       "code": 0,
+                       "data": {
+                           "entity": {
+                               "id": 1,  //主键,前端页面不需要此字段
+                               "broker": "U10177011", //账户表示,传递用
+                               "brokerName": "tiger", //账户名称,显示用
+                               "total": 1000000, //勾股资金量
+                               "rate": 0.0834 //股票配额
+                           }
+                       }
+                   }
+
+/config/update_gougu_account:
+  description:  更新账户跟随勾美股操作的资金量分配信息
+  post:
+    body:
+      application/json:
+          example: |
+            {
+                "broker":"U9626351", //账户标识
+                "total":0,  //勾股资金量
+                "rate":0.0834 //股票配额
+            }
+    responses:
+          200:
+              body:
+                  application/json:
+                     example: |
+                        {
+                            "code": 0,
+                            "data": {
+                                "entity": {
+                                    "id": 2, //主键,前端不需要此字段
+                                    "broker": "U9626351", //账户标识
+                                    "brokerName": "snowball", //账户名称
+                                    "total": 1, //勾股资金量
+                                    "rate": 0.0834 //股票配额
+                                }
+                            }
+                        }
+
+
+/config/find_gougu_plan:
+  description:  获取跟随勾美股操作的具体计划
+  get:
+    responses:
+      200:
+          body:
+              application/json:
+                example: |
+                   {
+                       "code": 0,
+                       "data": {
+                           "entities": [
+                               {
+                                   "id": 1,  //主键,后续修改交易金额是需要传递此参数
+                                   "newDate": "21-04-15", //推荐日期,前端不用管
+                                   "name": "AMC", //代码
+                                   "type": "S", //前端不用管
+                                   "action": "做空",  //类型
+                                   "broker": "U10177011", //账户标识,前端不用管
+                                   "brokerName": "tiger", //交易账户
+                                   "tradeValue": -83400.0 //交易金额
+                               }
+                           ]
+                       }
+                   }
+
+
+/config/update_gougu_plan:
+  description:  更新跟随勾美股策略的某只股票的交易金额
+  get:
+    queryParameters:
+      id:
+        required: true
+        type: integer
+        description: 交易列表的主键
+      tradeValue:
+        required: true
+        type: string
+        description: 修改后的交易金额
+    responses:
+      200:
+          body:
+              application/json:
+                example: |
+                   {
+                        "code": 0,
+                        "data": {
+                            "entities": [
+                                {
+                                    "id": 1,  //主键,后续修改交易金额是需要传递此参数
+                                    "newDate": "21-04-15", //推荐日期,前端不用管
+                                    "name": "AMC", //代码
+                                    "type": "S", //前端不用管
+                                    "action": "做空",  //类型
+                                    "broker": "U10177011", //账户标识,前端不用管
+                                    "brokerName": "tiger", //交易账户
+                                    "tradeValue": -83400.0 //交易金额
+                                }
+                            ]
+                        }
+                    }
+
+/config/reset_gougu_plan:
+  description:  重置勾股的交易计划
+  get:
+    responses:
+      200:
+          body:
+              application/json:
+                example: |
+                   {
+                        "code": 0,
+                        "data": {
+                            "entities": [
+                                {
+                                    "id": 1,  //主键,后续修改交易金额是需要传递此参数
+                                    "newDate": "21-04-15", //推荐日期,前端不用管
+                                    "name": "AMC", //代码
+                                    "type": "S", //前端不用管
+                                    "action": "做空",  //类型
+                                    "broker": "U10177011", //账户标识,前端不用管
+                                    "brokerName": "tiger", //交易账户
+                                    "tradeValue": -83400.0 //交易金额
+                                }
+                            ]
+                        }
+                    }

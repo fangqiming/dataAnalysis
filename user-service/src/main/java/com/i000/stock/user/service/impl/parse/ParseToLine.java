@@ -43,7 +43,7 @@ public class ParseToLine implements ParseService {
     }
 
     @Override
-    public LocalDate save(String original,LocalDate date) {
+    public LocalDate save(String original, LocalDate date) {
         String ownPart = getPart(original);
         LocalDate maxDate = lineMapper.getMaxDate();
         LocalDate parse = null;
